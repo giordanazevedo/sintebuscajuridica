@@ -1103,11 +1103,22 @@
                     </svg>
                 </div>
                 <p style="font-size: 1.1rem; line-height: 1.5; color: var(--text-main); font-weight: 600;">
-                    Nova atualização: agora você pode acessar as planilhas diretamente por aqui!
+                    Nova atualização: buscas ultrarrápidas e acesso direto às planilhas!
                 </p>
-                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
-                    Clique no botão azul <strong>"Acessar Planilhas"</strong> no topo da tela para visualizar todas as planilhas do sistema ou baixá-las localmente.
-                </p>
+                <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 0.75rem; width: 100%; max-width: 420px; margin: 0.5rem auto 0 auto;">
+                    <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                        <span style="color: var(--primary); font-weight: bold; font-size: 1.1rem; line-height: 1.2;">⚡</span>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
+                            <strong>Busca Acelerada:</strong> Otimizamos o mecanismo de consulta para retornar os resultados das ações instantaneamente.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                        <span style="color: var(--primary); font-weight: bold; font-size: 1.1rem; line-height: 1.2;">📂</span>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
+                            <strong>Acesso Direto:</strong> Clique no botão azul <strong>"Acessar Planilhas"</strong> no topo da tela para ver ou baixar as bases de dados a qualquer momento.
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <div class="modal-footer-buttons" style="justify-content: center; border-top: none; padding-top: 0;">
@@ -1476,12 +1487,12 @@
             });
 
             // Verifica se o usuário já visualizou a atualização no localStorage
-            if (!localStorage.getItem('sinte_atualizacao_planilhas_vista_v1')) {
+            if (!localStorage.getItem('sinte_atualizacao_planilhas_vista_v2')) {
                 // Abre o modal após um pequeno delay para suavizar a entrada
                 setTimeout(() => {
                     modalAtualizacao.style.display = 'flex';
                     // Marca como visualizado para não exibir mais
-                    localStorage.setItem('sinte_atualizacao_planilhas_vista_v1', 'true');
+                    localStorage.setItem('sinte_atualizacao_planilhas_vista_v2', 'true');
                 }, 800);
             }
         }
