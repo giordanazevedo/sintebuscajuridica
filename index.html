@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SINTE-PI | Busca Jurídica Unificada</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #d31124;
+            /* SINTE Red */
+            --primary-glow: rgba(211, 17, 36, 0.15);
+            --accent: #004b9b;
+            /* SINTE Blue */
+            --accent-glow: rgba(0, 75, 155, 0.15);
+            --bg-color: #f4f6f9;
+            --bg-pattern: repeating-linear-gradient(45deg, #eff2f6, #eff2f6 2px, #f4f6f9 2px, #f4f6f9 12px);
+            --surface: #ffffff;
+            --surface-border: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --success: #059669;
+            --danger: #dc2626;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            background-image: var(--bg-pattern);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 2.5rem;
+            background: var(--surface);
+            border-bottom: 1px solid var(--surface-border);
+            border-top: 5px solid var(--primary);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .logo-img {
+            height: 55px;
+            object-fit: contain;
+        }
+
+        .logo-title {
+            padding-left: 1rem;
+            border-left: 2px solid var(--surface-border);
+        }
+
+        .logo-title h1 {
+            font-size: 1.35rem;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .logo-title p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn-sync,
+        .btn-add {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            color: var(--text-main);
+            padding: 0.65rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: var(--transition);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-add {
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+        }
+
+        .btn-add:hover {
+            background: #003875;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .btn-sync:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #fffafa;
+            transform: translateY(-1px);
+        }
+
+        .btn-sync svg,
+        .btn-add svg {
+            width: 16px;
+            height: 16px;
+            transition: var(--transition);
+        }
+
+        .btn-sync.loading svg {
+            animation: spin 1s linear infinite;
+        }
+
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 1050px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .search-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1.5rem;
+        }
+
+        .search-section h2 {
+            font-size: 2.5rem;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 750px;
+            position: relative;
+            background: var(--surface);
+            border: 2px solid var(--surface-border);
+            border-radius: 16px;
+            padding: 0.5rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .search-container:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .search-icon {
+            width: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--accent);
+        }
+
+        .search-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 1.125rem;
+            padding: 0.75rem 0.5rem;
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .clear-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.5rem;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .clear-btn:hover {
+            color: var(--danger);
+            background: #fee2e2;
+        }
+
+        .clear-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .search-tips {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .search-tips span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .search-tips strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .results-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--surface-border);
+            padding-bottom: 0.75rem;
+        }
+
+        .results-count {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .results-count span {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .server-card {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            animation: fadeIn 0.3s ease-out;
+            border-left: 5px solid var(--primary);
+        }
+
+        .server-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--surface-border);
+            padding-bottom: 1rem;
+        }
+
+        .server-name-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .server-name {
+            font-size: 1.35rem;
+            color: var(--accent);
+            letter-spacing: -0.3px;
+        }
+
+        .occurrence-badge {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: var(--accent);
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .link-item {
+            background: #f8fafc;
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            transition: var(--transition);
+        }
+
+        .link-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .link-item:hover {
+            border-color: #cbd5e1;
+            background: #f1f5f9;
+        }
+
+        .meta-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .meta-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        .meta-value {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .meta-value.highlight {
+            color: var(--primary);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .source-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.8rem;
+            color: var(--accent);
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .source-tag.aba-tag {
+            color: var(--primary);
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .source-tag svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        .info-tag {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            background: var(--surface);
+            border: 2px dashed var(--surface-border);
+            border-radius: 16px;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            color: var(--surface-border);
+            stroke: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            color: var(--accent);
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            max-width: 450px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* ESTILO DO MODAL DE PLANILHAS */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-card {
+            background: var(--surface);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 520px;
+            padding: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--surface-border);
+            border-top: 5px solid var(--accent);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .modal-card.modal-large {
+            max-width: 720px;
+            width: 95%;
+            max-height: 85vh;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--surface-border);
+            padding-bottom: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .modal-title {
+            font-size: 1.45rem;
+            color: var(--accent);
+            margin-bottom: 0;
+        }
+
+        .btn-close-x {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .btn-close-x:hover {
+            background: var(--bg-color);
+            color: var(--danger);
+        }
+
+        .btn-close-x svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .modal-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-top: -0.5rem;
+        }
+
+        .modal-search-wrapper {
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .modal-search-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .modal-search-wrapper .form-control {
+            padding-left: 2.25rem;
+            height: 42px;
+            border: 2px solid var(--surface-border);
+            transition: var(--transition);
+        }
+
+        .modal-search-wrapper .form-control:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .planilhas-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.85rem;
+            max-height: 45vh;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+            margin: 0.5rem 0;
+        }
+
+        @media (min-width: 600px) {
+            .planilhas-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Scrollbar customizada para o grid */
+        .planilhas-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .planilhas-grid::-webkit-scrollbar-track {
+            background: var(--bg-color);
+            border-radius: 4px;
+        }
+
+        .planilhas-grid::-webkit-scrollbar-thumb {
+            background: var(--surface-border);
+            border-radius: 4px;
+        }
+
+        .planilhas-grid::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        .planilha-card {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .planilha-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            width: 5px;
+            background: var(--accent);
+            transition: var(--transition);
+        }
+
+        .planilha-card.tipo-local::before {
+            background: var(--success);
+        }
+
+        .planilha-card:hover {
+            transform: translateY(-2.5px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .planilha-card.tipo-local:hover {
+            border-color: rgba(5, 150, 105, 0.4);
+            background: #f8fafc;
+        }
+        
+        .planilha-card.tipo-google:hover {
+            border-color: rgba(0, 75, 155, 0.4);
+            background: #f8fafc;
+        }
+
+        .planilha-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            flex-grow: 1;
+            min-width: 0; /* allows text truncation/wrap calculation */
+        }
+
+        .planilha-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.35;
+            word-break: break-word;
+        }
+
+        .planilha-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            width: fit-content;
+        }
+
+        .planilha-card.tipo-google .planilha-type-badge {
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+
+        .planilha-card.tipo-local .planilha-type-badge {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success);
+        }
+
+        .planilha-type-badge svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        .planilha-link-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            transition: var(--transition);
+            flex-shrink: 0;
+            border: 1px solid var(--surface-border);
+        }
+
+        .planilha-card.tipo-google .planilha-link-icon {
+            background: var(--accent-glow);
+            color: var(--accent);
+            border-color: rgba(0, 75, 155, 0.15);
+        }
+
+        .planilha-card.tipo-google:hover .planilha-link-icon {
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+        }
+
+        .planilha-card.tipo-local .planilha-link-icon {
+            background: rgba(5, 150, 105, 0.08);
+            color: var(--success);
+            border-color: rgba(5, 150, 105, 0.15);
+        }
+
+        .planilha-card.tipo-local:hover .planilha-link-icon {
+            background: var(--success);
+            color: #ffffff;
+            border-color: var(--success);
+        }
+
+        .planilha-link-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ESTILOS PARA AS TAGS CLICÁVEIS DOS RESULTADOS DE BUSCA */
+        .source-tag.clickable-tag {
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .source-tag.clickable-tag:hover {
+            background: var(--accent);
+            color: #ffffff !important;
+            border-color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: var(--accent-glow) 0 4px 6px;
+        }
+
+        .source-tag.clickable-tag:hover svg {
+            fill: #ffffff;
+        }
+
+        .modal-footer-buttons {
+            display: flex;
+            justify-content: flex-end;
+            border-top: 1px solid var(--surface-border);
+            padding-top: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        /* loading state within grid */
+        .planilhas-loading {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            gap: 1rem;
+            color: var(--text-muted);
+        }
+
+        .planilhas-loading svg {
+            width: 36px;
+            height: 36px;
+            animation: spin 1.5s linear infinite;
+            stroke: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            border: 1px solid var(--surface-border);
+            padding: 0.65rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-save {
+            background: var(--accent);
+            border: none;
+            padding: 0.65rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .btn-save:hover {
+            background: #003875;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: var(--surface);
+            color: var(--text-main);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid var(--surface-border);
+            border-left-width: 4px;
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--surface-border);
+            background: var(--surface);
+            margin-top: auto;
+        }
+
+        footer strong {
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .logo-container {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .logo-title h1 { font-size: 1.15rem; }
+            .logo-title p { display: none; }
+
+            .header-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .btn-sync, .btn-add {
+                width: 100%;
+                justify-content: center;
+                padding: 0.75rem;
+            }
+
+            main { padding: 1.5rem 1rem; gap: 1.5rem; }
+            .search-section h2 { font-size: 1.75rem; }
+            .search-icon { width: 40px; }
+            .search-input { font-size: 1rem; padding: 0.6rem 0.5rem; }
+            .search-tips { flex-direction: column; align-items: center; gap: 0.75rem; }
+            .card-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+            .server-name { font-size: 1.15rem; }
+            .toast-container { left: 1rem; right: 1rem; bottom: 1rem; }
+            .toast { min-width: unset; width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo-container">
+            <img src="https://www.sintepiaui.org.br/images/logos/1/logomarcaa24.png" alt="SINTE-PI Logo"
+                class="logo-img">
+            <div class="logo-title">
+                <h1>Busca Jurídica</h1>
+                <p>Açoes Unificadas</p>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <button id="btn-open-planilhas" class="btn-add">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span>Acessar Planilhas</span>
+            </button>
+
+            <button id="sync-btn" class="btn-sync">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                </svg>
+                <span>Sincronizar Dados</span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="search-section">
+            <h2>Consulta de Ações Jurídicas</h2>
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <div class="search-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+                    <input type="text" id="search-input" class="search-input"
+                        placeholder="Digite CPF, Matrícula ou Nome do servidor..." autofocus autocomplete="off">
+                    <button id="clear-btn" class="clear-btn" title="Limpar pesquisa">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="search-tips">
+                <span>Busca por <strong>CPF</strong></span>
+                <span>Busca por <strong>Matrícula</strong></span>
+                <span>Busca por <strong>Nome parcial</strong></span>
+            </div>
+        </section>
+
+        <section class="results-section">
+            <div class="results-header" id="results-header" style="display: none;">
+                <div class="results-count" id="results-count">
+                    Nenhum resultado encontrado
+                </div>
+            </div>
+
+            <div id="results-content">
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <h3>Sistema Pronto para Consulta</h3>
+                    <p>Utilize o campo acima para buscar instantaneamente qualquer associado nas planilhas do
+                        departamento jurídico do SINTE.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL DE ACESSAR PLANILHAS -->
+    <div class="modal-overlay" id="modal-planilhas">
+        <div class="modal-card modal-large">
+            <div class="modal-header">
+                <h3 class="modal-title">Bases de Dados e Planilhas</h3>
+                <button class="btn-close-x" id="btn-close-modal-x" title="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <p class="modal-subtitle">Selecione uma planilha para visualizar no Google Drive ou baixar a cópia local mais recente.</p>
+            
+            <div class="modal-search-wrapper">
+                <div class="modal-search-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <input type="text" id="modal-search-input" class="form-control" placeholder="Buscar planilha pelo nome...">
+            </div>
+
+            <div class="planilhas-grid" id="planilhas-grid">
+                <!-- Inserido dinamicamente por JS -->
+            </div>
+
+            <div class="modal-footer-buttons">
+                <button class="btn-cancel" id="btn-close-modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <footer>
+        <p>&copy; 2026 <strong>SINTE-PI</strong>. Todos os direitos reservados. Sistema Unificado de Consultas
+            Jurídicas.</p>
+    </footer>
+
+    <script>
+        const searchInput = document.getElementById('search-input');
+        const clearBtn = document.getElementById('clear-btn');
+        const syncBtn = document.getElementById('sync-btn');
+        const resultsHeader = document.getElementById('results-header');
+        const resultsCount = document.getElementById('results-count');
+        const resultsContent = document.getElementById('results-content');
+        const toastContainer = document.getElementById('toast-container');
+
+        // Mapa de planilhas para permitir links clicáveis nas buscas
+        const mapaPlanilhasUrls = {};
+
+        async function inicializarMapaPlanilhas() {
+            try {
+                const response = await fetch('/api/planilhas');
+                const data = await response.json();
+                if (data.success) {
+                    data.planilhas.forEach(p => {
+                        mapaPlanilhasUrls[p.nome.toUpperCase().trim()] = p.url;
+                        if (p.url.startsWith('/planilhas/')) {
+                            const filename = p.url.replace('/planilhas/', '');
+                            mapaPlanilhasUrls[filename.toUpperCase().trim()] = p.url;
+                            mapaPlanilhasUrls[filename.replace('.xlsx', '').replace('.xls', '').toUpperCase().trim()] = p.url;
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Erro ao inicializar mapa de planilhas:", e);
+            }
+        }
+
+        inicializarMapaPlanilhas();
+
+        // Modal Controls
+        const btnOpenPlanilhas = document.getElementById('btn-open-planilhas');
+        const btnCloseModal = document.getElementById('btn-close-modal');
+        const btnCloseModalX = document.getElementById('btn-close-modal-x');
+        const modalPlanilhas = document.getElementById('modal-planilhas');
+        const planilhasGrid = document.getElementById('planilhas-grid');
+        const modalSearchInput = document.getElementById('modal-search-input');
+
+        let debounceTimeout;
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+
+            let icon = '';
+            if (type === 'success') {
+                icon = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="3" style="width:20px;height:20px;"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            } else if (type === 'error') {
+                icon = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="3" style="width:20px;height:20px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+            }
+
+            toast.innerHTML = icon + '<span class="toast-message">' + message + '</span>';
+
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.5s ease-in-out';
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
+
+        function formatCPF(cpf) {
+            if (!cpf || cpf === 'Não informado' || cpf === 'NAN') return 'Não informado';
+            let cleaned = cpf.replace(/\D/g, '');
+            if (cleaned.length === 11) {
+                return cleaned.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            }
+            return cpf;
+        }
+
+        function formatMatricula(mat) {
+            if (!mat || mat === 'Não informada' || mat === 'NAN') return 'Não informada';
+            return mat;
+        }
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value;
+
+            if (query.trim().length > 0) {
+                clearBtn.style.display = 'flex';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                performSearch(query);
+            }, 250);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            clearBtn.style.display = 'none';
+            performSearch('');
+            searchInput.focus();
+        });
+
+        async function performSearch(query) {
+            const trimmed = query.trim();
+
+            if (trimmed.length < 2) {
+                resultsHeader.style.display = 'none';
+                resultsContent.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg><h3>Sistema Pronto para Consulta</h3><p>Digite pelo menos 2 caracteres do CPF, Matrícula ou Nome do professor/servidor acima para pesquisar.</p></div>';
+                return;
+            }
+
+            resultsContent.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="animation: spin 1.5s linear infinite;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg><h3 style="color:var(--accent);">Pesquisando...</h3><p>Buscando na base de dados unificada...</p></div>';
+
+            try {
+                const response = await fetch('/api/search?q=' + encodeURIComponent(trimmed));
+                const data = await response.json();
+
+                renderResults(data.results, trimmed);
+            } catch (error) {
+                console.error("Erro na busca:", error);
+                showToast("Erro ao conectar com o servidor.", "error");
+                resultsContent.innerHTML = '<div class="empty-state" style="border-color: var(--danger);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg><h3 style="color: var(--danger)">Erro na Pesquisa</h3><p>Não foi possível buscar as informações. Certifique-se de que o servidor local está rodando.</p></div>';
+            }
+        }
+
+        function renderResults(results, searchTerm) {
+            resultsHeader.style.display = 'flex';
+
+            if (!results || results.length === 0) {
+                resultsCount.innerHTML = 'Nenhum registro correspondente a "<span>' + escapeHTML(searchTerm) + '</span>"';
+                resultsContent.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="15.01" y2="9"></line><line x1="9" y1="9" x2="9.01" y2="9"></line><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path></svg><h3>Nenhum registro encontrado</h3><p>Nenhum servidor foi localizado com este termo. Verifique a digitação.</p></div>';
+                return;
+            }
+
+            const grouped = {};
+            results.forEach(item => {
+                const nameKey = (item.nome || 'SEM NOME').toUpperCase().trim();
+                if (!grouped[nameKey]) {
+                    grouped[nameKey] = {
+                        nome: item.nome || 'SEM NOME',
+                        links: []
+                    };
+                }
+                grouped[nameKey].links.push(item);
+            });
+
+            const uniqueNamesCount = Object.keys(grouped).length;
+            resultsCount.innerHTML = 'Encontrado(s) <span>' + uniqueNamesCount + '</span> servidor(es) com total de <span>' + results.length + '</span> vínculos/ações';
+
+            let html = '<div class="cards-list">';
+
+            for (const key in grouped) {
+                const server = grouped[key];
+                const occurrenceText = server.links.length === 1 ? '1 ocorrência' : server.links.length + ' ocorrências / vínculos';
+
+                html += '<div class="server-card"><div class="card-header"><div class="server-name-container"><h3 class="server-name">' + escapeHTML(server.nome) + '</h3></div><span class="occurrence-badge">' + occurrenceText + '</span></div><div class="card-body">';
+
+                server.links.forEach(link => {
+                    const detalheExibir = link.info || link.detalhes || 'Nenhum detalhe adicional informado.';
+                    const nomeArquivo = (link.arquivo || '').replace('.xlsx', '').replace('Local: ', '');
+                    const nomeChave = nomeArquivo.toUpperCase().trim();
+                    const urlPlanilha = mapaPlanilhasUrls[nomeChave] || '#';
+                    
+                    const tagClass = urlPlanilha !== '#' ? 'source-tag clickable-tag' : 'source-tag';
+                    const linkAttr = urlPlanilha !== '#' ? `href="${urlPlanilha}" ${urlPlanilha.startsWith('/planilhas/') ? 'download' : 'target="_blank"'}` : '';
+                    const elementTag = urlPlanilha !== '#' ? 'a' : 'span';
+                    
+                    html += '<div class="link-item"><div class="meta-field"><span class="meta-label">Matrícula</span><span class="meta-value highlight">' + escapeHTML(formatMatricula(link.matricula)) + '</span></div><div class="meta-field"><span class="meta-label">CPF</span><span class="meta-value highlight">' + escapeHTML(formatCPF(link.cpf)) + '</span></div><div class="meta-field"><span class="meta-label">Ação / Origem Jurídica</span><div class="meta-value" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem;"><' + elementTag + ' class="' + tagClass + '" ' + linkAttr + ' title="Clique para abrir a planilha"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' + escapeHTML(nomeArquivo) + '</' + elementTag + '><span class="source-tag aba-tag" title="Aba da Planilha">Aba: ' + escapeHTML(link.aba || 'Geral') + '</span></div></div><div class="meta-field" style="grid-column: 1 / -1;"><span class="meta-label">Detalhes da Planilha</span><span class="meta-value info-tag">' + escapeHTML(detalheExibir) + '</span></div></div>';
+                });
+
+                html += '</div></div>';
+            }
+
+            html += '</div>';
+            resultsContent.innerHTML = html;
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        syncBtn.addEventListener('click', async () => {
+            if (syncBtn.classList.contains('loading')) return;
+
+            syncBtn.classList.add('loading');
+            syncBtn.querySelector('span').textContent = 'Sincronizando...';
+
+            showToast("Varrendo planilhas e recarregando banco de dados...", "success");
+
+            try {
+                const response = await fetch('/api/sync');
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Sincronização concluída! ' + data.total_records.toLocaleString() + ' registros indexados com sucesso.', "success");
+                    if (searchInput.value.trim().length >= 2) {
+                        performSearch(searchInput.value);
+                    }
+                } else {
+                    showToast('Erro na sincronização: ' + data.error, "error");
+                }
+            } catch (error) {
+                console.error("Erro na sincronização:", error);
+                showToast("Erro ao conectar ao servidor para sincronização.", "error");
+            } finally {
+                syncBtn.classList.remove('loading');
+                syncBtn.querySelector('span').textContent = 'Sincronizar Dados';
+            }
+        });
+
+        // Modal Event Handlers para Planilhas
+        let planilhasData = [];
+
+        async function carregarPlanilhas() {
+            planilhasGrid.innerHTML = `
+                <div class="planilhas-loading">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                    </svg>
+                    <span>Carregando planilhas ativas...</span>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/api/planilhas');
+                const data = await response.json();
+                
+                if (data.success) {
+                    planilhasData = data.planilhas;
+                    renderPlanilhas(planilhasData);
+                } else {
+                    planilhasGrid.innerHTML = `
+                        <div class="planilhas-loading" style="color: var(--danger);">
+                            <h3>Erro ao carregar</h3>
+                            <p>${data.error || 'Erro desconhecido'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error("Erro ao carregar planilhas:", error);
+                planilhasGrid.innerHTML = `
+                    <div class="planilhas-loading" style="color: var(--danger);">
+                        <h3>Erro de conexão</h3>
+                        <p>Não foi possível comunicar com o servidor.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderPlanilhas(planilhas) {
+            if (planilhas.length === 0) {
+                planilhasGrid.innerHTML = `
+                    <div class="planilhas-loading">
+                        <span>Nenhuma planilha correspondente encontrada.</span>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            planilhas.forEach(p => {
+                const badgeText = p.tipo;
+                const iconGoogle = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                `;
+                const iconLocal = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                `;
+
+                const btnIcon = p.local ? iconLocal : iconGoogle;
+                const cardClass = p.local ? 'tipo-local' : 'tipo-google';
+                const linkAttr = p.local ? `href="${p.url}" download` : `href="${p.url}" target="_blank"`;
+                const tooltipText = p.local ? 'Clique para baixar a planilha Excel' : 'Clique para abrir no Google Sheets';
+
+                html += `
+                    <a ${linkAttr} class="planilha-card ${cardClass}" title="${tooltipText}">
+                        <div class="planilha-info">
+                            <span class="planilha-type-badge">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                </svg>
+                                ${badgeText}
+                            </span>
+                            <div class="planilha-name">${escapeHTML(p.nome)}</div>
+                        </div>
+                        <div class="planilha-link-icon">
+                            ${btnIcon}
+                        </div>
+                    </a>
+                `;
+            });
+            planilhasGrid.innerHTML = html;
+        }
+
+        btnOpenPlanilhas.addEventListener('click', () => {
+            modalPlanilhas.style.display = 'flex';
+            modalSearchInput.value = '';
+            carregarPlanilhas();
+        });
+
+        const fecharModalPlanilhas = () => {
+            modalPlanilhas.style.display = 'none';
+        };
+
+        btnCloseModal.addEventListener('click', fecharModalPlanilhas);
+        btnCloseModalX.addEventListener('click', fecharModalPlanilhas);
+
+        modalPlanilhas.addEventListener('click', (e) => {
+            if (e.target === modalPlanilhas) {
+                fecharModalPlanilhas();
+            }
+        });
+
+        modalSearchInput.addEventListener('input', () => {
+            const query = modalSearchInput.value.toLowerCase().trim();
+            const filtradas = planilhasData.filter(p => p.nome.toLowerCase().includes(query));
+            renderPlanilhas(filtradas);
+        });
+    </script>
+</body>
+
+</html>
