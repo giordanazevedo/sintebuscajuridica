@@ -1079,6 +1079,43 @@
         </div>
     </div>
 
+    <!-- MODAL DE NOTIFICAÇÃO DE ATUALIZAÇÃO -->
+    <div class="modal-overlay" id="modal-atualizacao">
+        <div class="modal-card" style="border-top: 5px solid var(--primary);">
+            <div class="modal-header">
+                <h3 class="modal-title">Nova Atualização!</h3>
+                <button class="btn-close-x" id="btn-close-atualizacao-x" title="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.25rem; padding: 1rem 0;">
+                <div style="background: rgba(211, 17, 36, 0.1); color: var(--primary); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px;">
+                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                </div>
+                <p style="font-size: 1.1rem; line-height: 1.5; color: var(--text-main); font-weight: 600;">
+                    Nova atualização: agora você pode acessar as planilhas diretamente por aqui!
+                </p>
+                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
+                    Clique no botão azul <strong>"Acessar Planilhas"</strong> no topo da tela para visualizar todas as planilhas do sistema ou baixá-las localmente.
+                </p>
+            </div>
+
+            <div class="modal-footer-buttons" style="justify-content: center; border-top: none; padding-top: 0;">
+                <button class="btn-save" id="btn-close-atualizacao" style="padding: 0.75rem 2.5rem; font-size: 1rem; width: 100%; max-width: 200px;">Entendido</button>
+            </div>
+        </div>
+    </div>
+
     <div class="toast-container" id="toast-container"></div>
 
     <footer>
@@ -1418,6 +1455,36 @@
             const filtradas = planilhasData.filter(p => p.nome.toLowerCase().includes(query));
             renderPlanilhas(filtradas);
         });
+
+        // Controle do Modal de Atualização (Exibido apenas uma vez)
+        const modalAtualizacao = document.getElementById('modal-atualizacao');
+        const btnCloseAtualizacao = document.getElementById('btn-close-atualizacao');
+        const btnCloseAtualizacaoX = document.getElementById('btn-close-atualizacao-x');
+
+        if (modalAtualizacao && btnCloseAtualizacao && btnCloseAtualizacaoX) {
+            const fecharModalAtualizacao = () => {
+                modalAtualizacao.style.display = 'none';
+            };
+
+            btnCloseAtualizacao.addEventListener('click', fecharModalAtualizacao);
+            btnCloseAtualizacaoX.addEventListener('click', fecharModalAtualizacao);
+
+            modalAtualizacao.addEventListener('click', (e) => {
+                if (e.target === modalAtualizacao) {
+                    fecharModalAtualizacao();
+                }
+            });
+
+            // Verifica se o usuário já visualizou a atualização no localStorage
+            if (!localStorage.getItem('sinte_atualizacao_planilhas_vista_v1')) {
+                // Abre o modal após um pequeno delay para suavizar a entrada
+                setTimeout(() => {
+                    modalAtualizacao.style.display = 'flex';
+                    // Marca como visualizado para não exibir mais
+                    localStorage.setItem('sinte_atualizacao_planilhas_vista_v1', 'true');
+                }, 800);
+            }
+        }
     </script>
 </body>
 
