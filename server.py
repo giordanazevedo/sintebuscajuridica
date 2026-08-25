@@ -9,6 +9,10 @@ from flask import Flask, jsonify, request, send_from_directory
 
 app = Flask(__name__, static_folder=".")
 
+# Senha de acesso restrito às planilhas (padrão: sinte@juridico10)
+SENHA_ACESSO = os.environ.get("SENHA_ACESSO", "sinte@juridico10")
+
+
 # ----------------------------------------------------------------------
 # 1. MAPEAMENTO DAS 6 PLANILHAS DO GOOGLE DRIVE
 # ----------------------------------------------------------------------
@@ -199,6 +203,11 @@ def home():
 @app.route("/api/planilhas")
 def listar_planilhas():
     try:
+        # Verifica a senha enviada no cabeçalho ou como parâmetro de consulta
+        senha = request.headers.get("Authorization") or request.args.get("senha")
+        if senha != SENHA_ACESSO:
+            return jsonify({"success": False, "error": "Acesso não autorizado. Senha incorreta."}), 401
+
         planilhas = []
         # Google spreadsheets
         for item in PLANILHAS_GOOGLE:
@@ -227,6 +236,11 @@ def listar_planilhas():
 
 @app.route("/planilhas/<path:filename>")
 def baixar_planilha(filename):
+    # Verifica a senha como parâmetro de consulta
+    senha = request.args.get("senha")
+    if senha != SENHA_ACESSO:
+        return "Acesso não autorizado. Senha incorreta.", 401
+
     filename_safe = os.path.basename(filename)
     if filename_safe.endswith(".xlsx") or filename_safe.endswith(".xls"):
         if os.path.exists(filename_safe):

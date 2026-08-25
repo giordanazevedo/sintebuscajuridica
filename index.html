@@ -1045,6 +1045,36 @@
         </section>
     </main>
 
+    <!-- MODAL DE SENHA DE ACESSO -->
+    <div class="modal-overlay" id="modal-senha">
+        <div class="modal-card" style="max-width: 400px; border-top: 5px solid var(--primary);">
+            <div class="modal-header">
+                <h3 class="modal-title">Acesso Restrito</h3>
+                <button class="btn-close-x" id="btn-close-senha-x" title="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <p class="modal-subtitle">Insira a senha de acesso para visualizar as planilhas do departamento jurídico.</p>
+            
+            <div class="form-group" style="margin-top: 1rem;">
+                <label for="senha-acesso-input">Senha de Acesso</label>
+                <input type="password" id="senha-acesso-input" class="form-control" placeholder="Digite a senha..." style="height: 42px;">
+                <div id="senha-erro-msg" style="color: var(--danger); font-size: 0.85rem; font-weight: 600; display: none; margin-top: 0.25rem;">
+                    Senha incorreta. Tente novamente.
+                </div>
+            </div>
+
+            <div class="modal-buttons" style="margin-top: 1rem;">
+                <button class="btn-cancel" id="btn-cancel-senha">Cancelar</button>
+                <button class="btn-save" id="btn-confirmar-senha">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE ACESSAR PLANILHAS -->
     <div class="modal-overlay" id="modal-planilhas">
         <div class="modal-card modal-large">
@@ -1148,8 +1178,12 @@
         const mapaPlanilhasUrls = {};
 
         async function inicializarMapaPlanilhas() {
+            const senhaSalva = sessionStorage.getItem('sinte_senha_planilhas');
+            if (!senhaSalva) return;
             try {
-                const response = await fetch('/api/planilhas');
+                const response = await fetch('/api/planilhas', {
+                    headers: { 'Authorization': senhaSalva }
+                });
                 const data = await response.json();
                 if (data.success) {
                     data.planilhas.forEach(p => {
@@ -1298,9 +1332,15 @@
                     const nomeChave = nomeArquivo.toUpperCase().trim();
                     const urlPlanilha = mapaPlanilhasUrls[nomeChave] || '#';
                     
-                    const tagClass = urlPlanilha !== '#' ? 'source-tag clickable-tag' : 'source-tag';
-                    const linkAttr = urlPlanilha !== '#' ? `href="${urlPlanilha}" ${urlPlanilha.startsWith('/planilhas/') ? 'download' : 'target="_blank"'}` : '';
-                    const elementTag = urlPlanilha !== '#' ? 'a' : 'span';
+                    let urlFinal = urlPlanilha;
+                    if (urlFinal !== '#' && urlFinal.startsWith('/planilhas/')) {
+                        const senhaSalva = sessionStorage.getItem('sinte_senha_planilhas') || '';
+                        urlFinal += `?senha=${encodeURIComponent(senhaSalva)}`;
+                    }
+                    
+                    const tagClass = urlFinal !== '#' ? 'source-tag clickable-tag' : 'source-tag';
+                    const linkAttr = urlFinal !== '#' ? `href="${urlFinal}" ${urlFinal.startsWith('/planilhas/') ? 'download' : 'target="_blank"'}` : '';
+                    const elementTag = urlFinal !== '#' ? 'a' : 'span';
                     
                     html += '<div class="link-item"><div class="meta-field"><span class="meta-label">Matrícula</span><span class="meta-value highlight">' + escapeHTML(formatMatricula(link.matricula)) + '</span></div><div class="meta-field"><span class="meta-label">CPF</span><span class="meta-value highlight">' + escapeHTML(formatCPF(link.cpf)) + '</span></div><div class="meta-field"><span class="meta-label">Ação / Origem Jurídica</span><div class="meta-value" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem;"><' + elementTag + ' class="' + tagClass + '" ' + linkAttr + ' title="Clique para abrir a planilha"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' + escapeHTML(nomeArquivo) + '</' + elementTag + '><span class="source-tag aba-tag" title="Aba da Planilha">Aba: ' + escapeHTML(link.aba || 'Geral') + '</span></div></div><div class="meta-field" style="grid-column: 1 / -1;"><span class="meta-label">Detalhes da Planilha</span><span class="meta-value info-tag">' + escapeHTML(detalheExibir) + '</span></div></div>';
                 });
@@ -1354,6 +1394,87 @@
         // Modal Event Handlers para Planilhas
         let planilhasData = [];
 
+        const modalSenha = document.getElementById('modal-senha');
+        const senhaAcessoInput = document.getElementById('senha-acesso-input');
+        const senhaErroMsg = document.getElementById('senha-erro-msg');
+        const btnCloseSenhaX = document.getElementById('btn-close-senha-x');
+        const btnCancelSenha = document.getElementById('btn-cancel-senha');
+        const btnConfirmarSenha = document.getElementById('btn-confirmar-senha');
+
+        function abrirModalSenha() {
+            modalSenha.style.display = 'flex';
+            senhaAcessoInput.value = '';
+            senhaErroMsg.style.display = 'none';
+            senhaAcessoInput.focus();
+        }
+
+        function fecharModalSenha() {
+            modalSenha.style.display = 'none';
+            senhaAcessoInput.value = '';
+            senhaErroMsg.style.display = 'none';
+        }
+
+        btnCloseSenhaX.addEventListener('click', fecharModalSenha);
+        btnCancelSenha.addEventListener('click', fecharModalSenha);
+        modalSenha.addEventListener('click', (e) => {
+            if (e.target === modalSenha) {
+                fecharModalSenha();
+            }
+        });
+
+        senhaAcessoInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                validarSenhaSubmit();
+            }
+        });
+
+        btnConfirmarSenha.addEventListener('click', validarSenhaSubmit);
+
+        async function validarSenhaSubmit() {
+            const senhaDigitada = senhaAcessoInput.value.trim();
+            if (!senhaDigitada) {
+                senhaErroMsg.textContent = 'Por favor, digite a senha.';
+                senhaErroMsg.style.display = 'block';
+                return;
+            }
+
+            btnConfirmarSenha.disabled = true;
+            btnConfirmarSenha.textContent = 'Verificando...';
+            senhaErroMsg.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/planilhas', {
+                    headers: { 'Authorization': senhaDigitada }
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    sessionStorage.setItem('sinte_senha_planilhas', senhaDigitada);
+                    await inicializarMapaPlanilhas();
+                    
+                    if (searchInput.value.trim().length >= 2) {
+                        performSearch(searchInput.value);
+                    }
+
+                    fecharModalSenha();
+                    modalPlanilhas.style.display = 'flex';
+                    modalSearchInput.value = '';
+                    carregarPlanilhas();
+                    showToast('Acesso autorizado!', 'success');
+                } else {
+                    senhaErroMsg.textContent = data.error || 'Senha incorreta. Tente novamente.';
+                    senhaErroMsg.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Erro ao validar senha:", error);
+                senhaErroMsg.textContent = 'Erro ao conectar ao servidor.';
+                senhaErroMsg.style.display = 'block';
+            } finally {
+                btnConfirmarSenha.disabled = false;
+                btnConfirmarSenha.textContent = 'Confirmar';
+            }
+        }
+
         async function carregarPlanilhas() {
             planilhasGrid.innerHTML = `
                 <div class="planilhas-loading">
@@ -1365,9 +1486,20 @@
             `;
 
             try {
-                const response = await fetch('/api/planilhas');
+                const senhaSalva = sessionStorage.getItem('sinte_senha_planilhas') || '';
+                const response = await fetch('/api/planilhas', {
+                    headers: { 'Authorization': senhaSalva }
+                });
                 const data = await response.json();
                 
+                if (response.status === 401 || !data.success) {
+                    sessionStorage.removeItem('sinte_senha_planilhas');
+                    fecharModalPlanilhas();
+                    abrirModalSenha();
+                    showToast(data.error || 'Acesso não autorizado.', 'error');
+                    return;
+                }
+
                 if (data.success) {
                     planilhasData = data.planilhas;
                     renderPlanilhas(planilhasData);
@@ -1420,7 +1552,10 @@
 
                 const btnIcon = p.local ? iconLocal : iconGoogle;
                 const cardClass = p.local ? 'tipo-local' : 'tipo-google';
-                const linkAttr = p.local ? `href="${p.url}" download` : `href="${p.url}" target="_blank"`;
+                
+                const senhaSalva = sessionStorage.getItem('sinte_senha_planilhas') || '';
+                const urlComSenha = p.local ? `${p.url}?senha=${encodeURIComponent(senhaSalva)}` : p.url;
+                const linkAttr = p.local ? `href="${urlComSenha}" download` : `href="${p.url}" target="_blank"`;
                 const tooltipText = p.local ? 'Clique para baixar a planilha Excel' : 'Clique para abrir no Google Sheets';
 
                 html += `
@@ -1444,9 +1579,14 @@
         }
 
         btnOpenPlanilhas.addEventListener('click', () => {
-            modalPlanilhas.style.display = 'flex';
-            modalSearchInput.value = '';
-            carregarPlanilhas();
+            const senhaSalva = sessionStorage.getItem('sinte_senha_planilhas');
+            if (senhaSalva) {
+                modalPlanilhas.style.display = 'flex';
+                modalSearchInput.value = '';
+                carregarPlanilhas();
+            } else {
+                abrirModalSenha();
+            }
         });
 
         const fecharModalPlanilhas = () => {
