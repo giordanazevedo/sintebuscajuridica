@@ -1,11 +1,19 @@
 import os
 import glob
 import io
+import re
+import sys
 import pandas as pd
 import requests
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from flask import Flask, jsonify, request, send_from_directory
+
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
 
 app = Flask(__name__, static_folder=".")
 
@@ -70,39 +78,55 @@ def carregar_dados():
     
     print("\n🔄 Sincronizando planilhas do Google Drive e Cadastros Manuais...")
     
+    # 1. Planilhas do Google Drive (processando todas as abas)
     for item in PLANILHAS_GOOGLE:
         sheet_id = item["id"]
         nome_acao = item["nome_acao"]
         url_xlsx = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=xlsx"
         
         try:
-            res = requests.get(url_xlsx)
+            res = requests.get(url_xlsx, timeout=30)
             if res.status_code == 200:
                 xls = pd.ExcelFile(io.BytesIO(res.content))
                 for nome_aba in xls.sheet_names:
-                    df = pd.read_excel(xls, sheet_name=nome_aba)
-                    processar_dataframe(df, arquivo_nome=nome_acao, aba_nome=nome_aba)
+                    try:
+                        df = pd.read_excel(xls, sheet_name=nome_aba)
+                        processar_dataframe(df, arquivo_nome=nome_acao, aba_nome=nome_aba)
+                    except Exception as e_aba:
+                        print(f"  ⚠️ Erro ao processar aba '{nome_aba}' de {nome_acao}: {e_aba}")
                 print(f"  ✅ {nome_acao} (todas as abas) sincronizada!")
+            else:
+                print(f"  ⚠️ HTTP {res.status_code} ao baixar {nome_acao}")
         except Exception as e:
             print(f"  ❌ Erro ao conectar com {nome_acao}: {e}")
 
+    # 2. Cadastros Manuais (processando todas as abas)
     if os.path.exists(ARQUIVO_CADASTROS_MANUAIS):
         try:
-            df_man = pd.read_excel(ARQUIVO_CADASTROS_MANUAIS)
-            processar_dataframe(df_man, arquivo_nome="Cadastros Manuais (Sistema)", aba_nome="Entradas Recentes")
-            print(f"  ✅ {ARQUIVO_CADASTROS_MANUAIS} carregado!")
+            xls_man = pd.ExcelFile(ARQUIVO_CADASTROS_MANUAIS)
+            for nome_aba in xls_man.sheet_names:
+                try:
+                    df_man = pd.read_excel(xls_man, sheet_name=nome_aba)
+                    processar_dataframe(df_man, arquivo_nome="Cadastros Manuais (Sistema)", aba_nome=nome_aba)
+                except Exception as e_aba:
+                    print(f"  ⚠️ Erro ao processar aba '{nome_aba}' em {ARQUIVO_CADASTROS_MANUAIS}: {e_aba}")
+            print(f"  ✅ {ARQUIVO_CADASTROS_MANUAIS} (todas as abas) carregado!")
         except Exception as e:
             print(f"  ⚠️ Erro ao ler cadastros manuais: {e}")
 
-    arquivos_locais = glob.glob("*.xlsx") + glob.glob("*.xls")
+    # 3. Demais arquivos Excel locais (processando todas as abas)
+    arquivos_locais = sorted(list(set(glob.glob("*.xlsx") + glob.glob("*.xls") + glob.glob("*.XLSX") + glob.glob("*.XLS"))))
     for arquivo in arquivos_locais:
-        if arquivo == ARQUIVO_CADASTROS_MANUAIS:
+        if os.path.basename(arquivo) == ARQUIVO_CADASTROS_MANUAIS:
             continue
         try:
             xls = pd.ExcelFile(arquivo)
             for nome_aba in xls.sheet_names:
-                df = pd.read_excel(xls, sheet_name=nome_aba)
-                processar_dataframe(df, arquivo_nome=f"Local: {arquivo}", aba_nome=nome_aba)
+                try:
+                    df = pd.read_excel(xls, sheet_name=nome_aba)
+                    processar_dataframe(df, arquivo_nome=f"Local: {arquivo}", aba_nome=nome_aba)
+                except Exception as e_aba:
+                    print(f"  ⚠️ Erro ao processar aba '{nome_aba}' de {arquivo}: {e_aba}")
         except Exception as e:
             print(f"Erro ao ler arquivo local {arquivo}: {e}")
             
@@ -114,89 +138,143 @@ def processar_dataframe(df, arquivo_nome, aba_nome):
     if df.empty:
         return
 
-    # Ajuste dinâmico de cabeçalho (caso as primeiras linhas sejam títulos/mescladas)
-    possui_cabecalho = False
-    colunas_originais = [str(c).strip().upper() for c in df.columns]
-    for col in colunas_originais:
-        if any(kw in col for kw in ['NOME', 'SERVIDOR', 'CPF', 'MATR', 'MTR', 'REGIONAL', 'CIDADE']):
-            possui_cabecalho = True
-            break
-            
+    HEADER_KEYWORDS = ['NOME', 'SERVIDOR', 'FUNCIONARIO', 'FUNCIONÁRIO', 'PESSOA', 'FILIADO', 'CPF', 'MATR', 'MTR', 'MAT', 'REGIONAL', 'CIDADE', 'MUNICIPIO', 'MUNICÍPIO', 'NUCLEO', 'NÚCLEO']
+    NAME_KEYWORDS = ['NOME', 'SERVIDOR', 'FUNCIONARIO', 'FUNCIONÁRIO', 'PESSOA', 'FILIADO']
+
+    def eh_cabecalho_valido(lista_valores):
+        """Verifica se a lista de valores possui termos característicos de cabeçalho real."""
+        lista_up = [str(v).strip().upper() for v in lista_valores]
+        tem_nome = any(any(nk in val for nk in NAME_KEYWORDS) for val in lista_up)
+        kw_encontrados = sum(1 for val in lista_up if any(kw in val for kw in HEADER_KEYWORDS))
+        
+        if tem_nome and kw_encontrados >= 1:
+            return True
+        if kw_encontrados >= 2:
+            return True
+        return False
+
+    # 1. Busca dinâmica de cabeçalhos até 10 linhas (Requisito 1)
+    possui_cabecalho = eh_cabecalho_valido(df.columns)
+
     if not possui_cabecalho:
-        for idx in range(min(5, len(df))):
-            linha_valores = [str(val).strip().upper() for val in df.iloc[idx]]
-            eh_cabecalho_real = False
-            for val in linha_valores:
-                if any(kw in val for kw in ['NOME', 'SERVIDOR', 'CPF', 'MATR', 'MTR', 'REGIONAL', 'CIDADE']):
-                    eh_cabecalho_real = True
-                    break
-            if eh_cabecalho_real:
+        max_linhas = min(10, len(df))
+        for idx in range(max_linhas):
+            linha_valores = list(df.iloc[idx])
+            if eh_cabecalho_valido(linha_valores):
                 novas_colunas = [str(val).strip() for val in df.iloc[idx]]
                 df = df.iloc[idx+1:].copy()
                 df.columns = novas_colunas
                 break
 
     colunas_originais = [str(c).strip() for c in df.columns]
-    df.columns = colunas_originais
     
+    # Mapeamento expandido (Requisito 2)
+    REGIONAL_KEYWORDS = ['REGIONAL', 'CIDADE', 'MUNICIPIO', 'MUNICÍPIO', 'NUCLEO', 'NÚCLEO']
+    MATRICULA_KEYWORDS = ['MATR', 'MTR', 'MATRICULA', 'MATRÍCULA', 'CODIGO', 'CÓDIGO']
+    NOME_KEYWORDS = ['NOME', 'SERVIDOR', 'FUNCIONARIO', 'FUNCIONÁRIO', 'PESSOA', 'FILIADO']
+    CPF_KEYWORDS = ['CPF']
+
+    # Palavras-chave e valores para filtrar títulos e separadores no meio da tabela (Requisito 3)
+    TITULOS_E_SEPARADORES = [
+        'NOVAS FILIAÇÕES', 'NOVAS FILIACOES', 'FILIAÇÕES', 'FILIACOES', 'RELAÇÃO', 'RELACAO',
+        'LISTA DE', 'TOTAL', 'SUBTOTAL', 'DEMONSTRATIVO', 'CADASTROS MANUAIS', 'SERVIDORES ADMITIDOS',
+        'SECRETARIA DE EDUCACAO', 'GOVERNO DO ESTADO', 'SINTE', 'SINDICATO', 'TERMO DE', 'ALTERAÇÕES', 'ALTERACOES'
+    ]
+
+    VALORES_CABECALHO_INVALIDOS = {
+        'NOME', 'NOME DO SERVIDOR', 'SERVIDOR', 'NOME COMPLETO', 'FUNCIONARIO', 'NOME DO FUNCIONARIO', 'FILIADO', 'NOME DO FILIADO',
+        'MATRÍCULA', 'MATRICULA', 'MATR', 'MTR', 'CODIGO', 'CÓDIGO', 'ORDEM', 'Nº', 'NR', 'Nº.',
+        'CPF', 'CPF/MF', 'C.P.F.', 'DOC', 'DOCUMENTO',
+        'REGIONAL', 'CIDADE', 'MUNICIPIO', 'MUNICÍPIO', 'NÚCLEO', 'NUCLEO'
+    }
+
     for _, linha in df.iterrows():
+        # Extração de Matrícula
         matricula = ""
         col_mat_idx = -1
         for idx, col in enumerate(colunas_originais):
             col_upper = col.upper()
-            if 'MATR' in col_upper or 'MTR' in col_upper or 'MAT' in col_upper:
-                matricula = str(linha.get(col, '')).strip()
-                col_mat_idx = idx
-                break
+            if any(kw in col_upper for kw in MATRICULA_KEYWORDS) or 'MAT' in col_upper:
+                val = str(linha.get(col, '')).strip()
+                if val and val.upper() not in ['NAN', 'NONE', 'N/I', '-', 'NULL', '0']:
+                    matricula = val
+                    col_mat_idx = idx
+                    break
         if not matricula or matricula.upper() == 'NAN':
             if len(colunas_originais) > 0:
                 val_col1 = str(linha.iloc[0]).strip() if not pd.isna(linha.iloc[0]) else ''
-                if val_col1 and val_col1.upper() != 'NAN':
+                if val_col1 and val_col1.upper() not in ['NAN', 'NONE', 'N/I', '-', 'NULL']:
                     matricula = val_col1
                     col_mat_idx = 0
 
+        # Extração de Nome
         nome = ""
         col_nome_idx = -1
         for idx, col in enumerate(colunas_originais):
             col_upper = col.upper()
-            if 'NOME' in col_upper or 'SERVIDOR' in col_upper:
-                nome = str(linha.get(col, '')).strip().upper()
-                col_nome_idx = idx
-                break
+            if any(kw in col_upper for kw in NOME_KEYWORDS):
+                val = str(linha.get(col, '')).strip().upper()
+                if val and val not in ['NAN', 'NONE', 'N/I', '-', 'NULL']:
+                    nome = val
+                    col_nome_idx = idx
+                    break
         if (not nome or nome == 'NAN') and len(colunas_originais) > 1:
             val_col2 = str(linha.iloc[1]).strip() if not pd.isna(linha.iloc[1]) else ''
-            if val_col2 and val_col2.upper() != 'NAN':
+            if val_col2 and val_col2.upper() not in ['NAN', 'NONE', 'N/I', '-', 'NULL']:
                 nome = val_col2.upper()
                 col_nome_idx = 1
 
+        # Extração de CPF
         cpf = ""
         col_cpf_idx = -1
         for idx, col in enumerate(colunas_originais):
             col_upper = col.upper()
-            if 'CPF' in col_upper:
-                cpf = str(linha.get(col, '')).strip()
-                col_cpf_idx = idx
-                break
+            if any(kw in col_upper for kw in CPF_KEYWORDS):
+                val = str(linha.get(col, '')).strip()
+                if val and val.upper() not in ['NAN', 'NONE', 'N/I', '-', 'NULL']:
+                    cpf = val
+                    col_cpf_idx = idx
+                    break
         if (not cpf or cpf == 'NAN') and len(colunas_originais) > 2:
             val_col3 = str(linha.iloc[2]).strip() if not pd.isna(linha.iloc[2]) else ''
-            if val_col3 and val_col3.upper() != 'NAN':
+            if val_col3 and val_col3.upper() not in ['NAN', 'NONE', 'N/I', '-', 'NULL']:
                 cpf = val_col3
                 col_cpf_idx = 2
 
         if cpf.endswith('.0'): cpf = cpf[:-2]
         if matricula.endswith('.0'): matricula = matricula[:-2]
 
-        # Extração da Regional / Cidade
+        # Extração da Regional / Cidade / Município (Requisito 2)
         regional = ""
         col_reg_idx = -1
         for idx, col in enumerate(colunas_originais):
             col_upper = col.upper()
-            if 'REGIONAL' in col_upper or 'CIDADE' in col_upper:
+            if any(kw in col_upper for kw in REGIONAL_KEYWORDS):
                 val_reg = str(linha.get(col, '')).strip()
-                if val_reg and val_reg.upper() != 'NAN' and val_reg != '-':
+                if val_reg and val_reg.upper() not in ['NAN', 'NONE', 'N/I', '-', 'NULL', 'UNDEFINED', '0']:
                     regional = val_reg.upper()
                     col_reg_idx = idx
+                    break
+
+        # Requisito 3: Filtrar linhas de títulos, separadores de datas e cabeçalhos repetidos
+        if nome in VALORES_CABECALHO_INVALIDOS or matricula.upper() in VALORES_CABECALHO_INVALIDOS or cpf.upper() in VALORES_CABECALHO_INVALIDOS:
+            continue
+
+        texto_linha_combinado = f"{nome} {matricula} {regional}".upper()
+
+        eh_titulo_ou_divisor = False
+        for tit in TITULOS_E_SEPARADORES:
+            if tit in nome or tit in matricula.upper():
+                eh_titulo_ou_divisor = True
                 break
+
+        if not eh_titulo_ou_divisor:
+            if re.search(r'\d{1,2}/\d{1,2}/\d{2,4}', nome) or re.search(r'\d{1,2}/\d{1,2}/\d{2,4}', matricula):
+                if any(w in texto_linha_combinado for w in ['FILIA', 'CADASTRO', 'LOTE', 'NOVA', 'NOVO', 'RELA', 'LISTA', 'ALTERA', 'DATA', 'TOTAL', 'SEMANA', 'MES', 'MÊS']):
+                    eh_titulo_ou_divisor = True
+
+        if eh_titulo_ou_divisor:
+            continue
 
         detalhes_extras = []
         indices_principais = {col_mat_idx, col_nome_idx, col_cpf_idx, col_reg_idx}
@@ -207,7 +285,7 @@ def processar_dataframe(df, arquivo_nome, aba_nome):
                 
             if pd.notna(val):
                 valor_str = str(val).strip()
-                if valor_str and valor_str.upper() != 'NAN' and valor_str != '-':
+                if valor_str and valor_str.upper() not in ['NAN', 'NONE', 'N/I', '-', 'NULL']:
                     nome_col = colunas_originais[idx]
                     if 'UNNAMED' in nome_col.upper() or nome_col == '':
                         detalhes_extras.append(f"{valor_str}")
