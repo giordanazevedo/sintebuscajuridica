@@ -164,8 +164,20 @@ def processar_dataframe(df, arquivo_nome, aba_nome):
         if cpf.endswith('.0'): cpf = cpf[:-2]
         if matricula.endswith('.0'): matricula = matricula[:-2]
 
+        # Extração da Regional / Cidade
+        regional = ""
+        col_reg_idx = -1
+        for idx, col in enumerate(colunas_originais):
+            col_upper = col.upper()
+            if 'REGIONAL' in col_upper or 'CIDADE' in col_upper:
+                val_reg = str(linha.get(col, '')).strip()
+                if val_reg and val_reg.upper() != 'NAN' and val_reg != '-':
+                    regional = val_reg.upper()
+                    col_reg_idx = idx
+                break
+
         detalhes_extras = []
-        indices_principais = {col_mat_idx, col_nome_idx, col_cpf_idx}
+        indices_principais = {col_mat_idx, col_nome_idx, col_cpf_idx, col_reg_idx}
         
         for idx, val in enumerate(linha):
             if idx in indices_principais:
@@ -189,6 +201,7 @@ def processar_dataframe(df, arquivo_nome, aba_nome):
                 "matricula": matricula if matricula != 'NAN' else '',
                 "cpf": cpf if cpf != 'NAN' else '',
                 "nome": nome if nome != 'NAN' else '',
+                "regional": regional,
                 "detalhes": texto_detalhes
             })
 
@@ -329,6 +342,7 @@ def cadastrar():
         nome = dados.get("nome", "").strip().upper()
         matricula = dados.get("matricula", "").strip()
         cpf = dados.get("cpf", "").strip()
+        regional = dados.get("regional", "").strip().upper()
         acao = dados.get("acao", "AUTORIZAÇÕES ASSINADAS - MÃO SANTA 99").strip()
         detalhes = dados.get("detalhes", "Sem detalhes").strip()
 
@@ -347,6 +361,7 @@ def cadastrar():
             "NOME": nome,
             "MATRÍCULA": matricula,
             "CPF": cpf,
+            "REGIONAL": regional,
             "AÇÃO JURÍDICA": acao,
             "OBSERVAÇÕES": detalhes
         }
@@ -365,10 +380,54 @@ def cadastrar():
             "matricula": matricula,
             "cpf": cpf,
             "nome": nome,
+            "regional": regional,
             "detalhes": f"Observações: {detalhes}"
         })
 
         return jsonify({"success": True, "message": f"Servidor cadastrado com sucesso{msg_drive}"})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/regionais")
+def listar_regionais():
+    try:
+        # Coleta todas as regionais únicas, ignorando valores vazios e de erro
+        regionais = sorted(list(set(
+            reg["regional"].strip().upper() 
+            for reg in banco_dados 
+            if reg.get("regional") and reg["regional"].strip().upper() not in ['NAN', '', '-', 'NONE', 'N/I']
+        )))
+        return jsonify({"success": True, "regionais": regionais})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/regional/stats")
+def regional_stats():
+    try:
+        regional_query = request.args.get("q", "").strip().upper()
+        if not regional_query:
+            return jsonify({"success": False, "error": "Informe a regional."}), 400
+            
+        pessoas_na_regional = []
+        total_por_acao = {}
+        
+        for reg in banco_dados:
+            reg_val = reg.get("regional", "").strip().upper()
+            if reg_val == regional_query:
+                pessoas_na_regional.append(reg)
+                acao = reg["arquivo"]
+                total_por_acao[acao] = total_por_acao.get(acao, 0) + 1
+                
+        # Formata a resposta com as estatísticas e as pessoas
+        return jsonify({
+            "success": True,
+            "regional": regional_query,
+            "total": len(pessoas_na_regional),
+            "por_acao": total_por_acao,
+            "pessoas": pessoas_na_regional
+        })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 

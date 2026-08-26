@@ -961,6 +961,180 @@
             .toast-container { left: 1rem; right: 1rem; bottom: 1rem; }
             .toast { min-width: unset; width: 100%; }
         }
+
+        /* Novas Estilizações de Busca por Regional e Abas */
+        .search-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid var(--surface-border);
+            width: 100%;
+            max-width: 750px;
+            justify-content: center;
+        }
+
+        .search-tab {
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .search-tab svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .search-tab:hover {
+            color: var(--accent);
+        }
+
+        .search-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .regional-dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @media (min-width: 768px) {
+            .regional-dashboard {
+                grid-template-columns: 1fr 2fr;
+            }
+        }
+
+        .regional-stats-card {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            box-shadow: var(--card-shadow);
+            border-left: 5px solid var(--accent);
+        }
+
+        .stats-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: var(--accent-glow);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .stats-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: currentColor;
+        }
+
+        .stats-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            text-align: left;
+        }
+
+        .stats-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-number {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--accent);
+            font-family: 'Outfit', sans-serif;
+            line-height: 1;
+        }
+
+        .regional-breakdown-card {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: left;
+        }
+
+        .breakdown-title {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--surface-border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .breakdown-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0.85rem;
+            background: #f8fafc;
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .breakdown-item:hover {
+            border-color: #cbd5e1;
+            background: #f1f5f9;
+        }
+
+        .breakdown-name {
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80%;
+        }
+
+        .breakdown-badge {
+            background: var(--accent);
+            color: white;
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+        }
     </style>
 </head>
 
@@ -1000,8 +1174,27 @@
     <main>
         <section class="search-section">
             <h2>Consulta de Ações Jurídicas</h2>
+            
+            <div class="search-tabs">
+                <button class="search-tab active" id="tab-servidor">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>Busca por Servidor</span>
+                </button>
+                <button class="search-tab" id="tab-regional">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span>Busca por Regional (Cidades)</span>
+                </button>
+            </div>
+
             <div class="search-container">
-                <div class="search-input-wrapper">
+                <!-- Wrapper Busca Servidor -->
+                <div class="search-input-wrapper" id="wrapper-servidor">
                     <div class="search-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <circle cx="11" cy="11" r="8"></circle>
@@ -1017,11 +1210,34 @@
                         </svg>
                     </button>
                 </div>
+
+                <!-- Wrapper Busca Regional -->
+                <div class="search-input-wrapper" id="wrapper-regional" style="display: none;">
+                    <div class="search-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </div>
+                    <input type="text" id="regional-input" class="search-input" list="regionais-list"
+                        placeholder="Selecione ou digite uma cidade/regional..." autocomplete="off">
+                    <datalist id="regionais-list"></datalist>
+                    <button id="clear-regional-btn" class="clear-btn" title="Limpar pesquisa">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <div class="search-tips">
+            
+            <div class="search-tips" id="tips-servidor">
                 <span>Busca por <strong>CPF</strong></span>
                 <span>Busca por <strong>Matrícula</strong></span>
                 <span>Busca por <strong>Nome parcial</strong></span>
+            </div>
+            <div class="search-tips" id="tips-regional" style="display: none;">
+                <span>Consulte estatísticas e servidores por <strong>Cidade / Regional</strong></span>
             </div>
         </section>
 
@@ -1343,8 +1559,9 @@
                     const elementTag = urlFinal !== '#' ? 'a' : 'span';
                     
                     const tagAbaHtml = link.aba ? '<span class="source-tag aba-tag">' + escapeHTML(link.aba) + '</span>' : '';
+                    const tagRegionalHtml = link.regional ? '<span class="source-tag" style="background:#f0fdf4; border-color:#bbf7d0; color:#16a34a;"><svg viewBox="0 0 24 24" style="fill:none; stroke:currentColor; stroke-width:2; width:12px; height:12px; margin-right:2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' + escapeHTML(link.regional) + '</span>' : '';
                     
-                    html += '<div class="link-item"><div class="meta-field"><span class="meta-label">Matrícula</span><span class="meta-value highlight">' + escapeHTML(formatMatricula(link.matricula)) + '</span></div><div class="meta-field"><span class="meta-label">CPF</span><span class="meta-value highlight">' + escapeHTML(formatCPF(link.cpf)) + '</span></div><div class="meta-field"><span class="meta-label">Ação / Origem Jurídica</span><div class="meta-value" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem;"><' + elementTag + ' class="' + tagClass + '" ' + linkAttr + ' title="Clique para abrir a planilha"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' + escapeHTML(nomeArquivo) + '</' + elementTag + '>' + tagAbaHtml + '</div></div><div class="meta-field" style="grid-column: 1 / -1;"><span class="meta-label">Detalhes da Planilha</span><span class="meta-value info-tag">' + escapeHTML(detalheExibir) + '</span></div></div>';
+                    html += '<div class="link-item"><div class="meta-field"><span class="meta-label">Matrícula</span><span class="meta-value highlight">' + escapeHTML(formatMatricula(link.matricula)) + '</span></div><div class="meta-field"><span class="meta-label">CPF</span><span class="meta-value highlight">' + escapeHTML(formatCPF(link.cpf)) + '</span></div><div class="meta-field"><span class="meta-label">Ação / Origem Jurídica</span><div class="meta-value" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem;"><' + elementTag + ' class="' + tagClass + '" ' + linkAttr + ' title="Clique para abrir a planilha"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' + escapeHTML(nomeArquivo) + '</' + elementTag + '>' + tagAbaHtml + tagRegionalHtml + '</div></div><div class="meta-field" style="grid-column: 1 / -1;"><span class="meta-label">Detalhes da Planilha</span><span class="meta-value info-tag">' + escapeHTML(detalheExibir) + '</span></div></div>';
                  });
 
                 html += '</div></div>';
@@ -1392,6 +1609,214 @@
                 syncBtn.querySelector('span').textContent = 'Sincronizar Dados';
             }
         });
+
+        // --- LOGICA DE BUSCA POR REGIONAL (CIDADE) ---
+        const tabServidor = document.getElementById('tab-servidor');
+        const tabRegional = document.getElementById('tab-regional');
+        const wrapperServidor = document.getElementById('wrapper-servidor');
+        const wrapperRegional = document.getElementById('wrapper-regional');
+        const tipsServidor = document.getElementById('tips-servidor');
+        const tipsRegional = document.getElementById('tips-regional');
+        
+        const regionalInput = document.getElementById('regional-input');
+        const clearRegionalBtn = document.getElementById('clear-regional-btn');
+        const regionaisList = document.getElementById('regionais-list');
+
+        let modoBusca = 'servidor'; // 'servidor' ou 'regional'
+        let listaCidades = [];
+
+        // Alterna entre abas
+        tabServidor.addEventListener('click', () => {
+            if (modoBusca === 'servidor') return;
+            modoBusca = 'servidor';
+            
+            tabServidor.classList.add('active');
+            tabRegional.classList.remove('active');
+            
+            wrapperServidor.style.display = 'flex';
+            wrapperRegional.style.display = 'none';
+            tipsServidor.style.display = 'flex';
+            tipsRegional.style.display = 'none';
+            
+            // Restaura estado anterior de busca
+            performSearch(searchInput.value);
+            searchInput.focus();
+        });
+
+        tabRegional.addEventListener('click', async () => {
+            if (modoBusca === 'regional') return;
+            modoBusca = 'regional';
+            
+            tabRegional.classList.add('active');
+            tabServidor.classList.remove('active');
+            
+            wrapperRegional.style.display = 'flex';
+            wrapperServidor.style.display = 'none';
+            tipsRegional.style.display = 'flex';
+            tipsServidor.style.display = 'none';
+            
+            // Carrega a lista de regionais se ainda não foi carregada
+            if (listaCidades.length === 0) {
+                await carregarListaRegionais();
+            }
+            
+            performSearchRegional(regionalInput.value);
+            regionalInput.focus();
+        });
+
+        // Carrega a lista de regionais do backend
+        async function carregarListaRegionais() {
+            try {
+                const res = await fetch('/api/regionais');
+                const data = await res.json();
+                if (data.success) {
+                    listaCidades = data.regionais;
+                    regionaisList.innerHTML = listaCidades.map(c => `<option value="${escapeHTML(c)}"></option>`).join('');
+                }
+            } catch (e) {
+                console.error("Erro ao carregar lista de regionais:", e);
+            }
+        }
+
+        // Listener de input para busca por regional
+        regionalInput.addEventListener('input', () => {
+            const query = regionalInput.value;
+            if (query.trim().length > 0) {
+                clearRegionalBtn.style.display = 'flex';
+            } else {
+                clearRegionalBtn.style.display = 'none';
+            }
+
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                performSearchRegional(query);
+            }, 300);
+        });
+
+        clearRegionalBtn.addEventListener('click', () => {
+            regionalInput.value = '';
+            clearRegionalBtn.style.display = 'none';
+            performSearchRegional('');
+            regionalInput.focus();
+        });
+
+        async function performSearchRegional(query) {
+            const trimmed = query.trim().toUpperCase();
+            
+            if (trimmed.length < 2) {
+                resultsHeader.style.display = 'none';
+                resultsContent.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg><h3>Busca por Regional</h3><p>Selecione ou digite o nome de uma cidade/regional acima para consultar estatísticas e visualizar os servidores cadastrados.</p></div>';
+                return;
+            }
+
+            // Exibe carregamento
+            resultsContent.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="animation: spin 1.5s linear infinite;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg><h3 style="color:var(--accent);">Carregando Estatísticas...</h3><p>Consultando dados da regional...</p></div>';
+
+            try {
+                const response = await fetch('/api/regional/stats?q=' + encodeURIComponent(trimmed));
+                const data = await response.json();
+
+                if (data.success && data.total > 0) {
+                    renderRegionalResults(data);
+                } else {
+                    resultsHeader.style.display = 'flex';
+                    resultsCount.innerHTML = 'Nenhum registro correspondente a "<span>' + escapeHTML(trimmed) + '</span>"';
+                    resultsContent.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="15.01" y2="9"></line><line x1="9" y1="9" x2="9.01" y2="9"></line><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path></svg><h3>Nenhum servidor nesta regional</h3><p>Verifique o nome digitado ou selecione outra regional da lista.</p></div>';
+                }
+            } catch (error) {
+                console.error("Erro na busca por regional:", error);
+                showToast("Erro ao conectar com o servidor.", "error");
+                resultsContent.innerHTML = '<div class="empty-state" style="border-color: var(--danger);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg><h3 style="color: var(--danger)">Erro na Pesquisa</h3><p>Não foi possível carregar as estatísticas da regional.</p></div>';
+            }
+        }
+
+        function renderRegionalResults(data) {
+            resultsHeader.style.display = 'flex';
+            resultsCount.innerHTML = 'Regional <span>' + escapeHTML(data.regional) + '</span> possui <span>' + data.total + '</span> servidores cadastrados';
+
+            // Cria o dashboard de estatísticas
+            let breakdownHtml = '';
+            for (const acao in data.por_acao) {
+                breakdownHtml += `
+                    <div class="breakdown-item">
+                        <span class="breakdown-name" title="${escapeHTML(acao)}">${escapeHTML(acao)}</span>
+                        <span class="breakdown-badge">${data.por_acao[acao]}</span>
+                    </div>
+                `;
+            }
+
+            let html = `
+                <div class="regional-dashboard">
+                    <div class="regional-stats-card">
+                        <div class="stats-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <div class="stats-info">
+                            <span class="stats-label">Total de Servidores</span>
+                            <span class="stats-number">${data.total}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="regional-breakdown-card">
+                        <h4 class="breakdown-title">Distribuição por Ação / Origem Jurídica</h4>
+                        <div class="breakdown-list">
+                            ${breakdownHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Agora, renderiza a lista de servidores dessa regional usando o mesmo formato visual
+            html += '<h3 style="font-family:\'Outfit\',sans-serif; color:var(--accent); margin-bottom: 1rem; text-align:left;">Lista de Servidores</h3>';
+            
+            // Agrupa os servidores da regional por nome
+            const grouped = {};
+            data.pessoas.forEach(item => {
+                const nameKey = (item.nome || 'SEM NOME').toUpperCase().trim();
+                if (!grouped[nameKey]) {
+                    grouped[nameKey] = {
+                        nome: item.nome || 'SEM NOME',
+                        links: []
+                    };
+                }
+                grouped[nameKey].links.push(item);
+            });
+
+            html += '<div class="cards-list">';
+            for (const key in grouped) {
+                const server = grouped[key];
+                const occurrenceText = server.links.length === 1 ? '1 ocorrência' : server.links.length + ' ocorrências / vínculos';
+
+                html += '<div class="server-card"><div class="card-header"><div class="server-name-container"><h3 class="server-name">' + escapeHTML(server.nome) + '</h3></div><span class="occurrence-badge">' + occurrenceText + '</span></div><div class="card-body">';
+
+                server.links.forEach(link => {
+                    const detalheExibir = link.info || link.detalhes || 'Nenhum detalhe adicional informado.';
+                    const nomeArquivo = (link.arquivo || '').replace('.xlsx', '').replace('Local: ', '');
+                    const nomeChave = nomeArquivo.toUpperCase().trim();
+                    const urlPlanilha = mapaPlanilhasUrls[nomeChave] || '#';
+                    
+                    let urlFinal = urlPlanilha;
+                    if (urlFinal !== '#' && urlFinal.startsWith('/planilhas/')) {
+                        const senhaSalva = sessionStorage.getItem('sinte_senha_planilhas') || '';
+                        urlFinal += `?senha=${encodeURIComponent(senhaSalva)}`;
+                    }
+                    
+                    const tagClass = urlFinal !== '#' ? 'source-tag clickable-tag' : 'source-tag';
+                    const linkAttr = urlFinal !== '#' ? `href="${urlFinal}" ${urlFinal.startsWith('/planilhas/') ? 'download' : 'target="_blank"'}` : '';
+                    const elementTag = urlFinal !== '#' ? 'a' : 'span';
+                    
+                    const tagAbaHtml = link.aba ? '<span class="source-tag aba-tag">' + escapeHTML(link.aba) + '</span>' : '';
+                    const tagRegionalHtml = link.regional ? '<span class="source-tag" style="background:#f0fdf4; border-color:#bbf7d0; color:#16a34a;"><svg viewBox="0 0 24 24" style="fill:none; stroke:currentColor; stroke-width:2; width:12px; height:12px; margin-right:2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' + escapeHTML(link.regional) + '</span>' : '';
+
+                    html += '<div class="link-item"><div class="meta-field"><span class="meta-label">Matrícula</span><span class="meta-value highlight">' + escapeHTML(formatMatricula(link.matricula)) + '</span></div><div class="meta-field"><span class="meta-label">CPF</span><span class="meta-value highlight">' + escapeHTML(formatCPF(link.cpf)) + '</span></div><div class="meta-field"><span class="meta-label">Ação / Origem Jurídica</span><div class="meta-value" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem;"><' + elementTag + ' class="' + tagClass + '" ' + linkAttr + ' title="Clique para abrir a planilha"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' + escapeHTML(nomeArquivo) + '</' + elementTag + '>' + tagAbaHtml + tagRegionalHtml + '</div></div><div class="meta-field" style="grid-column: 1 / -1;"><span class="meta-label">Detalhes da Planilha</span><span class="meta-value info-tag">' + escapeHTML(detalheExibir) + '</span></div></div>';
+                });
+
+                html += '</div></div>';
+            }
+            html += '</div>';
+
+            resultsContent.innerHTML = html;
+        }
 
         // Modal Event Handlers para Planilhas
         let planilhasData = [];
