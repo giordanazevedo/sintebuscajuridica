@@ -114,6 +114,28 @@ def processar_dataframe(df, arquivo_nome, aba_nome):
     if df.empty:
         return
 
+    # Ajuste dinâmico de cabeçalho (caso as primeiras linhas sejam títulos/mescladas)
+    possui_cabecalho = False
+    colunas_originais = [str(c).strip().upper() for c in df.columns]
+    for col in colunas_originais:
+        if any(kw in col for kw in ['NOME', 'SERVIDOR', 'CPF', 'MATR', 'MTR', 'REGIONAL', 'CIDADE']):
+            possui_cabecalho = True
+            break
+            
+    if not possui_cabecalho:
+        for idx in range(min(5, len(df))):
+            linha_valores = [str(val).strip().upper() for val in df.iloc[idx]]
+            eh_cabecalho_real = False
+            for val in linha_valores:
+                if any(kw in val for kw in ['NOME', 'SERVIDOR', 'CPF', 'MATR', 'MTR', 'REGIONAL', 'CIDADE']):
+                    eh_cabecalho_real = True
+                    break
+            if eh_cabecalho_real:
+                novas_colunas = [str(val).strip() for val in df.iloc[idx]]
+                df = df.iloc[idx+1:].copy()
+                df.columns = novas_colunas
+                break
+
     colunas_originais = [str(c).strip() for c in df.columns]
     df.columns = colunas_originais
     
