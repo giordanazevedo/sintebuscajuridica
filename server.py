@@ -34,6 +34,9 @@ PLANILHAS_GOOGLE = [
 ]
 
 MAPA_IDS_ACOES = {p["nome_acao"]: p["id"] for p in PLANILHAS_GOOGLE}
+MAPA_IDS_ACOES["FUNDEF"] = "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"
+MAPA_IDS_ACOES["GUILHERME MELO"] = "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"
+MAPA_IDS_ACOES["FILIAÇÕES"] = "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"
 
 ARQUIVO_CADASTROS_MANUAIS = "novos_cadastros_sinte.xlsx"
 banco_dados = []
@@ -91,7 +94,18 @@ def carregar_dados():
                 for nome_aba in xls.sheet_names:
                     try:
                         df = pd.read_excel(xls, sheet_name=nome_aba)
-                        processar_dataframe(df, arquivo_nome=nome_acao, aba_nome=nome_aba)
+                        nome_acao_efetivo = nome_acao
+                        
+                        # Separação especial da planilha Guilherme Melo / FUNDEF
+                        if "GUILHERME MELO" in nome_acao.upper():
+                            if "FUNDEF" in nome_aba.upper():
+                                nome_acao_efetivo = "FUNDEF"
+                            elif "FILIA" in nome_aba.upper():
+                                nome_acao_efetivo = "FILIAÇÕES"
+                            elif "GUILHERME" in nome_aba.upper():
+                                nome_acao_efetivo = "Ação Guilherme Melo"
+
+                        processar_dataframe(df, arquivo_nome=nome_acao_efetivo, aba_nome=nome_aba)
                     except Exception as e_aba:
                         print(f"  ⚠️ Erro ao processar aba '{nome_aba}' de {nome_acao}: {e_aba}")
                 print(f"  ✅ {nome_acao} (todas as abas) sincronizada!")
