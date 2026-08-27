@@ -105,6 +105,17 @@ def carregar_dados():
                             elif "GUILHERME" in nome_aba.upper():
                                 nome_acao_efetivo = "Ação Guilherme Melo"
 
+                        # Log de diagnóstico: colunas da aba
+                        colunas_aba = list(df.columns)
+                        col_regional_encontrada = next(
+                            (c for c in colunas_aba if any(kw in str(c).upper() for kw in
+                             ['REGIONAL','CIDADE','MUNICIPIO','MUNICÍPIO','NUCLEO','NÚCLEO',
+                              'LOCAL','LOCALIDADE','LOTACAO','LOTAÇÃO','SEDE','POLO','PÓLO',
+                              'MUNICIPALIDADE','SECRETARIA'])),
+                            None
+                        )
+                        if not col_regional_encontrada:
+                            print(f"    ⚠️ '{nome_aba}' ({nome_acao_efetivo}): SEM coluna regional! Colunas: {colunas_aba[:8]}")
                         processar_dataframe(df, arquivo_nome=nome_acao_efetivo, aba_nome=nome_aba)
                     except Exception as e_aba:
                         print(f"  ⚠️ Erro ao processar aba '{nome_aba}' de {nome_acao}: {e_aba}")
@@ -183,7 +194,12 @@ def processar_dataframe(df, arquivo_nome, aba_nome):
     colunas_originais = [str(c).strip() for c in df.columns]
     
     # Mapeamento expandido (Requisito 2)
-    REGIONAL_KEYWORDS = ['REGIONAL', 'CIDADE', 'MUNICIPIO', 'MUNICÍPIO', 'NUCLEO', 'NÚCLEO']
+    REGIONAL_KEYWORDS = [
+        'REGIONAL', 'CIDADE', 'MUNICIPIO', 'MUNICÍPIO',
+        'NUCLEO', 'NÚCLEO', 'LOCAL', 'LOCALIDADE',
+        'LOTACAO', 'LOTAÇÃO', 'SEDE', 'POLO', 'PÓLO',
+        'MUNICIPALIDADE', 'SECRETARIA'
+    ]
     MATRICULA_KEYWORDS = ['MATR', 'MTR', 'MATRICULA', 'MATRÍCULA', 'CODIGO', 'CÓDIGO']
     NOME_KEYWORDS = ['NOME', 'SERVIDOR', 'FUNCIONARIO', 'FUNCIONÁRIO', 'PESSOA', 'FILIADO']
     CPF_KEYWORDS = ['CPF']
@@ -542,6 +558,37 @@ def regional_stats():
             "por_acao": total_por_acao,
             "pessoas": pessoas_na_regional
         })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/diagnostico")
+def diagnostico():
+    """Mostra por planilha/aba: total registros, quantos tem regional preenchida, e quais acoes aparecem."""
+    try:
+        resumo = {}
+        for reg in banco_dados:
+            chave = f"{reg['arquivo']} | {reg['aba']}"
+            if chave not in resumo:
+                resumo[chave] = {"total": 0, "com_regional": 0, "sem_regional": 0, "acao": reg["arquivo"]}
+            resumo[chave]["total"] += 1
+            if reg.get("regional", "").strip():
+                resumo[chave]["com_regional"] += 1
+            else:
+                resumo[chave]["sem_regional"] += 1
+
+        resultado = []
+        for chave, v in sorted(resumo.items(), key=lambda x: x[1]["sem_regional"], reverse=True):
+            resultado.append({
+                "planilha_aba": chave,
+                "acao": v["acao"],
+                "total": v["total"],
+                "com_regional": v["com_regional"],
+                "sem_regional": v["sem_regional"],
+                "pct_com_regional": round(v["com_regional"] / v["total"] * 100, 1) if v["total"] else 0
+            })
+
+        return jsonify({"success": True, "resumo": resultado})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
