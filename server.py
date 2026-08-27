@@ -552,10 +552,14 @@ def stats_guilherme_fundef():
     Retorna estatísticas de pessoas únicas entre 'Ação Guilherme Melo' e 'FUNDEF'.
     A deduplicação é feita por matrícula (normalizada: sem pontos, traços, espaços).
     Pessoas sem matrícula são contadas individualmente pelo nome.
+    Aceita parâmetro opcional ?regional=NOME para filtrar por cidade/regional.
     """
     try:
         ACAO_GM = "Ação Guilherme Melo"
         ACAO_FU = "FUNDEF"
+
+        # Filtro opcional por regional
+        regional_filtro = request.args.get("regional", "").strip().upper()
 
         def normalizar_mat(m):
             return m.replace(".", "").replace("-", "").replace("/", "").replace(" ", "").upper().strip()
@@ -568,7 +572,12 @@ def stats_guilherme_fundef():
             arq = reg.get("arquivo", "")
             mat_raw = reg.get("matricula", "").strip()
             nome = reg.get("nome", "").strip().upper()
+            reg_regional = reg.get("regional", "").strip().upper()
             mat = normalizar_mat(mat_raw) if mat_raw else ""
+
+            # Aplica filtro de regional se informado
+            if regional_filtro and reg_regional != regional_filtro:
+                continue
 
             # Chave de identificação: matrícula se existir, senão nome
             chave = mat if mat and mat not in ["NAN", "NONE", "0", "N/I", "-"] else (f"NOME:{nome}" if nome else None)
@@ -592,6 +601,7 @@ def stats_guilherme_fundef():
 
         return jsonify({
             "success": True,
+            "regional": regional_filtro or None,
             "total_guilherme_melo": len(set_gm),
             "total_fundef": len(set_fu),
             "total_em_ambos": len(em_ambos),
