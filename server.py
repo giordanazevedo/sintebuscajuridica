@@ -546,9 +546,70 @@ def regional_stats():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route("/api/stats/guilherme-fundef")
+def stats_guilherme_fundef():
+    """
+    Retorna estatísticas de pessoas únicas entre 'Ação Guilherme Melo' e 'FUNDEF'.
+    A deduplicação é feita por matrícula (normalizada: sem pontos, traços, espaços).
+    Pessoas sem matrícula são contadas individualmente pelo nome.
+    """
+    try:
+        ACAO_GM = "Ação Guilherme Melo"
+        ACAO_FU = "FUNDEF"
+
+        def normalizar_mat(m):
+            return m.replace(".", "").replace("-", "").replace("/", "").replace(" ", "").upper().strip()
+
+        # Coleta matrículas e nomes por ação
+        mats_gm = {}   # matricula_normalizada -> registro representativo
+        mats_fu = {}
+
+        for reg in banco_dados:
+            arq = reg.get("arquivo", "")
+            mat_raw = reg.get("matricula", "").strip()
+            nome = reg.get("nome", "").strip().upper()
+            mat = normalizar_mat(mat_raw) if mat_raw else ""
+
+            # Chave de identificação: matrícula se existir, senão nome
+            chave = mat if mat and mat not in ["NAN", "NONE", "0", "N/I", "-"] else (f"NOME:{nome}" if nome else None)
+            if not chave:
+                continue
+
+            if arq == ACAO_GM:
+                if chave not in mats_gm:
+                    mats_gm[chave] = reg
+            elif arq == ACAO_FU:
+                if chave not in mats_fu:
+                    mats_fu[chave] = reg
+
+        set_gm = set(mats_gm.keys())
+        set_fu = set(mats_fu.keys())
+
+        so_gm = set_gm - set_fu
+        so_fu = set_fu - set_gm
+        em_ambos = set_gm & set_fu
+        total_unico = set_gm | set_fu
+
+        return jsonify({
+            "success": True,
+            "total_guilherme_melo": len(set_gm),
+            "total_fundef": len(set_fu),
+            "total_em_ambos": len(em_ambos),
+            "total_unico_conjunto": len(total_unico),
+            "so_guilherme_melo": len(so_gm),
+            "so_fundef": len(so_fu),
+            "pessoas_em_ambos": [mats_gm[k] for k in sorted(em_ambos)],
+            "pessoas_so_guilherme_melo": [mats_gm[k] for k in sorted(so_gm)],
+            "pessoas_so_fundef": [mats_fu[k] for k in sorted(so_fu)],
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 if __name__ == "__main__":
     carregar_dados()
     port = int(os.environ.get("PORT", 5000))
     print(f"\n🚀 Servidor do SINTE-PI no ar na porta {port}!")
     
     app.run(host="0.0.0.0", port=port, debug=False)
+
