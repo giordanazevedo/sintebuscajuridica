@@ -397,8 +397,24 @@ def search():
     if not query or len(query) < 2:
         return jsonify({"results": []})
         
-    query_limpa = query.replace(".", "").replace("-", "").replace("/", "")
-    eh_numerico = query_limpa.isdigit() or (query_limpa[:-1].isdigit() and query_limpa[-1] in 'XkXK')
+    # Divide a busca por vírgula para suportar múltiplos termos
+    if "," in query:
+        termos = [t.strip() for t in query.split(",") if len(t.strip()) >= 2]
+    else:
+        termos = [query]
+        
+    if not termos:
+        return jsonify({"results": []})
+        
+    termos_processados = []
+    for t in termos:
+        t_limpa = t.replace(".", "").replace("-", "").replace("/", "")
+        t_eh_numerico = t_limpa.isdigit() or (t_limpa[:-1].isdigit() and t_limpa[-1] in 'XkXK')
+        termos_processados.append({
+            "original": t,
+            "limpa": t_limpa,
+            "eh_numerico": t_eh_numerico
+        })
     
     encontrados_diretos = []
     matriculas_validas = set()
@@ -411,17 +427,19 @@ def search():
         nome_reg = reg["nome"].upper()
         
         match = False
+        for tp in termos_processados:
+            if tp["eh_numerico"]:
+                # Exige correspondência EXATA ou que o registro comece exatamente com o termo numérico
+                if (mat_limpa and (mat_limpa == tp["limpa"] or mat_limpa.startswith(tp["limpa"]))) or \
+                   (cpf_limpo and (cpf_limpo == tp["limpa"] or cpf_limpo.startswith(tp["limpa"]))):
+                    match = True
+                    break
+            else:
+                # Se tiver letras, busca por substring no Nome
+                if tp["original"] in nome_reg and len(nome_reg) > 0:
+                    match = True
+                    break
         
-        if eh_numerico:
-            # Exige correspondência EXATA ou que o registro comece exatamente com a query
-            if (mat_limpa and (mat_limpa == query_limpa or mat_limpa.startswith(query_limpa))) or \
-               (cpf_limpo and (cpf_limpo == query_limpa or cpf_limpo.startswith(query_limpa))):
-                match = True
-        else:
-            # Se tiver letras, busca por substring no Nome
-            if query in nome_reg and len(nome_reg) > 0:
-                match = True
-
         if match:
             encontrados_diretos.append(reg)
             
