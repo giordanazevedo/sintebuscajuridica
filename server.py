@@ -22,7 +22,7 @@ SENHA_ACESSO = os.environ.get("SENHA_ACESSO", "sinte@juridico10")
 
 
 # ----------------------------------------------------------------------
-# 1. MAPEAMENTO DAS 6 PLANILHAS DO GOOGLE DRIVE
+# 1. MAPEAMENTO DAS PLANILHAS DO GOOGLE DRIVE
 # ----------------------------------------------------------------------
 PLANILHAS_GOOGLE = [
     {"nome_acao": "AUTORIZAÇÕES ASSINADAS - MÃO SANTA 99", "id": "1T7riNd-ksnhfWkuR4iQUW8_mYfx8u07O"},
@@ -30,7 +30,9 @@ PLANILHAS_GOOGLE = [
     {"nome_acao": "MÃO SANTA III", "id": "1GMHtlfXB3bRzknUZh2ILzfEeSny4etkj"},
     {"nome_acao": "MÃO SANTA IV A VII", "id": "1LLxcb-STxF8Y2qhzsmMYTy-n-L9-lu33"},
     {"nome_acao": "Ação Guilherme Melo COMPLETO", "id": "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"},
-    {"nome_acao": "SEGUNDA AÇÃO", "id": "1_tfg7-uoslZaVJCDDpOyiNXh_LVxvWak"}
+    {"nome_acao": "SEGUNDA AÇÃO", "id": "1_tfg7-uoslZaVJCDDpOyiNXh_LVxvWak"},
+    {"nome_acao": "HERDEIROS CONCLUIDOS GUILHERME MELO E MÃO SANTA", "id": "1CxixmGKhtV-MdF6xM3h6RhfxKqzbiyIQ"},
+    {"nome_acao": "SEGUNDA AÇÃO - HERDEIROS CONCLUÍDOS", "id": "1eF_NFwNhbR7PeJJmQXLK27z69O3cqhXq"}
 ]
 
 MAPA_IDS_ACOES = {p["nome_acao"]: p["id"] for p in PLANILHAS_GOOGLE}
@@ -97,7 +99,7 @@ def carregar_dados():
                         nome_acao_efetivo = nome_acao
                         
                         # Separação especial da planilha Guilherme Melo / FUNDEF
-                        if "GUILHERME MELO" in nome_acao.upper():
+                        if nome_acao == "Ação Guilherme Melo COMPLETO":
                             if "FUNDEF" in nome_aba.upper():
                                 nome_acao_efetivo = "FUNDEF"
                             elif "FILIA" in nome_aba.upper():
