@@ -1340,15 +1340,7 @@
                     </svg>
                     <span>Busca por Regional (Cidades)</span>
                 </button>
-                <button class="search-tab" id="tab-gmfundef">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    <span>GM + FUNDEF</span>
-                </button>
+
             </div>
 
             <div class="search-container">
@@ -1398,9 +1390,7 @@
             <div class="search-tips" id="tips-regional" style="display: none;">
                 <span>Consulte estatísticas e servidores por <strong>Cidade / Regional</strong></span>
             </div>
-            <div class="search-tips" id="tips-gmfundef" style="display: none;">
-                <span>Contagem única de pessoas nas ações <strong>Guilherme Melo</strong> e <strong>FUNDEF</strong> por matrícula</span>
-            </div>
+
         </section>
 
         <section class="results-section">
@@ -1421,25 +1411,6 @@
                 </div>
             </div>
 
-            <!-- Painel GM + FUNDEF (hidden by default) -->
-            <div id="gm-fundef-section" style="display: none;">
-                <div class="gm-fundef-panel">
-                    <div class="gm-fundef-header">
-                        <h3>Ação Guilherme Melo + FUNDEF</h3>
-                        <span class="badge-gm">Contagem por Matrícula</span>
-                        <button class="gm-btn-refresh" id="btn-gm-refresh" title="Atualizar contagem">
-                            <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-                            Atualizar
-                        </button>
-                    </div>
-                    <div id="gm-fundef-content">
-                        <div class="gm-loading">
-                            <svg viewBox="0 0 24 24" fill="none"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-                            <span>Carregando dados...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
     </main>
 
@@ -1662,89 +1633,6 @@
             }, 250);
         });
 
-        // ====== LÓGICA GM + FUNDEF ======
-        let gmFundefCache = null;
-        const gmFundefSection = document.getElementById('gm-fundef-section');
-        const tipsGmFundef = document.getElementById('tips-gmfundef');
-        const tabGmFundef = document.getElementById('tab-gmfundef');
-
-        document.getElementById('btn-gm-refresh').addEventListener('click', () => carregarGmFundef(true));
-
-        function renderPessoasList(pessoas) {
-            if (!pessoas || pessoas.length === 0) {
-                return '<p style="font-size:0.85rem;color:var(--text-muted);padding:0.5rem 0;">Nenhuma pessoa nesta categoria.</p>';
-            }
-            return '<div class="gm-pessoas-list">' + pessoas.map(p => {
-                const nome = p.nome || '–';
-                const mat = p.matricula ? 'Mat: ' + p.matricula : (p.cpf ? 'CPF: ' + p.cpf : '–');
-                return '<div class="gm-pessoa-item"><span class="gm-pessoa-nome">' + escapeHTML(nome) + '</span><span class="gm-pessoa-mat">' + escapeHTML(mat) + '</span></div>';
-            }).join('') + '</div>';
-        }
-
-        function renderGmFundefStats(d) {
-            const el = document.getElementById('gm-fundef-content');
-            el.innerHTML = `
-                <div class="gm-stats-grid">
-                    <div class="gm-stat-card total">
-                        <span class="sc-label">Total Único (União)</span>
-                        <span class="sc-num">${d.total_unico_conjunto}</span>
-                        <span class="sc-sub">Pessoas distintas nas duas ações</span>
-                    </div>
-                    <div class="gm-stat-card gm">
-                        <span class="sc-label">Guilherme Melo</span>
-                        <span class="sc-num">${d.total_guilherme_melo}</span>
-                        <span class="sc-sub">${d.so_guilherme_melo} só nesta ação</span>
-                    </div>
-                    <div class="gm-stat-card fu">
-                        <span class="sc-label">FUNDEF</span>
-                        <span class="sc-num">${d.total_fundef}</span>
-                        <span class="sc-sub">${d.so_fundef} só nesta ação</span>
-                    </div>
-                    <div class="gm-stat-card inter">
-                        <span class="sc-label">Em Ambas as Ações</span>
-                        <span class="sc-num">${d.total_em_ambos}</span>
-                        <span class="sc-sub">Mesma matrícula em GM e FUNDEF</span>
-                    </div>
-                </div>
-                <div class="gm-detail-grid">
-                    <div class="gm-list-card">
-                        <h4><span class="dot" style="background:#059669;"></span>Em Ambas (${d.total_em_ambos})</h4>
-                        ${renderPessoasList(d.pessoas_em_ambos)}
-                    </div>
-                    <div class="gm-list-card">
-                        <h4><span class="dot" style="background:#2563eb;"></span>Só Guilherme Melo (${d.so_guilherme_melo})</h4>
-                        ${renderPessoasList(d.pessoas_so_guilherme_melo)}
-                    </div>
-                    <div class="gm-list-card" style="grid-column:1/-1;">
-                        <h4><span class="dot" style="background:#d97706;"></span>Só FUNDEF (${d.so_fundef})</h4>
-                        ${renderPessoasList(d.pessoas_so_fundef)}
-                    </div>
-                </div>
-            `;
-        }
-
-        async function carregarGmFundef(forceRefresh = false) {
-            if (gmFundefCache && !forceRefresh) {
-                renderGmFundefStats(gmFundefCache);
-                return;
-            }
-            const el = document.getElementById('gm-fundef-content');
-            el.innerHTML = '<div class="gm-loading"><svg viewBox="0 0 24 24" fill="none"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg><span>Calculando contagem única...</span></div>';
-            try {
-                const res = await fetch('/api/stats/guilherme-fundef');
-                const data = await res.json();
-                if (data.success) {
-                    gmFundefCache = data;
-                    renderGmFundefStats(data);
-                    showToast('Contagem atualizada com sucesso!', 'success');
-                } else {
-                    el.innerHTML = '<div class="gm-loading" style="color:var(--danger);">Erro: ' + escapeHTML(data.error || 'Erro desconhecido') + '</div>';
-                }
-            } catch (e) {
-                el.innerHTML = '<div class="gm-loading" style="color:var(--danger);">Não foi possível conectar ao servidor.</div>';
-            }
-        }
-
 
 
         clearBtn.addEventListener('click', () => {
@@ -1889,7 +1777,7 @@
         const clearRegionalBtn = document.getElementById('clear-regional-btn');
         const regionaisList = document.getElementById('regionais-list');
 
-        let modoBusca = 'servidor'; // 'servidor', 'regional' ou 'gmfundef'
+        let modoBusca = 'servidor'; // 'servidor' ou 'regional'
         let listaCidades = [];
 
         // Alterna entre abas
@@ -1899,15 +1787,12 @@
             
             tabServidor.classList.add('active');
             tabRegional.classList.remove('active');
-            tabGmFundef.classList.remove('active');
             
             wrapperServidor.style.display = 'flex';
             wrapperRegional.style.display = 'none';
             tipsServidor.style.display = 'flex';
             tipsRegional.style.display = 'none';
-            tipsGmFundef.style.display = 'none';
             resultsContent.style.display = '';
-            gmFundefSection.style.display = 'none';
             resultsHeader.style.display = 'none';
             
             // Restaura estado anterior de busca
@@ -1921,15 +1806,12 @@
             
             tabRegional.classList.add('active');
             tabServidor.classList.remove('active');
-            tabGmFundef.classList.remove('active');
             
             wrapperRegional.style.display = 'flex';
             wrapperServidor.style.display = 'none';
             tipsRegional.style.display = 'flex';
             tipsServidor.style.display = 'none';
-            tipsGmFundef.style.display = 'none';
             resultsContent.style.display = '';
-            gmFundefSection.style.display = 'none';
             
             // Carrega a lista de regionais se ainda não foi carregada
             if (listaCidades.length === 0) {
@@ -1940,24 +1822,7 @@
             regionalInput.focus();
         });
 
-        tabGmFundef.addEventListener('click', () => {
-            if (modoBusca === 'gmfundef') return;
-            modoBusca = 'gmfundef';
 
-            tabGmFundef.classList.add('active');
-            tabServidor.classList.remove('active');
-            tabRegional.classList.remove('active');
-
-            wrapperServidor.style.display = 'none';
-            wrapperRegional.style.display = 'none';
-            tipsServidor.style.display = 'none';
-            tipsRegional.style.display = 'none';
-            tipsGmFundef.style.display = 'flex';
-            resultsContent.style.display = 'none';
-            resultsHeader.style.display = 'none';
-            gmFundefSection.style.display = '';
-            carregarGmFundef();
-        });
 
         // Carrega a lista de regionais do backend
         async function carregarListaRegionais() {
