@@ -225,7 +225,7 @@ def processar_dataframe(df, arquivo_nome, aba_nome):
         for idx, col in enumerate(colunas_originais):
             col_upper = col.upper()
             if any(kw in col_upper for kw in MATRICULA_KEYWORDS) or 'MAT' in col_upper:
-                val = str(linha.get(col, '')).strip()
+                val = str(linha.iloc[idx]).strip() if not pd.isna(linha.iloc[idx]) else ''
                 if val and val.upper() not in ['NAN', 'NONE', 'N/I', '-', 'NULL', '0']:
                     matricula = val
                     col_mat_idx = idx
@@ -243,7 +243,7 @@ def processar_dataframe(df, arquivo_nome, aba_nome):
         for idx, col in enumerate(colunas_originais):
             col_upper = col.upper()
             if any(kw in col_upper for kw in NOME_KEYWORDS):
-                val = str(linha.get(col, '')).strip().upper()
+                val = str(linha.iloc[idx]).strip().upper() if not pd.isna(linha.iloc[idx]) else ''
                 if val and val not in ['NAN', 'NONE', 'N/I', '-', 'NULL']:
                     nome = val
                     col_nome_idx = idx
@@ -260,7 +260,7 @@ def processar_dataframe(df, arquivo_nome, aba_nome):
         for idx, col in enumerate(colunas_originais):
             col_upper = col.upper()
             if any(kw in col_upper for kw in CPF_KEYWORDS):
-                val = str(linha.get(col, '')).strip()
+                val = str(linha.iloc[idx]).strip() if not pd.isna(linha.iloc[idx]) else ''
                 if val and val.upper() not in ['NAN', 'NONE', 'N/I', '-', 'NULL']:
                     cpf = val
                     col_cpf_idx = idx
@@ -280,7 +280,7 @@ def processar_dataframe(df, arquivo_nome, aba_nome):
         for idx, col in enumerate(colunas_originais):
             col_upper = col.upper()
             if any(kw in col_upper for kw in REGIONAL_KEYWORDS):
-                val_reg = str(linha.get(col, '')).strip()
+                val_reg = str(linha.iloc[idx]).strip() if not pd.isna(linha.iloc[idx]) else ''
                 if val_reg and val_reg.upper() not in ['NAN', 'NONE', 'N/I', '-', 'NULL', 'UNDEFINED', '0']:
                     regional = val_reg.upper()
                     col_reg_idx = idx
