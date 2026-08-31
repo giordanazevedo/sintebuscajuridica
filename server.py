@@ -3,6 +3,9 @@ import glob
 import io
 import re
 import sys
+import threading
+import time
+from datetime import datetime
 import pandas as pd
 import requests
 import gspread
@@ -19,6 +22,14 @@ app = Flask(__name__, static_folder=".")
 
 # Senha de acesso restrito às planilhas (padrão: sinte@juridico10)
 SENHA_ACESSO = os.environ.get("SENHA_ACESSO", "sinte@juridico10")
+
+# Intervalo da sincronização automática em minutos (padrão: 30 minutos)
+SYNC_INTERVAL_MINUTES = int(os.environ.get("SYNC_INTERVAL_MINUTES", "30"))
+
+banco_dados = []
+ultima_sincronizacao = None
+sincronizando = False
+sync_lock = threading.Lock()
 
 
 # ----------------------------------------------------------------------
@@ -41,7 +52,6 @@ MAPA_IDS_ACOES["GUILHERME MELO"] = "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"
 MAPA_IDS_ACOES["FILIAÇÕES"] = "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"
 
 ARQUIVO_CADASTROS_MANUAIS = "novos_cadastros_sinte.xlsx"
-banco_dados = []
 
 # ----------------------------------------------------------------------
 # 2. ESCRITA NA PLANILHA CORRESPONDENTE VIA CREDENTIALS.JSON
@@ -75,93 +85,104 @@ def salvar_no_google_sheets(nome, matricula, cpf, acao, detalhes):
 
 
 # ----------------------------------------------------------------------
-# 3. LEITURA E SINCRONIZAÇÃO DAS BASES
+# 3. LEITURA E SINCRONIZAÇÃO DAS BASES (THREAD-SAFE / ATOMIC SWAP)
 # ----------------------------------------------------------------------
 def carregar_dados():
-    global banco_dados
-    banco_dados = []
-    
-    print("\n🔄 Sincronizando planilhas do Google Drive e Cadastros Manuais...")
-    
-    # 1. Planilhas do Google Drive (processando todas as abas)
-    for item in PLANILHAS_GOOGLE:
-        sheet_id = item["id"]
-        nome_acao = item["nome_acao"]
-        url_xlsx = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=xlsx"
+    global banco_dados, ultima_sincronizacao, sincronizando
+    with sync_lock:
+        sincronizando = True
+        novos_dados = []
+        hora_inicio = datetime.now()
+        print(f"\n🔄 [{hora_inicio.strftime('%d/%m/%Y %H:%M:%S')}] Sincronizando planilhas do Google Drive e Cadastros Manuais...")
         
         try:
-            res = requests.get(url_xlsx, timeout=30)
-            if res.status_code == 200:
-                xls = pd.ExcelFile(io.BytesIO(res.content))
-                for nome_aba in xls.sheet_names:
-                    try:
-                        df = pd.read_excel(xls, sheet_name=nome_aba)
-                        nome_acao_efetivo = nome_acao
-                        
-                        # Separação especial da planilha Guilherme Melo / FUNDEF
-                        if nome_acao == "Ação Guilherme Melo COMPLETO":
-                            if "FUNDEF" in nome_aba.upper():
-                                nome_acao_efetivo = "FUNDEF"
-                            elif "FILIA" in nome_aba.upper():
-                                nome_acao_efetivo = "FILIAÇÕES"
-                            elif "GUILHERME" in nome_aba.upper():
-                                nome_acao_efetivo = "Ação Guilherme Melo"
-
-                        # Log de diagnóstico: colunas da aba
-                        colunas_aba = list(df.columns)
-                        col_regional_encontrada = next(
-                            (c for c in colunas_aba if any(kw in str(c).upper() for kw in
-                             ['REGIONAL','CIDADE','MUNICIPIO','MUNICÍPIO','NUCLEO','NÚCLEO',
-                              'LOCAL','LOCALIDADE','LOTACAO','LOTAÇÃO','SEDE','POLO','PÓLO',
-                              'MUNICIPALIDADE','SECRETARIA'])),
-                            None
-                        )
-                        if not col_regional_encontrada:
-                            print(f"    ⚠️ '{nome_aba}' ({nome_acao_efetivo}): SEM coluna regional! Colunas: {colunas_aba[:8]}")
-                        processar_dataframe(df, arquivo_nome=nome_acao_efetivo, aba_nome=nome_aba)
-                    except Exception as e_aba:
-                        print(f"  ⚠️ Erro ao processar aba '{nome_aba}' de {nome_acao}: {e_aba}")
-                print(f"  ✅ {nome_acao} (todas as abas) sincronizada!")
-            else:
-                print(f"  ⚠️ HTTP {res.status_code} ao baixar {nome_acao}")
-        except Exception as e:
-            print(f"  ❌ Erro ao conectar com {nome_acao}: {e}")
-
-    # 2. Cadastros Manuais (processando todas as abas)
-    if os.path.exists(ARQUIVO_CADASTROS_MANUAIS):
-        try:
-            xls_man = pd.ExcelFile(ARQUIVO_CADASTROS_MANUAIS)
-            for nome_aba in xls_man.sheet_names:
+            # 1. Planilhas do Google Drive (processando todas as abas)
+            for item in PLANILHAS_GOOGLE:
+                sheet_id = item["id"]
+                nome_acao = item["nome_acao"]
+                url_xlsx = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=xlsx"
+                
                 try:
-                    df_man = pd.read_excel(xls_man, sheet_name=nome_aba)
-                    processar_dataframe(df_man, arquivo_nome="Cadastros Manuais (Sistema)", aba_nome=nome_aba)
-                except Exception as e_aba:
-                    print(f"  ⚠️ Erro ao processar aba '{nome_aba}' em {ARQUIVO_CADASTROS_MANUAIS}: {e_aba}")
-            print(f"  ✅ {ARQUIVO_CADASTROS_MANUAIS} (todas as abas) carregado!")
-        except Exception as e:
-            print(f"  ⚠️ Erro ao ler cadastros manuais: {e}")
+                    res = requests.get(url_xlsx, timeout=30)
+                    if res.status_code == 200:
+                        xls = pd.ExcelFile(io.BytesIO(res.content))
+                        for nome_aba in xls.sheet_names:
+                            try:
+                                df = pd.read_excel(xls, sheet_name=nome_aba)
+                                nome_acao_efetivo = nome_acao
+                                
+                                # Separação especial da planilha Guilherme Melo / FUNDEF
+                                if nome_acao == "Ação Guilherme Melo COMPLETO":
+                                    if "FUNDEF" in nome_aba.upper():
+                                        nome_acao_efetivo = "FUNDEF"
+                                    elif "FILIA" in nome_aba.upper():
+                                        nome_acao_efetivo = "FILIAÇÕES"
+                                    elif "GUILHERME" in nome_aba.upper():
+                                        nome_acao_efetivo = "Ação Guilherme Melo"
 
-    # 3. Demais arquivos Excel locais (processando todas as abas)
-    arquivos_locais = sorted(list(set(glob.glob("*.xlsx") + glob.glob("*.xls") + glob.glob("*.XLSX") + glob.glob("*.XLS"))))
-    for arquivo in arquivos_locais:
-        if os.path.basename(arquivo) == ARQUIVO_CADASTROS_MANUAIS:
-            continue
-        try:
-            xls = pd.ExcelFile(arquivo)
-            for nome_aba in xls.sheet_names:
+                                processar_dataframe(df, arquivo_nome=nome_acao_efetivo, aba_nome=nome_aba, destino_lista=novos_dados)
+                            except Exception as e_aba:
+                                print(f"  ⚠️ Erro ao processar aba '{nome_aba}' de {nome_acao}: {e_aba}")
+                        print(f"  ✅ {nome_acao} sincronizada!")
+                    else:
+                        print(f"  ⚠️ HTTP {res.status_code} ao baixar {nome_acao}")
+                except Exception as e:
+                    print(f"  ❌ Erro ao conectar com {nome_acao}: {e}")
+
+            # 2. Cadastros Manuais (processando todas as abas)
+            if os.path.exists(ARQUIVO_CADASTROS_MANUAIS):
                 try:
-                    df = pd.read_excel(xls, sheet_name=nome_aba)
-                    processar_dataframe(df, arquivo_nome=f"Local: {arquivo}", aba_nome=nome_aba)
-                except Exception as e_aba:
-                    print(f"  ⚠️ Erro ao processar aba '{nome_aba}' de {arquivo}: {e_aba}")
+                    xls_man = pd.ExcelFile(ARQUIVO_CADASTROS_MANUAIS)
+                    for nome_aba in xls_man.sheet_names:
+                        try:
+                            df_man = pd.read_excel(xls_man, sheet_name=nome_aba)
+                            processar_dataframe(df_man, arquivo_nome="Cadastros Manuais (Sistema)", aba_nome=nome_aba, destino_lista=novos_dados)
+                        except Exception as e_aba:
+                            print(f"  ⚠️ Erro ao processar aba '{nome_aba}' em {ARQUIVO_CADASTROS_MANUAIS}: {e_aba}")
+                    print(f"  ✅ {ARQUIVO_CADASTROS_MANUAIS} carregado!")
+                except Exception as e:
+                    print(f"  ⚠️ Erro ao ler cadastros manuais: {e}")
+
+            # 3. Demais arquivos Excel locais (processando todas as abas)
+            arquivos_locais = sorted(list(set(glob.glob("*.xlsx") + glob.glob("*.xls") + glob.glob("*.XLSX") + glob.glob("*.XLS"))))
+            for arquivo in arquivos_locais:
+                if os.path.basename(arquivo) == ARQUIVO_CADASTROS_MANUAIS:
+                    continue
+                try:
+                    xls = pd.ExcelFile(arquivo)
+                    for nome_aba in xls.sheet_names:
+                        try:
+                            df = pd.read_excel(xls, sheet_name=nome_aba)
+                            processar_dataframe(df, arquivo_nome=f"Local: {arquivo}", aba_nome=nome_aba, destino_lista=novos_dados)
+                        except Exception as e_aba:
+                            print(f"  ⚠️ Erro ao processar aba '{nome_aba}' de {arquivo}: {e_aba}")
+                except Exception as e:
+                    print(f"Erro ao ler arquivo local {arquivo}: {e}")
+                    
+            # Substituição atômica na memória: buscas nunca sofrem com banco vazio
+            banco_dados = novos_dados
+            ultima_sincronizacao = datetime.now()
+            print(f"\n🟢 Sincronização concluída! Total de {len(banco_dados)} registros ativos.\n")
+            return len(banco_dados)
+        finally:
+            sincronizando = False
+
+
+def background_sync_worker():
+    """Thread em segundo plano que executa a sincronização automática em intervalos regulares."""
+    intervalo_segundos = max(60, SYNC_INTERVAL_MINUTES * 60)
+    print(f"⏱️ Sincronização automática em segundo plano ativada (a cada {SYNC_INTERVAL_MINUTES} minutos).")
+    while True:
+        try:
+            time.sleep(intervalo_segundos)
+            print(f"\n⏰ [Auto-Sync] Iniciando atualização periódica automática dos dados...")
+            carregar_dados()
         except Exception as e:
-            print(f"Erro ao ler arquivo local {arquivo}: {e}")
-            
-    print(f"\n🟢 Sincronização concluída! Total de {len(banco_dados)} registros ativos.\n")
-    return len(banco_dados)
+            print(f"⚠️ [Auto-Sync] Erro na sincronização automática: {e}")
+            time.sleep(60)
 
 
-def processar_dataframe(df, arquivo_nome, aba_nome):
+def processar_dataframe(df, arquivo_nome, aba_nome, destino_lista=None):
     if df.empty:
         return
 
@@ -326,8 +347,9 @@ def processar_dataframe(df, arquivo_nome, aba_nome):
         
         texto_detalhes = " • ".join(detalhes_extras) if detalhes_extras else "Nenhum detalhe adicional informado."
         
+        alvo = destino_lista if destino_lista is not None else banco_dados
         if (nome and nome != 'NAN') or (cpf and cpf != 'NAN') or (matricula and matricula != 'NAN'):
-            banco_dados.append({
+            alvo.append({
                 "arquivo": arquivo_nome,
                 "aba": aba_nome,
                 "matricula": matricula if matricula != 'NAN' else '',
@@ -476,11 +498,26 @@ def search():
     return jsonify({"results": resultados_finais})
 
 
+@app.route("/api/status")
+def status():
+    return jsonify({
+        "success": True,
+        "total_registros": len(banco_dados),
+        "ultima_sincronizacao": ultima_sincronizacao.strftime("%d/%m/%Y às %H:%M:%S") if ultima_sincronizacao else None,
+        "intervalo_minutos": SYNC_INTERVAL_MINUTES,
+        "sincronizando": sincronizando
+    })
+
+
 @app.route("/api/sync")
 def sync():
     try:
         total = carregar_dados()
-        return jsonify({"success": True, "total_records": total})
+        return jsonify({
+            "success": True, 
+            "total_records": total,
+            "ultima_sincronizacao": ultima_sincronizacao.strftime("%d/%m/%Y às %H:%M:%S") if ultima_sincronizacao else None
+        })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
@@ -683,10 +720,16 @@ def stats_guilherme_fundef():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+# ----------------------------------------------------------------------
+# 5. INICIALIZAÇÃO DOS DADOS E BACKGROUND SYNC DAEMON
+# ----------------------------------------------------------------------
+carregar_dados()
+sync_thread = threading.Thread(target=background_sync_worker, daemon=True)
+sync_thread.start()
+
+
 if __name__ == "__main__":
-    carregar_dados()
     port = int(os.environ.get("PORT", 5000))
     print(f"\n🚀 Servidor do SINTE-PI no ar na porta {port}!")
-    
     app.run(host="0.0.0.0", port=port, debug=False)
 

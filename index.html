@@ -412,9 +412,10 @@
             color: var(--accent);
             background: #eff6ff;
             border: 1px solid #bfdbfe;
-            padding: 0.2rem 0.6rem;
+            padding: 0.25rem 0.65rem;
             border-radius: 6px;
             font-weight: 600;
+            line-height: 1.3;
         }
 
         .source-tag.aba-tag {
@@ -423,10 +424,57 @@
             border-color: #fecaca;
         }
 
+        .source-tag.acao-tag,
+        .source-tag.clickable-tag {
+            cursor: pointer;
+            text-decoration: none;
+            border: 1px solid #93c5fd;
+            background: #eff6ff;
+            color: var(--accent);
+            font-family: inherit;
+            font-size: 0.82rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        button.source-tag {
+            appearance: none;
+            -webkit-appearance: none;
+            font-family: inherit;
+            font-size: 0.82rem;
+            text-align: left;
+        }
+
+        .source-tag.acao-tag:hover,
+        .source-tag.clickable-tag:hover {
+            background: #004b9b !important;
+            color: #ffffff !important;
+            border-color: #003670 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 75, 155, 0.3);
+        }
+
+        .source-tag.acao-tag:hover svg,
+        .source-tag.clickable-tag:hover svg {
+            fill: #ffffff !important;
+            stroke: #ffffff !important;
+        }
+
+        .source-tag.acao-tag:active,
+        .source-tag.clickable-tag:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 75, 155, 0.2);
+        }
+
         .source-tag svg {
             width: 14px;
             height: 14px;
             fill: currentColor;
+            transition: all 0.2s ease;
         }
 
         .info-tag {
@@ -1285,6 +1333,78 @@
             font-weight: 700;
             font-family: 'Outfit', sans-serif;
         }
+
+        .sync-status-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.85rem;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            color: #15803d;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: var(--transition);
+            cursor: default;
+        }
+
+        .sync-status-container:hover {
+            background: #dcfce7;
+            border-color: #86efac;
+        }
+
+        .sync-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+            animation: pulseGreen 2.2s infinite;
+        }
+
+        .sync-status-dot.syncing {
+            background: #eab308;
+            box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.6);
+            animation: pulseYellow 1.2s infinite;
+        }
+
+        @keyframes pulseGreen {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+            }
+        }
+
+        @keyframes pulseYellow {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 6px rgba(234, 179, 8, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(234, 179, 8, 0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sync-status-container {
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -1301,6 +1421,11 @@
         </div>
 
         <div class="header-actions">
+            <div class="sync-status-container" id="sync-status-container" title="Sincronização automática em segundo plano ativa">
+                <span class="sync-status-dot" id="sync-status-dot"></span>
+                <span class="sync-status-text" id="sync-status-text">Auto-Sync Ativo</span>
+            </div>
+
             <button id="btn-open-planilhas" class="btn-add">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6z"></path>
@@ -1312,7 +1437,7 @@
                 <span>Acessar Planilhas</span>
             </button>
 
-            <button id="sync-btn" class="btn-sync">
+            <button id="sync-btn" class="btn-sync" title="Forçar sincronização manual imediata">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
                 </svg>
@@ -1701,24 +1826,12 @@
                 server.links.forEach(link => {
                     const detalheExibir = link.info || link.detalhes || 'Nenhum detalhe adicional informado.';
                     const nomeArquivo = (link.arquivo || '').replace('.xlsx', '').replace('Local: ', '');
-                    const nomeChave = nomeArquivo.toUpperCase().trim();
-                    const urlPlanilha = mapaPlanilhasUrls[nomeChave] || '#';
-                    
-                    let urlFinal = urlPlanilha;
-                    if (urlFinal !== '#' && urlFinal.startsWith('/planilhas/')) {
-                        const senhaSalva = sessionStorage.getItem('sinte_senha_planilhas') || '';
-                        urlFinal += `?senha=${encodeURIComponent(senhaSalva)}`;
-                    }
-                    
-                    const tagClass = urlFinal !== '#' ? 'source-tag clickable-tag' : 'source-tag';
-                    const linkAttr = urlFinal !== '#' ? `href="${urlFinal}" ${urlFinal.startsWith('/planilhas/') ? 'download' : 'target="_blank"'}` : '';
-                    const elementTag = urlFinal !== '#' ? 'a' : 'span';
-                    
+                    const nomeArquivoEscaped = escapeHTML(nomeArquivo);
                     const tagAbaHtml = link.aba ? '<span class="source-tag aba-tag">' + escapeHTML(link.aba) + '</span>' : '';
                     const tagRegionalHtml = link.regional ? '<span class="source-tag" style="background:#f0fdf4; border-color:#bbf7d0; color:#16a34a;"><svg viewBox="0 0 24 24" style="fill:none; stroke:currentColor; stroke-width:2; width:12px; height:12px; margin-right:2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' + escapeHTML(link.regional) + '</span>' : '';
                     
-                    html += '<div class="link-item"><div class="meta-field"><span class="meta-label">Matrícula</span><span class="meta-value highlight">' + escapeHTML(formatMatricula(link.matricula)) + '</span></div><div class="meta-field"><span class="meta-label">CPF</span><span class="meta-value highlight">' + escapeHTML(formatCPF(link.cpf)) + '</span></div><div class="meta-field"><span class="meta-label">Ação / Origem Jurídica</span><div class="meta-value" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem;"><' + elementTag + ' class="' + tagClass + '" ' + linkAttr + ' title="Clique para abrir a planilha"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' + escapeHTML(nomeArquivo) + '</' + elementTag + '>' + tagAbaHtml + tagRegionalHtml + '</div></div><div class="meta-field" style="grid-column: 1 / -1;"><span class="meta-label">Detalhes da Planilha</span><span class="meta-value info-tag">' + escapeHTML(detalheExibir) + '</span></div></div>';
-                 });
+                    html += '<div class="link-item"><div class="meta-field"><span class="meta-label">Matrícula</span><span class="meta-value highlight">' + escapeHTML(formatMatricula(link.matricula)) + '</span></div><div class="meta-field"><span class="meta-label">CPF</span><span class="meta-value highlight">' + escapeHTML(formatCPF(link.cpf)) + '</span></div><div class="meta-field"><span class="meta-label">Ação / Origem Jurídica</span><div class="meta-value" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem;"><button type="button" class="source-tag acao-tag clickable-tag" data-acao="' + nomeArquivoEscaped + '" title="Clique para abrir a planilha desta ação"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg><span>' + nomeArquivoEscaped + '</span></button>' + tagAbaHtml + tagRegionalHtml + '</div></div><div class="meta-field" style="grid-column: 1 / -1;"><span class="meta-label">Detalhes da Planilha</span><span class="meta-value info-tag">' + escapeHTML(detalheExibir) + '</span></div></div>';
+                });
 
                 html += '</div></div>';
             }
@@ -1737,11 +1850,42 @@
                 .replace(/'/g, '&#039;');
         }
 
+        // --- CONTROLE DE STATUS DA SINCRONIZAÇÃO AUTOMÁTICA ---
+        const syncStatusContainer = document.getElementById('sync-status-container');
+        const syncStatusText = document.getElementById('sync-status-text');
+        const syncStatusDot = document.getElementById('sync-status-dot');
+
+        async function atualizarStatusSincronizacao() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                if (data.success) {
+                    if (data.sincronizando) {
+                        if (syncStatusText) syncStatusText.textContent = 'Auto-Sync: Atualizando...';
+                        if (syncStatusDot) syncStatusDot.className = 'sync-status-dot syncing';
+                    } else if (data.ultima_sincronizacao) {
+                        const horaMatch = data.ultima_sincronizacao.match(/(\d{2}:\d{2})/);
+                        const horaFormatada = horaMatch ? horaMatch[1] : data.ultima_sincronizacao;
+                        if (syncStatusText) syncStatusText.textContent = `Auto-Sync ativo • ${horaFormatada}`;
+                        if (syncStatusDot) syncStatusDot.className = 'sync-status-dot';
+                        if (syncStatusContainer) syncStatusContainer.title = `Última sincronização: ${data.ultima_sincronizacao} (${data.total_registros.toLocaleString()} registros). Atualiza automaticamente a cada ${data.intervalo_minutos} min.`;
+                    }
+                }
+            } catch (e) {
+                console.warn("Status de sync indisponível:", e);
+            }
+        }
+
+        atualizarStatusSincronizacao();
+        setInterval(atualizarStatusSincronizacao, 30000);
+
         syncBtn.addEventListener('click', async () => {
             if (syncBtn.classList.contains('loading')) return;
 
             syncBtn.classList.add('loading');
             syncBtn.querySelector('span').textContent = 'Sincronizando...';
+            if (syncStatusText) syncStatusText.textContent = 'Sincronizando manual...';
+            if (syncStatusDot) syncStatusDot.className = 'sync-status-dot syncing';
 
             showToast("Varrendo planilhas e recarregando banco de dados...", "success");
 
@@ -1751,6 +1895,11 @@
 
                 if (data.success) {
                     showToast('Sincronização concluída! ' + data.total_records.toLocaleString() + ' registros indexados com sucesso.', "success");
+                    if (data.ultima_sincronizacao) {
+                        const horaMatch = data.ultima_sincronizacao.match(/(\d{2}:\d{2})/);
+                        const horaFormatada = horaMatch ? horaMatch[1] : data.ultima_sincronizacao;
+                        if (syncStatusText) syncStatusText.textContent = `Auto-Sync ativo • ${horaFormatada}`;
+                    }
                     if (searchInput.value.trim().length >= 2) {
                         performSearch(searchInput.value);
                     }
@@ -1763,6 +1912,7 @@
             } finally {
                 syncBtn.classList.remove('loading');
                 syncBtn.querySelector('span').textContent = 'Sincronizar Dados';
+                atualizarStatusSincronizacao();
             }
         });
 
@@ -1961,23 +2111,11 @@
                 server.links.forEach(link => {
                     const detalheExibir = link.info || link.detalhes || 'Nenhum detalhe adicional informado.';
                     const nomeArquivo = (link.arquivo || '').replace('.xlsx', '').replace('Local: ', '');
-                    const nomeChave = nomeArquivo.toUpperCase().trim();
-                    const urlPlanilha = mapaPlanilhasUrls[nomeChave] || '#';
-                    
-                    let urlFinal = urlPlanilha;
-                    if (urlFinal !== '#' && urlFinal.startsWith('/planilhas/')) {
-                        const senhaSalva = sessionStorage.getItem('sinte_senha_planilhas') || '';
-                        urlFinal += `?senha=${encodeURIComponent(senhaSalva)}`;
-                    }
-                    
-                    const tagClass = urlFinal !== '#' ? 'source-tag clickable-tag' : 'source-tag';
-                    const linkAttr = urlFinal !== '#' ? `href="${urlFinal}" ${urlFinal.startsWith('/planilhas/') ? 'download' : 'target="_blank"'}` : '';
-                    const elementTag = urlFinal !== '#' ? 'a' : 'span';
-                    
+                    const nomeArquivoEscaped = escapeHTML(nomeArquivo);
                     const tagAbaHtml = link.aba ? '<span class="source-tag aba-tag">' + escapeHTML(link.aba) + '</span>' : '';
                     const tagRegionalHtml = link.regional ? '<span class="source-tag" style="background:#f0fdf4; border-color:#bbf7d0; color:#16a34a;"><svg viewBox="0 0 24 24" style="fill:none; stroke:currentColor; stroke-width:2; width:12px; height:12px; margin-right:2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' + escapeHTML(link.regional) + '</span>' : '';
 
-                    html += '<div class="link-item"><div class="meta-field"><span class="meta-label">Matrícula</span><span class="meta-value highlight">' + escapeHTML(formatMatricula(link.matricula)) + '</span></div><div class="meta-field"><span class="meta-label">CPF</span><span class="meta-value highlight">' + escapeHTML(formatCPF(link.cpf)) + '</span></div><div class="meta-field"><span class="meta-label">Ação / Origem Jurídica</span><div class="meta-value" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem;"><' + elementTag + ' class="' + tagClass + '" ' + linkAttr + ' title="Clique para abrir a planilha"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' + escapeHTML(nomeArquivo) + '</' + elementTag + '>' + tagAbaHtml + tagRegionalHtml + '</div></div><div class="meta-field" style="grid-column: 1 / -1;"><span class="meta-label">Detalhes da Planilha</span><span class="meta-value info-tag">' + escapeHTML(detalheExibir) + '</span></div></div>';
+                    html += '<div class="link-item"><div class="meta-field"><span class="meta-label">Matrícula</span><span class="meta-value highlight">' + escapeHTML(formatMatricula(link.matricula)) + '</span></div><div class="meta-field"><span class="meta-label">CPF</span><span class="meta-value highlight">' + escapeHTML(formatCPF(link.cpf)) + '</span></div><div class="meta-field"><span class="meta-label">Ação / Origem Jurídica</span><div class="meta-value" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem;"><button type="button" class="source-tag acao-tag clickable-tag" data-acao="' + nomeArquivoEscaped + '" title="Clique para abrir a planilha desta ação"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg><span>' + nomeArquivoEscaped + '</span></button>' + tagAbaHtml + tagRegionalHtml + '</div></div><div class="meta-field" style="grid-column: 1 / -1;"><span class="meta-label">Detalhes da Planilha</span><span class="meta-value info-tag">' + escapeHTML(detalheExibir) + '</span></div></div>';
                 });
 
                 html += '</div></div>';
@@ -2045,6 +2183,87 @@
         const btnCancelSenha = document.getElementById('btn-cancel-senha');
         const btnConfirmarSenha = document.getElementById('btn-confirmar-senha');
 
+        let pendingAcaoAbertura = null;
+
+        // Clique em qualquer tag de Ação / Origem Jurídica
+        document.addEventListener('click', (e) => {
+            const acaoBtn = e.target.closest('.source-tag.acao-tag');
+            if (acaoBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const nomeAcao = acaoBtn.getAttribute('data-acao');
+                if (nomeAcao) {
+                    tratarCliqueAcao(nomeAcao);
+                }
+            }
+        });
+
+        async function tratarCliqueAcao(nomeAcao) {
+            const senhaSalva = sessionStorage.getItem('sinte_senha_planilhas');
+            if (!senhaSalva) {
+                pendingAcaoAbertura = nomeAcao;
+                abrirModalSenha();
+                return;
+            }
+            await abrirPlanilhaDireta(nomeAcao);
+        }
+
+        async function abrirPlanilhaDireta(nomeAcao) {
+            const senhaSalva = sessionStorage.getItem('sinte_senha_planilhas') || '';
+            if (!senhaSalva) {
+                pendingAcaoAbertura = nomeAcao;
+                abrirModalSenha();
+                return;
+            }
+
+            if (Object.keys(mapaPlanilhasUrls).length === 0) {
+                await inicializarMapaPlanilhas();
+            }
+
+            const limpo = (nomeAcao || '').replace('.xlsx', '').replace('.xls', '').replace('Local: ', '').toUpperCase().trim();
+            
+            let url = mapaPlanilhasUrls[limpo];
+
+            // Busca flexível
+            if (!url) {
+                for (const k in mapaPlanilhasUrls) {
+                    const kLimpo = k.replace('.XLSX', '').replace('.XLS', '').replace('LOCAL: ', '').trim();
+                    if (limpo.includes(kLimpo) || kLimpo.includes(limpo)) {
+                        url = mapaPlanilhasUrls[k];
+                        break;
+                    }
+                }
+            }
+
+            // Fallback para Guilherme Melo / FUNDEF / Filiações
+            if (!url) {
+                if (limpo.includes("GUILHERME") || limpo.includes("FUNDEF") || limpo.includes("FILIA")) {
+                    url = mapaPlanilhasUrls["AÇÃO GUILHERME MELO COMPLETO"] || "https://docs.google.com/spreadsheets/d/1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw/edit?usp=drivesdk";
+                }
+            }
+
+            if (url) {
+                if (url.startsWith('/planilhas/')) {
+                    const urlComSenha = `${url}?senha=${encodeURIComponent(senhaSalva)}`;
+                    const a = document.createElement('a');
+                    a.href = urlComSenha;
+                    a.download = '';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    showToast(`Baixando planilha "${nomeAcao}"...`, 'success');
+                } else {
+                    window.open(url, '_blank');
+                    showToast(`Abrindo planilha "${nomeAcao}" no Google Sheets...`, 'success');
+                }
+            } else {
+                modalPlanilhas.style.display = 'flex';
+                modalSearchInput.value = nomeAcao;
+                carregarPlanilhas();
+                showToast('Planilha localizada no painel.', 'success');
+            }
+        }
+
         function abrirModalSenha() {
             modalSenha.style.display = 'flex';
             senhaAcessoInput.value = '';
@@ -2056,6 +2275,7 @@
             modalSenha.style.display = 'none';
             senhaAcessoInput.value = '';
             senhaErroMsg.style.display = 'none';
+            pendingAcaoAbertura = null;
         }
 
         btnCloseSenhaX.addEventListener('click', fecharModalSenha);
@@ -2094,17 +2314,30 @@
 
                 if (response.ok && data.success) {
                     sessionStorage.setItem('sinte_senha_planilhas', senhaDigitada);
-                    await inicializarMapaPlanilhas();
                     
-                    if (searchInput.value.trim().length >= 2) {
-                        performSearch(searchInput.value);
+                    if (data.planilhas) {
+                        planilhasData = data.planilhas;
+                        data.planilhas.forEach(p => {
+                            mapaPlanilhasUrls[p.nome.toUpperCase().trim()] = p.url;
+                            if (p.url.startsWith('/planilhas/')) {
+                                const filename = p.url.replace('/planilhas/', '');
+                                mapaPlanilhasUrls[filename.toUpperCase().trim()] = p.url;
+                                mapaPlanilhasUrls[filename.replace('.xlsx', '').replace('.xls', '').toUpperCase().trim()] = p.url;
+                            }
+                        });
                     }
 
+                    const acaoParaAbrir = pendingAcaoAbertura;
                     fecharModalSenha();
-                    modalPlanilhas.style.display = 'flex';
-                    modalSearchInput.value = '';
-                    carregarPlanilhas();
-                    showToast('Acesso autorizado!', 'success');
+
+                    if (acaoParaAbrir) {
+                        await abrirPlanilhaDireta(acaoParaAbrir);
+                    } else {
+                        modalPlanilhas.style.display = 'flex';
+                        modalSearchInput.value = '';
+                        renderPlanilhas(planilhasData);
+                        showToast('Acesso autorizado!', 'success');
+                    }
                 } else {
                     senhaErroMsg.textContent = data.error || 'Senha incorreta. Tente novamente.';
                     senhaErroMsg.style.display = 'block';
