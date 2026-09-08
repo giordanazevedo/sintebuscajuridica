@@ -1731,16 +1731,18 @@
         }
 
         function formatCPF(cpf) {
-            if (!cpf || cpf === 'Não informado' || cpf === 'NAN') return 'Não informado';
-            let cleaned = cpf.replace(/\D/g, '');
-            if (cleaned.length === 11) {
+            if (!cpf || cpf === 'Não informado' || cpf === 'NAN' || cpf === '0' || cpf === '-') return 'Não informado';
+            let cleaned = String(cpf).replace(/\D/g, '');
+            if (!cleaned || /^0+$/.test(cleaned)) return 'Não informado';
+            if (cleaned.length <= 11) {
+                cleaned = cleaned.padStart(11, '0');
                 return cleaned.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
             }
             return cpf;
         }
 
         function formatMatricula(mat) {
-            if (!mat || mat === 'Não informada' || mat === 'NAN') return 'Não informada';
+            if (!mat || mat === 'Não informada' || mat === 'NAN' || mat === '0' || mat === '-') return 'Não informada';
             return mat;
         }
 
@@ -2238,7 +2240,7 @@
             // Fallback para Guilherme Melo / FUNDEF / Filiações
             if (!url) {
                 if (limpo.includes("GUILHERME") || limpo.includes("FUNDEF") || limpo.includes("FILIA")) {
-                    url = mapaPlanilhasUrls["AÇÃO GUILHERME MELO COMPLETO"] || "https://docs.google.com/spreadsheets/d/1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw/edit?usp=drivesdk";
+                    url = mapaPlanilhasUrls["AÇÃO GUILHERME MELO COMPLETO"] || "https://docs.google.com/spreadsheets/d/1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c/edit?usp=drivesdk";
                 }
             }
 

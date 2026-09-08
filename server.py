@@ -40,16 +40,16 @@ PLANILHAS_GOOGLE = [
     {"nome_acao": "MAO SANTA II", "id": "1z9tGbxd1BrezQwfnI0gTA9UDnA1CWYxG"},
     {"nome_acao": "MÃO SANTA III", "id": "1GMHtlfXB3bRzknUZh2ILzfEeSny4etkj"},
     {"nome_acao": "MÃO SANTA IV A VII", "id": "1LLxcb-STxF8Y2qhzsmMYTy-n-L9-lu33"},
-    {"nome_acao": "Ação Guilherme Melo COMPLETO", "id": "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"},
+    {"nome_acao": "Ação Guilherme Melo COMPLETO", "id": "1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c"},
     {"nome_acao": "SEGUNDA AÇÃO", "id": "1_tfg7-uoslZaVJCDDpOyiNXh_LVxvWak"},
     {"nome_acao": "HERDEIROS CONCLUIDOS GUILHERME MELO E MÃO SANTA", "id": "1CxixmGKhtV-MdF6xM3h6RhfxKqzbiyIQ"},
     {"nome_acao": "SEGUNDA AÇÃO - HERDEIROS CONCLUÍDOS", "id": "1eF_NFwNhbR7PeJJmQXLK27z69O3cqhXq"}
 ]
 
 MAPA_IDS_ACOES = {p["nome_acao"]: p["id"] for p in PLANILHAS_GOOGLE}
-MAPA_IDS_ACOES["FUNDEF"] = "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"
-MAPA_IDS_ACOES["GUILHERME MELO"] = "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"
-MAPA_IDS_ACOES["FILIAÇÕES"] = "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"
+MAPA_IDS_ACOES["FUNDEF"] = "1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c"
+MAPA_IDS_ACOES["GUILHERME MELO"] = "1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c"
+MAPA_IDS_ACOES["FILIAÇÕES"] = "1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c"
 
 ARQUIVO_CADASTROS_MANUAIS = "novos_cadastros_sinte.xlsx"
 
@@ -180,6 +180,32 @@ def background_sync_worker():
         except Exception as e:
             print(f"⚠️ [Auto-Sync] Erro na sincronização automática: {e}")
             time.sleep(60)
+
+
+def normalizar_cpf(val):
+    """
+    Normaliza CPF para exatamente 11 dígitos se for numérico.
+    Preenche zeros à esquerda caso o Excel/planilha tenha removido (ex: 3567931334 vira 03567931334).
+    Descarta valores inválidos como '0', '0.0', 'NAN', etc.
+    """
+    if val is None or pd.isna(val):
+        return ""
+    s = str(val).strip()
+    if s.endswith(".0"):
+        s = s[:-2].strip()
+    s_upper = s.upper()
+    if s_upper in ["NAN", "NONE", "N/I", "-", "NULL", "UNDEFINED", "0", "00", "000", ""]:
+        return ""
+    
+    apenas_digitos = re.sub(r"\D", "", s)
+    if not apenas_digitos or set(apenas_digitos) == {"0"}:
+        return ""
+    
+    # Se tiver até 11 dígitos, completa com zeros à esquerda (padrão CPF brasileiro)
+    if len(apenas_digitos) <= 11:
+        return apenas_digitos.zfill(11)
+        
+    return s
 
 
 def processar_dataframe(df, arquivo_nome, aba_nome, destino_lista=None):
@@ -329,6 +355,9 @@ def processar_dataframe(df, arquivo_nome, aba_nome, destino_lista=None):
         if eh_titulo_ou_divisor:
             continue
 
+        # Normaliza CPF com 11 dígitos (preenchendo zeros à esquerda perdidos no Excel)
+        cpf = normalizar_cpf(cpf)
+
         detalhes_extras = []
         indices_principais = {col_mat_idx, col_nome_idx, col_cpf_idx, col_reg_idx}
         
@@ -443,6 +472,7 @@ def search():
     encontrados_diretos = []
     matriculas_validas = set()
     nomes_validos = set()
+    cpfs_validos = set()
     
     # 1º Passo: Localiza correspondências DIRETAS e PRECISAS
     for reg in banco_dados:
@@ -452,10 +482,36 @@ def search():
         
         match = False
         for tp in termos_processados:
+            t_num = tp["limpa"]
             if tp["eh_numerico"]:
-                # Exige correspondência EXATA ou que o registro comece exatamente com o termo numérico
-                if (mat_limpa and (mat_limpa == tp["limpa"] or mat_limpa.startswith(tp["limpa"]))) or \
-                   (cpf_limpo and (cpf_limpo == tp["limpa"] or cpf_limpo.startswith(tp["limpa"]))):
+                # Match de Matrícula flexível (com ou sem zeros à esquerda)
+                match_mat = False
+                if mat_limpa:
+                    if mat_limpa == t_num or mat_limpa.startswith(t_num):
+                        match_mat = True
+                    else:
+                        mat_sem_zero = mat_limpa.lstrip("0")
+                        t_sem_zero = t_num.lstrip("0")
+                        if t_sem_zero and len(t_sem_zero) >= 2:
+                            if mat_sem_zero == t_sem_zero or mat_sem_zero.startswith(t_sem_zero):
+                                match_mat = True
+
+                # Match de CPF flexível (com zero, sem zero, prefixo e zfill 11)
+                match_cpf = False
+                if cpf_limpo:
+                    if cpf_limpo == t_num or cpf_limpo.startswith(t_num):
+                        match_cpf = True
+                    elif t_num.isdigit():
+                        if len(t_num) <= 11 and len(cpf_limpo) <= 11 and cpf_limpo.zfill(11) == t_num.zfill(11):
+                            match_cpf = True
+                        else:
+                            cpf_sem_zero = cpf_limpo.lstrip("0")
+                            t_sem_zero = t_num.lstrip("0")
+                            if t_sem_zero and len(t_sem_zero) >= 2:
+                                if cpf_sem_zero == t_sem_zero or cpf_sem_zero.startswith(t_sem_zero):
+                                    match_cpf = True
+
+                if match_mat or match_cpf:
                     match = True
                     break
             else:
@@ -470,6 +526,15 @@ def search():
             # Só coleta dados para consolidação se o termo buscado for consistente
             if mat_limpa and mat_limpa not in ['NAN', 'NONE', 'N/I', '0', '-'] and len(mat_limpa) >= 3:
                 matriculas_validas.add(mat_limpa)
+                mat_sz = mat_limpa.lstrip("0")
+                if mat_sz:
+                    matriculas_validas.add(mat_sz)
+
+            if cpf_limpo and len(cpf_limpo) >= 8:
+                cpfs_validos.add(cpf_limpo.zfill(11))
+                cpf_sz = cpf_limpo.lstrip("0")
+                if cpf_sz:
+                    cpfs_validos.add(cpf_sz)
                 
             if nome_reg and nome_reg not in ['NAN', 'NONE', 'SEM NOME'] and len(nome_reg) >= 5:
                 nomes_validos.add(nome_reg)
@@ -481,17 +546,21 @@ def search():
     resultados_finais = list(encontrados_diretos)
     chaves_ja_incluidas = set((r["arquivo"], r["aba"], r["nome"], r["matricula"]) for r in resultados_finais)
     
-    if matriculas_validas or nomes_validos:
+    if matriculas_validas or nomes_validos or cpfs_validos:
         for reg in banco_dados:
             chave_reg = (reg["arquivo"], reg["aba"], reg["nome"], reg["matricula"])
             if chave_reg in chaves_ja_incluidas:
                 continue
                 
             mat_reg_limpa = reg["matricula"].replace(".", "").replace("-", "").replace("/", "").upper()
+            cpf_reg_limpo = reg["cpf"].replace(".", "").replace("-", "").replace("/", "")
             nome_reg = reg["nome"].upper()
             
-            if (mat_reg_limpa and mat_reg_limpa in matriculas_validas) or \
-               (nome_reg and nome_reg in nomes_validos):
+            mat_match = (mat_reg_limpa and (mat_reg_limpa in matriculas_validas or mat_reg_limpa.lstrip("0") in matriculas_validas))
+            cpf_match = (cpf_reg_limpo and (cpf_reg_limpo in cpfs_validos or cpf_reg_limpo.zfill(11) in cpfs_validos or cpf_reg_limpo.lstrip("0") in cpfs_validos))
+            nome_match = (nome_reg and nome_reg in nomes_validos)
+
+            if mat_match or cpf_match or nome_match:
                 resultados_finais.append(reg)
                 chaves_ja_incluidas.add(chave_reg)
             
@@ -528,7 +597,7 @@ def cadastrar():
         dados = request.json
         nome = dados.get("nome", "").strip().upper()
         matricula = dados.get("matricula", "").strip()
-        cpf = dados.get("cpf", "").strip()
+        cpf = normalizar_cpf(dados.get("cpf", ""))
         regional = dados.get("regional", "").strip().upper()
         acao = dados.get("acao", "AUTORIZAÇÕES ASSINADAS - MÃO SANTA 99").strip()
         detalhes = dados.get("detalhes", "Sem detalhes").strip()
@@ -675,16 +744,25 @@ def stats_guilherme_fundef():
         for reg in banco_dados:
             arq = reg.get("arquivo", "")
             mat_raw = reg.get("matricula", "").strip()
+            cpf_raw = reg.get("cpf", "").strip()
             nome = reg.get("nome", "").strip().upper()
             reg_regional = reg.get("regional", "").strip().upper()
             mat = normalizar_mat(mat_raw) if mat_raw else ""
+            cpf_norm = normalizar_cpf(cpf_raw) if cpf_raw else ""
 
             # Aplica filtro de regional se informado
             if regional_filtro and reg_regional != regional_filtro:
                 continue
 
-            # Chave de identificação: matrícula se existir, senão nome
-            chave = mat if mat and mat not in ["NAN", "NONE", "0", "N/I", "-"] else (f"NOME:{nome}" if nome else None)
+            # Chave de identificação: matrícula se existir, senão CPF, senão nome
+            if mat and mat not in ["NAN", "NONE", "0", "N/I", "-"]:
+                chave = mat
+            elif cpf_norm:
+                chave = f"CPF:{cpf_norm}"
+            elif nome:
+                chave = f"NOME:{nome}"
+            else:
+                continue
             if not chave:
                 continue
 
@@ -723,9 +801,10 @@ def stats_guilherme_fundef():
 # ----------------------------------------------------------------------
 # 5. INICIALIZAÇÃO DOS DADOS E BACKGROUND SYNC DAEMON
 # ----------------------------------------------------------------------
-carregar_dados()
-sync_thread = threading.Thread(target=background_sync_worker, daemon=True)
-sync_thread.start()
+if not os.environ.get("TESTING"):
+    carregar_dados()
+    sync_thread = threading.Thread(target=background_sync_worker, daemon=True)
+    sync_thread.start()
 
 
 if __name__ == "__main__":
