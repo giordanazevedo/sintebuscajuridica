@@ -1405,6 +1405,906 @@
                 display: none;
             }
         }
+
+        /* Botão de Novidades no Header */
+        .btn-novidades {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: rgba(0, 75, 155, 0.08);
+            border: 1px solid rgba(0, 75, 155, 0.22);
+            color: var(--accent);
+            padding: 0.55rem 0.95rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .btn-novidades:hover {
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 75, 155, 0.2);
+        }
+
+        .btn-novidades svg {
+            width: 15px;
+            height: 15px;
+            stroke: currentColor;
+        }
+
+        .btn-novidades:hover svg {
+            fill: #ffd166;
+            stroke: #ffd166;
+        }
+
+        .novidade-dot {
+            width: 7px;
+            height: 7px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.8);
+            animation: pulseGreen 1.8s infinite;
+        }
+
+        .tip-destaque {
+            background: #eff6ff !important;
+            border: 1px solid #bfdbfe !important;
+            color: #1d4ed8 !important;
+            font-weight: 600 !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tip-destaque:hover {
+            background: #dbeafe !important;
+            border-color: #93c5fd !important;
+            transform: translateY(-1px);
+        /* ==============================================================
+           ESTILOS DO MÓDULO DE GESTÃO DE HERDEIROS
+           ============================================================== */
+        .tab-badge {
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            border-radius: 20px;
+            margin-left: 0.35rem;
+            line-height: 1;
+        }
+
+        .herdeiros-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        /* Dashboard de KPIs */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-card {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 1.25rem 1.25rem;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+
+        .kpi-card.kpi-espera::before { background: #f59e0b; }
+        .kpi-card.kpi-producao::before { background: #3b82f6; }
+        .kpi-card.kpi-assinatura::before { background: #8b5cf6; }
+        .kpi-card.kpi-concluido::before { background: #10b981; }
+
+        .kpi-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            flex-shrink: 0;
+        }
+
+        .kpi-espera .kpi-icon { background: #fef3c7; color: #b45309; }
+        .kpi-producao .kpi-icon { background: #dbeafe; color: #1d4ed8; }
+        .kpi-assinatura .kpi-icon { background: #ede9fe; color: #6d28d9; }
+        .kpi-concluido .kpi-icon { background: #d1fae5; color: #047857; }
+
+        .kpi-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .kpi-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            line-height: 1.1;
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+        }
+
+        .kpi-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-top: 0.2rem;
+        }
+
+        /* Barra de Ações e Filtros */
+        .herdeiros-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.85rem;
+            background: var(--surface);
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--surface-border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .toolbar-left {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .toolbar-search {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+            max-width: 360px;
+        }
+
+        .toolbar-search input {
+            width: 100%;
+            padding: 0.6rem 0.75rem 0.6rem 2.25rem;
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            outline: none;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .toolbar-search input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .toolbar-search svg {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 15px;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .toolbar-select {
+            padding: 0.6rem 0.85rem;
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            background: var(--surface);
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toolbar-select:focus {
+            border-color: var(--accent);
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-view-toggle {
+            display: inline-flex;
+            background: #f1f5f9;
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid var(--surface-border);
+        }
+
+        .btn-view-opt {
+            border: none;
+            background: transparent;
+            padding: 0.4rem 0.65rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: var(--transition);
+        }
+
+        .btn-view-opt.active {
+            background: #ffffff;
+            color: var(--accent);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .btn-cta-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #b91c1c 100%);
+            color: #ffffff;
+            border: none;
+            padding: 0.65rem 1.15rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(211, 17, 36, 0.25);
+        }
+
+        .btn-cta-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(211, 17, 36, 0.35);
+        }
+
+        .btn-outline-action {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            color: var(--text-main);
+            padding: 0.65rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            transition: var(--transition);
+        }
+
+        .btn-outline-action:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: #f8fafc;
+        }
+
+        /* Quadro Kanban */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 1024px) {
+            .kanban-board {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .kanban-board {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .kanban-column {
+            background: #f8fafc;
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        .kanban-column-header {
+            padding: 0.85rem 1rem;
+            background: #ffffff;
+            border-bottom: 1px solid var(--surface-border);
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 4px solid transparent;
+        }
+
+        .col-espera .kanban-column-header { border-top-color: #f59e0b; }
+        .col-producao .kanban-column-header { border-top-color: #3b82f6; }
+        .col-assinatura .kanban-column-header { border-top-color: #8b5cf6; }
+        .col-concluido .kanban-column-header { border-top-color: #10b981; }
+
+        .kanban-title {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .kanban-counter {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            background: #e2e8f0;
+            color: var(--text-muted);
+        }
+
+        .col-espera .kanban-counter { background: #fef3c7; color: #b45309; }
+        .col-producao .kanban-counter { background: #dbeafe; color: #1d4ed8; }
+        .col-assinatura .kanban-counter { background: #ede9fe; color: #6d28d9; }
+        .col-concluido .kanban-counter { background: #d1fae5; color: #047857; }
+
+        .kanban-cards-wrapper {
+            padding: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 720px;
+        }
+
+        .kanban-card {
+            background: #ffffff;
+            border: 1px solid var(--surface-border);
+            border-radius: 10px;
+            padding: 0.95rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            position: relative;
+        }
+
+        .kanban-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+            border-color: #cbd5e1;
+        }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .card-id-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 0.15rem 0.45rem;
+            border-radius: 6px;
+            font-family: monospace;
+        }
+
+        .card-time-badge {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .card-falecido-nome {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.25;
+        }
+
+        .card-meta-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+
+        .meta-pill {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .meta-pill.pill-acao {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #dbeafe;
+            font-weight: 600;
+        }
+
+        .card-herdeiro-info {
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            border-radius: 6px;
+            padding: 0.45rem 0.55rem;
+            font-size: 0.78rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .herdeiro-label {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .herdeiro-name-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .card-location-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.73rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            width: fit-content;
+        }
+
+        .loc-provisorio {
+            background: #fffbeb;
+            color: #b45309;
+            border: 1px solid #fef3c7;
+        }
+
+        .loc-caixa-concluido {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            font-weight: 700;
+        }
+
+        .card-actions-footer {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding-top: 0.45rem;
+            border-top: 1px solid #f1f5f9;
+            margin-top: 0.15rem;
+        }
+
+        .btn-card-action {
+            flex: 1;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            transition: var(--transition);
+        }
+
+        .btn-card-action.btn-action-primary {
+            background: #eff6ff;
+            color: var(--accent);
+            border-color: #bfdbfe;
+        }
+
+        .btn-card-action.btn-action-primary:hover {
+            background: var(--accent);
+            color: #ffffff;
+        }
+
+        .btn-card-action.btn-whatsapp {
+            background: #25d366;
+            color: #ffffff;
+        }
+
+        .btn-card-action.btn-whatsapp:hover {
+            background: #1eb956;
+            transform: translateY(-1px);
+        }
+
+        .btn-card-action.btn-concluir {
+            background: #10b981;
+            color: #ffffff;
+        }
+
+        .btn-card-action.btn-concluir:hover {
+            background: #059669;
+        }
+
+        /* Tabela de Herdeiros */
+        .herdeiros-table-container {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .modern-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        .modern-table th {
+            background: #f8fafc;
+            padding: 0.85rem 1rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--surface-border);
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.4px;
+        }
+
+        .modern-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--surface-border);
+            vertical-align: middle;
+        }
+
+        .modern-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .status-badge.status-fila_espera { background: #fef3c7; color: #b45309; }
+        .status-badge.status-em_producao { background: #dbeafe; color: #1d4ed8; }
+        .status-badge.status-enviado_assinatura { background: #ede9fe; color: #6d28d9; }
+        .status-badge.status-concluido { background: #d1fae5; color: #047857; }
+
+        /* Integração nos Cards da Busca Geral */
+        .herdeiro-card-badge {
+            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+            border: 1px solid #fecdd3;
+            border-radius: 8px;
+            padding: 0.65rem 0.85rem;
+            margin-top: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .herdeiro-card-badge:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(211, 17, 36, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .herdeiro-badge-icon {
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        .btn-goto-herdeiro {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-goto-herdeiro:hover {
+            background: #b91c1c;
+        }
+
+        /* Modais Específicos de Herdeiros */
+        .herdeiro-form-section {
+            background: #f8fafc;
+            border: 1px solid var(--surface-border);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.85rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .form-row-2, .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #ffffff;
+            border: 1px solid var(--surface-border);
+            border-radius: 6px;
+            padding: 0.45rem 0.65rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .checklist-item:hover {
+            border-color: var(--accent);
+        }
+
+        .checklist-item input[type="checkbox"] {
+            cursor: pointer;
+            accent-color: var(--accent);
+            width: 15px;
+            height: 15px;
+        }
+
+        .dynamic-heir-card {
+            background: #ffffff;
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 0.85rem;
+            margin-bottom: 0.65rem;
+            position: relative;
+        }
+
+        .btn-remove-heir {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        .btn-remove-heir:hover {
+            background: #fee2e2;
+        }
+
+        /* Timeline de Histórico */
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            position: relative;
+            padding-left: 1.25rem;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 4px;
+            bottom: 4px;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .timeline-event {
+            position: relative;
+            background: #ffffff;
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.82rem;
+        }
+
+        .timeline-event::before {
+            content: '';
+            position: absolute;
+            left: -1.25rem;
+            top: 0.75rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-date {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .timeline-details {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            line-height: 1.4;
+        }
+
+        /* Gestor de Caixas */
+        .caixas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+
+        .caixa-card {
+            background: #ffffff;
+            border: 1px solid var(--surface-border);
+            border-radius: 10px;
+            padding: 1.15rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+        }
+
+        .caixa-card:hover {
+            border-color: #10b981;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.12);
+        }
+
+        .caixa-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .caixa-icon {
+            font-size: 1.5rem;
+        }
+
+        .caixa-total-badge {
+            background: #ecfdf5;
+            color: #047857;
+            font-weight: 700;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            border: 1px solid #a7f3d0;
+        }
+
+        .caixa-nome {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Área de Impressão */
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+            #printable-protocol, #printable-protocol * {
+                visibility: visible !important;
+            }
+            #printable-protocol {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: #ffffff;
+                color: #000000;
+                padding: 1.5cm;
+                display: block !important;
+            }
+        }
     </style>
 </head>
 
@@ -1421,6 +2321,14 @@
         </div>
 
         <div class="header-actions">
+            <button id="btn-novidades" class="btn-novidades" title="Ver detalhes da última atualização">
+                <span class="novidade-dot"></span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span>Novidades</span>
+            </button>
+
             <div class="sync-status-container" id="sync-status-container" title="Sincronização automática em segundo plano ativa">
                 <span class="sync-status-dot" id="sync-status-dot"></span>
                 <span class="sync-status-text" id="sync-status-text">Auto-Sync Ativo</span>
@@ -1465,7 +2373,16 @@
                     </svg>
                     <span>Busca por Regional (Cidades)</span>
                 </button>
-
+                <button class="search-tab" id="tab-herdeiros">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>Gestão de Herdeiros</span>
+                    <span class="tab-badge" id="badge-herdeiros-pendentes">0</span>
+                </button>
             </div>
 
             <div class="search-container">
@@ -1532,11 +2449,198 @@
                         <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <h3>Sistema Pronto para Consulta</h3>
-                    <p>Utilize o campo acima para buscar instantaneamente qualquer associado nas planilhas do
-                        departamento jurídico do SINTE.</p>
+                    <p>Digite CPF (com ou sem zero no início), Matrícula ou Nome do professor/servidor acima para pesquisar instantaneamente.</p>
                 </div>
             </div>
 
+        </section>
+
+        <!-- SEÇÃO DE GESTÃO DE HERDEIROS -->
+        <section class="herdeiros-section" id="herdeiros-section" style="display: none;">
+            <!-- KPI Cards Dashboard -->
+            <div class="kpi-grid">
+                <div class="kpi-card kpi-espera" id="kpi-card-espera" title="Filtrar casos aguardando minuta">
+                    <div class="kpi-icon">📥</div>
+                    <div class="kpi-info">
+                        <span class="kpi-value" id="kpi-count-espera">0</span>
+                        <span class="kpi-label">Fila de Espera (Doc Recebida)</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-producao" id="kpi-card-producao" title="Filtrar casos em produção pelo jurídico">
+                    <div class="kpi-icon">⚖️</div>
+                    <div class="kpi-info">
+                        <span class="kpi-value" id="kpi-count-producao">0</span>
+                        <span class="kpi-label">Em Produção / Minuta</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-assinatura" id="kpi-card-assinatura" title="Filtrar casos aguardando retorno dos herdeiros">
+                    <div class="kpi-icon">📲</div>
+                    <div class="kpi-info">
+                        <span class="kpi-value" id="kpi-count-assinatura">0</span>
+                        <span class="kpi-label">Enviado p/ Assinatura</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-concluido" id="kpi-card-concluido" title="Filtrar processos finalizados e arquivados">
+                    <div class="kpi-icon">🗃️</div>
+                    <div class="kpi-info">
+                        <span class="kpi-value" id="kpi-count-concluido">0</span>
+                        <span class="kpi-label">Concluído & Arquivado</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar de Filtros e Ações -->
+            <div class="herdeiros-toolbar">
+                <div class="toolbar-left">
+                    <div class="toolbar-search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="herdeiros-search-input" placeholder="Buscar por falecido, herdeiro, CPF ou caixa...">
+                    </div>
+
+                    <select id="herdeiros-filter-acao" class="toolbar-select">
+                        <option value="TODAS">Todas as Ações</option>
+                        <option value="Ação Guilherme Melo">Ação Guilherme Melo</option>
+                        <option value="FUNDEF">FUNDEF</option>
+                        <option value="MÃO SANTA">Mão Santa (Todas)</option>
+                        <option value="SEGUNDA AÇÃO">Segunda Ação</option>
+                    </select>
+
+                    <select id="herdeiros-filter-caixa" class="toolbar-select">
+                        <option value="TODAS">Todas as Caixas Físicas</option>
+                    </select>
+                </div>
+
+                <div class="toolbar-right">
+                    <div class="btn-view-toggle">
+                        <button type="button" class="btn-view-opt active" id="btn-view-kanban" title="Visualização em Pipeline">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                                <rect x="3" y="3" width="7" height="18" rx="1"></rect>
+                                <rect x="14" y="3" width="7" height="18" rx="1"></rect>
+                            </svg>
+                            <span>Kanban</span>
+                        </button>
+                        <button type="button" class="btn-view-opt" id="btn-view-tabela" title="Visualização em Lista/Tabela">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                            </svg>
+                            <span>Tabela</span>
+                        </button>
+                    </div>
+
+                    <button type="button" class="btn-outline-action" id="btn-abrir-caixas" title="Ver lista de caixas e processos físicos">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                        <span>Caixas de Arquivo</span>
+                    </button>
+
+                    <button type="button" class="btn-outline-action" id="btn-exportar-herdeiros" title="Exportar planilha Excel">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Exportar Excel</span>
+                    </button>
+
+                    <button type="button" class="btn-cta-primary" id="btn-novo-herdeiro">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px;">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>Nova Entrada de Herdeiros</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Visualização Kanban -->
+            <div class="kanban-board" id="herdeiros-kanban-view">
+                <!-- Coluna 1: Fila de Espera -->
+                <div class="kanban-column col-espera" id="kanban-col-espera">
+                    <div class="kanban-column-header">
+                        <div class="kanban-title">
+                            <span>📥 Fila de Espera</span>
+                        </div>
+                        <span class="kanban-counter" id="count-badge-espera">0</span>
+                    </div>
+                    <div class="kanban-cards-wrapper" id="cards-wrapper-espera">
+                        <!-- Renderizado via JS -->
+                    </div>
+                </div>
+
+                <!-- Coluna 2: Em Produção -->
+                <div class="kanban-column col-producao" id="kanban-col-producao">
+                    <div class="kanban-column-header">
+                        <div class="kanban-title">
+                            <span>⚖️ Em Produção / Minuta</span>
+                        </div>
+                        <span class="kanban-counter" id="count-badge-producao">0</span>
+                    </div>
+                    <div class="kanban-cards-wrapper" id="cards-wrapper-producao">
+                        <!-- Renderizado via JS -->
+                    </div>
+                </div>
+
+                <!-- Coluna 3: Enviado p/ Assinatura -->
+                <div class="kanban-column col-assinatura" id="kanban-col-assinatura">
+                    <div class="kanban-column-header">
+                        <div class="kanban-title">
+                            <span>📲 Enviado p/ Assinatura</span>
+                        </div>
+                        <span class="kanban-counter" id="count-badge-assinatura">0</span>
+                    </div>
+                    <div class="kanban-cards-wrapper" id="cards-wrapper-assinatura">
+                        <!-- Renderizado via JS -->
+                    </div>
+                </div>
+
+                <!-- Coluna 4: Concluído & Arquivado -->
+                <div class="kanban-column col-concluido" id="kanban-col-concluido">
+                    <div class="kanban-column-header">
+                        <div class="kanban-title">
+                            <span>🗃️ Concluído & Arquivado</span>
+                        </div>
+                        <span class="kanban-counter" id="count-badge-concluido">0</span>
+                    </div>
+                    <div class="kanban-cards-wrapper" id="cards-wrapper-concluido">
+                        <!-- Renderizado via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualização Tabela Completa -->
+            <div class="herdeiros-table-container" id="herdeiros-table-view" style="display: none;">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Titular Falecido</th>
+                            <th>CPF / Matrícula</th>
+                            <th>Ação Jurídica</th>
+                            <th>Herdeiro(s) Principal</th>
+                            <th>Local / Caixa</th>
+                            <th>Status da Esteira</th>
+                            <th style="text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="herdeiros-table-body">
+                        <!-- Renderizado via JS -->
+                    </tbody>
+                </table>
+            </div>
         </section>
     </main>
 
@@ -1607,9 +2711,13 @@
 
     <!-- MODAL DE NOTIFICAÇÃO DE ATUALIZAÇÃO -->
     <div class="modal-overlay" id="modal-atualizacao">
-        <div class="modal-card" style="border-top: 5px solid var(--primary);">
+        <div class="modal-card" style="border-top: 5px solid var(--accent); max-width: 580px;">
             <div class="modal-header">
-                <h3 class="modal-title">Nova Atualização!</h3>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="background: rgba(0, 75, 155, 0.1); color: var(--accent); font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.7rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px;">
+                        ✨ Nova Atualização
+                    </span>
+                </div>
                 <button class="btn-close-x" id="btn-close-atualizacao-x" title="Fechar">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -1618,37 +2726,487 @@
                 </button>
             </div>
             
-            <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.25rem; padding: 1rem 0;">
-                <div style="background: rgba(211, 17, 36, 0.1); color: var(--primary); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+            <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.15rem; padding: 0.5rem 0;">
+                <div style="background: linear-gradient(135deg, rgba(0, 75, 155, 0.12) 0%, rgba(211, 17, 36, 0.08) 100%); color: var(--accent); width: 66px; height: 66px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0, 75, 155, 0.15);">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px;">
-                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </div>
-                <p style="font-size: 1.1rem; line-height: 1.5; color: var(--text-main); font-weight: 600;">
-                    Nova atualização: buscas ultrarrápidas e acesso direto às planilhas!
-                </p>
-                <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 0.75rem; width: 100%; max-width: 420px; margin: 0.5rem auto 0 auto;">
-                    <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
-                        <span style="color: var(--primary); font-weight: bold; font-size: 1.1rem; line-height: 1.2;">⚡</span>
-                        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
-                            <strong>Busca Acelerada:</strong> Otimizamos o mecanismo de consulta para retornar os resultados das ações instantaneamente.
-                        </p>
+
+                <div style="text-align: center;">
+                    <h3 style="font-size: 1.35rem; color: var(--accent); margin-bottom: 0.35rem;">
+                        Busca por CPF com Zero Inicial Liberada!
+                    </h3>
+                    <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; max-width: 480px; margin: 0 auto;">
+                        Agora você pode pesquisar digitando o <strong>zero no início do CPF</strong> ou sem o zero. O sistema encontra o associado em qualquer formato!
+                    </p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 0.85rem; width: 100%; text-align: left; background: #f8fafc; border: 1px solid var(--surface-border); border-radius: 12px; padding: 1.1rem 1.25rem;">
+                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <span style="background: #e0f2fe; color: #0284c7; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">0️⃣</span>
+                        <div>
+                            <strong style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Pesquisa flexível com ou sem zero</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
+                                Pesquise com zero inicial (ex: <code style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">03567931334</code> ou formatado <code style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">035.679.313-34</code>) ou sem zero (<code style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">3567931334</code>).
+                            </p>
+                        </div>
                     </div>
-                    <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
-                        <span style="color: var(--primary); font-weight: bold; font-size: 1.1rem; line-height: 1.2;">📂</span>
-                        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
-                            <strong>Acesso Direto:</strong> Clique no botão azul <strong>"Acessar Planilhas"</strong> no topo da tela para ver ou baixar as bases de dados a qualquer momento.
-                        </p>
+
+                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <span style="background: #dcfce7; color: #16a34a; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">✨</span>
+                        <div>
+                            <strong style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Exibição completa de 11 dígitos</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
+                                Mesmo quando o Excel retirava os zeros da planilha, o sistema agora normaliza e exibe todos os <strong>11 dígitos</strong> com a máscara oficial (<code style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">000.000.000-00</code>).
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <span style="background: #fef3c7; color: #d97706; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">📁</span>
+                        <div>
+                            <strong style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Planilha Guilherme Melo Atualizada</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
+                                A nova versão da planilha da <em>Ação Guilherme Melo COMPLETO</em> já foi conectada e sincronizada ao sistema.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="modal-footer-buttons" style="justify-content: center; border-top: none; padding-top: 0;">
-                <button class="btn-save" id="btn-close-atualizacao" style="padding: 0.75rem 2.5rem; font-size: 1rem; width: 100%; max-width: 200px;">Entendido</button>
+            <div class="modal-footer-buttons" style="justify-content: center; border-top: none; padding-top: 0.25rem;">
+                <button class="btn-save" id="btn-close-atualizacao" style="padding: 0.8rem 2.5rem; font-size: 0.95rem; font-weight: 700; width: 100%; max-width: 250px; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 75, 155, 0.3);">
+                    <span>Entendido!</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CADASTRO / ENTRADA DE HERDEIROS -->
+    <div class="modal-overlay" id="modal-herdeiro-cadastro">
+        <div class="modal-card modal-large" style="max-width: 820px; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="cad-modal-title">Registrar Entrada de Herdeiros</h3>
+                    <p class="modal-subtitle">Preencha os dados do titular falecido, os herdeiros e a localização provisória dos documentos.</p>
+                </div>
+                <button class="btn-close-x" id="btn-close-cad-herdeiro-x" title="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div style="overflow-y: auto; padding-right: 0.5rem; flex: 1;">
+                <input type="hidden" id="cad-herd-id-editando" value="">
+
+                <!-- Seção 1: Titular Falecido -->
+                <div class="herdeiro-form-section">
+                    <div class="form-section-title">
+                        <span>1. Dados do Titular Falecido</span>
+                    </div>
+
+                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.85rem;">
+                        <label style="font-size: 0.78rem; font-weight: 700; color: var(--accent); display: block; margin-bottom: 0.35rem;">
+                            ⚡ Busca Rápida no Banco SINTE (Auto-preenchimento):
+                        </label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="cad-busca-titular-input" class="form-control" placeholder="Digite CPF, Matrícula ou Nome do falecido..." style="height: 38px;">
+                            <button type="button" class="btn-outline-action" id="btn-cad-buscar-titular" style="height: 38px; padding: 0 1rem; flex-shrink: 0;">
+                                <span>Localizar</span>
+                            </button>
+                        </div>
+                        <div id="cad-titular-sugestoes" style="display: none; margin-top: 0.5rem; max-height: 140px; overflow-y: auto; background: #ffffff; border: 1px solid var(--surface-border); border-radius: 6px;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cad-falecido-nome">Nome Completo do Falecido *</label>
+                        <input type="text" id="cad-falecido-nome" class="form-control" placeholder="Nome completo..." required>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="cad-falecido-cpf">CPF do Falecido</label>
+                            <input type="text" id="cad-falecido-cpf" class="form-control" placeholder="000.000.000-00">
+                        </div>
+                        <div class="form-group">
+                            <label for="cad-falecido-matricula">Matrícula</label>
+                            <input type="text" id="cad-falecido-matricula" class="form-control" placeholder="Matrícula funcional...">
+                        </div>
+                    </div>
+
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label for="cad-falecido-regional">Cidade / Regional</label>
+                            <input type="text" id="cad-falecido-regional" class="form-control" placeholder="Regional...">
+                        </div>
+                        <div class="form-group">
+                            <label for="cad-falecido-acao">Ação Jurídica *</label>
+                            <select id="cad-falecido-acao" class="form-control">
+                                <option value="Ação Guilherme Melo">Ação Guilherme Melo</option>
+                                <option value="FUNDEF">FUNDEF</option>
+                                <option value="AUTORIZAÇÕES ASSINADAS - MÃO SANTA 99">Mão Santa 99</option>
+                                <option value="MAO SANTA II">Mão Santa II</option>
+                                <option value="MÃO SANTA III">Mão Santa III</option>
+                                <option value="MÃO SANTA IV A VII">Mão Santa IV a VII</option>
+                                <option value="SEGUNDA AÇÃO">Segunda Ação</option>
+                                <option value="HERDEIROS CONCLUIDOS GUILHERME MELO E MÃO SANTA">Herdeiros Concluídos GM e MS</option>
+                                <option value="OUTRA AÇÃO">Outra Ação</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cad-falecido-obito">Data do Óbito</label>
+                            <input type="date" id="cad-falecido-obito" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção 2: Herdeiros -->
+                <div class="herdeiro-form-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <div class="form-section-title" style="margin-bottom: 0;">
+                            <span>2. Herdeiros Cadastrados</span>
+                        </div>
+                        <button type="button" class="btn-outline-action" id="btn-add-herdeiro-card" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+                            <span>+ Adicionar Outro Herdeiro</span>
+                        </button>
+                    </div>
+
+                    <div id="cad-herdeiros-cards-container">
+                        <!-- Cards dinâmicos inseridos via JS -->
+                    </div>
+                </div>
+
+                <!-- Seção 3: Checklist de Documentos Entregues -->
+                <div class="herdeiro-form-section">
+                    <div class="form-section-title">
+                        <span>3. Checklist de Documentos Recebidos</span>
+                    </div>
+
+                    <div class="checklist-grid">
+                        <label class="checklist-item">
+                            <input type="checkbox" id="chk-doc-obito">
+                            <span>Certidão de Óbito do Titular</span>
+                        </label>
+                        <label class="checklist-item">
+                            <input type="checkbox" id="chk-doc-rg-falecido">
+                            <span>RG e CPF do Titular Falecido</span>
+                        </label>
+                        <label class="checklist-item">
+                            <input type="checkbox" id="chk-doc-rg-herdeiros">
+                            <span>RG e CPF dos Herdeiros</span>
+                        </label>
+                        <label class="checklist-item">
+                            <input type="checkbox" id="chk-doc-residencia">
+                            <span>Comprovante de Residência</span>
+                        </label>
+                        <label class="checklist-item">
+                            <input type="checkbox" id="chk-doc-dependentes">
+                            <span>Declaração de Inexistência de Dependentes (INSS/RPPS)</span>
+                        </label>
+                        <label class="checklist-item">
+                            <input type="checkbox" id="chk-doc-casamento">
+                            <span>Certidão de Casamento / Nascimento</span>
+                        </label>
+                        <label class="checklist-item">
+                            <input type="checkbox" id="chk-doc-procuracao">
+                            <span>Procuração Jurídica Assinada</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 0.75rem;">
+                        <label for="cad-doc-outros">Outros Documentos / Detalhes</label>
+                        <input type="text" id="cad-doc-outros" class="form-control" placeholder="Ex: Termo de renúncia, declaração de herdeiros...">
+                    </div>
+                </div>
+
+                <!-- Seção 4: Guarda Física e Observações -->
+                <div class="herdeiro-form-section">
+                    <div class="form-section-title">
+                        <span>4. Arquivamento Físico & Observações</span>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="cad-local-provisorio">Local Provisório dos Documentos Físicos *</label>
+                            <input type="text" id="cad-local-provisorio" class="form-control" placeholder="Ex: Pasta Vermelha 03 - Entrada Jurídico..." value="Recepção / Entrada Jurídico">
+                        </div>
+                        <div class="form-group">
+                            <label for="cad-caixa-concluido">Caixa de Concluídos (se já arquivado)</label>
+                            <input type="text" id="cad-caixa-concluido" class="form-control" placeholder="Ex: Caixa 01 - GM Herdeiros">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cad-observacoes">Observações Gerais</label>
+                        <textarea id="cad-observacoes" class="form-control" rows="2" placeholder="Anotações internas sobre o caso..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer-buttons" style="margin-top: 1rem;">
+                <button type="button" class="btn-cancel" id="btn-cancel-cad-herdeiro">Cancelar</button>
+                <button type="button" class="btn-save" id="btn-salvar-cad-herdeiro">Salvar Processo de Herdeiros</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE DETALHES & HISTÓRICO DE HERDEIROS -->
+    <div class="modal-overlay" id="modal-herdeiro-detalhes">
+        <div class="modal-card modal-large" style="max-width: 880px; max-height: 92vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="align-items: flex-start;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.25rem;">
+                        <span class="card-id-badge" id="det-caso-id" style="font-size: 0.85rem; padding: 0.2rem 0.6rem;">HERD-0000</span>
+                        <span class="status-badge" id="det-caso-status-badge">Fila de Espera</span>
+                    </div>
+                    <h3 class="modal-title" id="det-caso-nome-falecido" style="font-size: 1.35rem; color: var(--text-main);">NOME DO TITULAR FALECIDO</h3>
+                    <p class="modal-subtitle" id="det-caso-subtitulo">CPF: 000.000.000-00 • Matrícula: 00000 • Ação: Ação Guilherme Melo</p>
+                </div>
+                <button class="btn-close-x" id="btn-close-det-herdeiro-x" title="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div style="overflow-y: auto; padding-right: 0.5rem; flex: 1; display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Barra de Ações Rápidas de Fase -->
+                <div style="background: #f8fafc; border: 1px solid var(--surface-border); border-radius: 10px; padding: 0.85rem 1rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                    <div>
+                        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Avançar Estágio do Processo:</span>
+                        <div id="det-botoes-transicao" style="display: flex; gap: 0.5rem; margin-top: 0.35rem; flex-wrap: wrap;">
+                            <!-- Botões de transição inseridos via JS -->
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="button" class="btn-outline-action" id="btn-det-editar" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">
+                            <span>✏️ Editar</span>
+                        </button>
+                        <button type="button" class="btn-outline-action" id="btn-det-excluir" style="font-size: 0.8rem; padding: 0.4rem 0.75rem; color: var(--danger); border-color: #fecdd3;">
+                            <span>🗑️ Excluir</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grid de 2 colunas -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <!-- Coluna Esquerda: Herdeiros e Documentos -->
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Localização Física -->
+                        <div class="herdeiro-form-section" style="margin-bottom: 0;">
+                            <div class="form-section-title">
+                                <span>📁 Guarda Física dos Documentos</span>
+                            </div>
+                            <div id="det-localizacao-box" style="font-size: 0.9rem; font-weight: 600; color: var(--text-main);">
+                                <!-- Local ou Caixa -->
+                            </div>
+                        </div>
+
+                        <!-- Herdeiros e Contatos -->
+                        <div class="herdeiro-form-section" style="margin-bottom: 0;">
+                            <div class="form-section-title">
+                                <span>👥 Herdeiros e Contatos</span>
+                            </div>
+                            <div id="det-herdeiros-lista" style="display: flex; flex-direction: column; gap: 0.65rem;">
+                                <!-- Lista de herdeiros com botões de WhatsApp -->
+                            </div>
+                        </div>
+
+                        <!-- Checklist -->
+                        <div class="herdeiro-form-section" style="margin-bottom: 0;">
+                            <div class="form-section-title">
+                                <span>📋 Documentos Recebidos</span>
+                            </div>
+                            <div id="det-checklist-view" style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.82rem;">
+                                <!-- Itens do checklist -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Anexos e Histórico -->
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Anexos Digitalizados -->
+                        <div class="herdeiro-form-section" style="margin-bottom: 0;">
+                            <div class="form-section-title">
+                                <span>📎 Documentos Digitalizados (Anexos)</span>
+                            </div>
+
+                            <div id="det-anexos-lista" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem;">
+                                <!-- Anexos existentes -->
+                            </div>
+
+                            <!-- Form para upload rápido de anexo -->
+                            <div style="background: #ffffff; border: 1px dashed var(--surface-border); border-radius: 8px; padding: 0.75rem;">
+                                <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">+ Anexar Novo Arquivo (PDF, Imagem, Minuta):</span>
+                                <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                    <select id="upload-tipo-anexo" class="form-control" style="font-size: 0.8rem; height: 34px;">
+                                        <option value="Minuta Jurídica">Minuta Jurídica</option>
+                                        <option value="Termo Assinado pelos Herdeiros">Termo Assinado pelos Herdeiros</option>
+                                        <option value="Certidão de Óbito">Certidão de Óbito</option>
+                                        <option value="Documentos Pessoais">Documentos Pessoais</option>
+                                        <option value="Outro Documento">Outro Documento</option>
+                                    </select>
+                                    <div style="display: flex; gap: 0.4rem;">
+                                        <input type="file" id="upload-arquivo-input" class="form-control" style="font-size: 0.78rem; height: 34px; padding: 0.2rem 0.4rem;">
+                                        <button type="button" class="btn-outline-action" id="btn-enviar-anexo" style="height: 34px; font-size: 0.78rem; flex-shrink: 0;">
+                                            <span>Upload</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Histórico & Timeline -->
+                        <div class="herdeiro-form-section" style="margin-bottom: 0; flex: 1;">
+                            <div class="form-section-title">
+                                <span>⏱️ Linha do Tempo e Notificações</span>
+                            </div>
+                            <div class="timeline-container" id="det-timeline-view" style="max-height: 250px; overflow-y: auto;">
+                                <!-- Eventos históricos -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer-buttons" style="margin-top: 1rem; justify-content: space-between; align-items: center;">
+                <button type="button" class="btn-outline-action" id="btn-imprimir-ficha" style="gap: 0.5rem; font-weight: 700;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    <span>Imprimir Ficha de Protocolo & Etiqueta</span>
+                </button>
+                <button type="button" class="btn-cancel" id="btn-close-det-herdeiro">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE ARQUIVAMENTO NA CAIXA -->
+    <div class="modal-overlay" id="modal-herdeiro-arquivar">
+        <div class="modal-card" style="max-width: 450px; border-top: 5px solid #10b981;">
+            <div class="modal-header">
+                <h3 class="modal-title">Arquivar na Caixa Específica</h3>
+                <button class="btn-close-x" id="btn-close-arquivar-x" title="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <p class="modal-subtitle">Informe a identificação da <strong>Caixa Física</strong> onde a pasta deste titular foi arquivada.</p>
+
+            <div class="form-group" style="margin-top: 1rem;">
+                <label for="arquivar-caixa-nome">Nome / Número da Caixa Física *</label>
+                <input type="text" id="arquivar-caixa-nome" class="form-control" list="caixas-existentes-list" placeholder="Ex: Caixa 01 - GM Herdeiros" style="height: 42px;">
+                <datalist id="caixas-existentes-list"></datalist>
+            </div>
+
+            <div class="form-group">
+                <label for="arquivar-caixa-obs">Observação de Localização (Opcional)</label>
+                <input type="text" id="arquivar-caixa-obs" class="form-control" placeholder="Ex: Prateleira 2, Armário de Herdeiros">
+            </div>
+
+            <div class="modal-buttons" style="margin-top: 1rem;">
+                <button type="button" class="btn-cancel" id="btn-cancel-arquivar">Cancelar</button>
+                <button type="button" class="btn-save" id="btn-confirmar-arquivar" style="background: #10b981; border-color: #10b981;">Concluir e Arquivar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE GESTÃO DE CAIXAS FÍSICAS -->
+    <div class="modal-overlay" id="modal-caixas-gerenciador">
+        <div class="modal-card modal-large" style="max-width: 800px; max-height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title">Gestor de Caixas de Arquivo Físico</h3>
+                    <p class="modal-subtitle">Localize as pastas de herdeiros guardadas nas caixas físicas do arquivo jurídico.</p>
+                </div>
+                <button class="btn-close-x" id="btn-close-caixas-x" title="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div style="overflow-y: auto; padding-right: 0.5rem; flex: 1;">
+                <div class="caixas-grid" id="caixas-grid-container">
+                    <!-- Cards de caixas inseridos via JS -->
+                </div>
+
+                <div id="caixa-detalhes-container" style="display: none; margin-top: 1.5rem; background: #f8fafc; border: 1px solid var(--surface-border); border-radius: 10px; padding: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <h4 id="caixa-detalhes-titulo" style="font-size: 1.1rem; color: var(--accent);">Processos na Caixa</h4>
+                        <button type="button" class="btn-outline-action" id="btn-voltar-caixas" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">&laquo; Voltar às Caixas</button>
+                    </div>
+                    <div id="caixa-detalhes-tabela-wrapper"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer-buttons" style="margin-top: 1rem;">
+                <button type="button" class="btn-cancel" id="btn-close-caixas">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DOCUMENTO DE PROTOCOLO E ETIQUETA FORMATADO PARA IMPRESSÃO (HIDDEN ON SCREEN) -->
+    <div id="printable-protocol" style="display: none;">
+        <div style="text-align: center; border-bottom: 2px solid #004b9b; padding-bottom: 12px; margin-bottom: 16px;">
+            <h2 style="font-size: 1.4rem; color: #004b9b; margin: 0; text-transform: uppercase;">SINTE-PI • Sindicato dos Trabalhadores em Educação</h2>
+            <p style="font-size: 0.85rem; color: #555; margin: 4px 0 0 0;">Departamento Jurídico • Protocolo de Entrada de Herdeiros</p>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; background: #f1f5f9; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 14px;">
+            <div>
+                <strong style="font-size: 1.1rem; color: #004b9b;" id="print-protocol-id">HERD-0000</strong>
+                <span style="display: block; font-size: 0.78rem; color: #64748b;" id="print-data-cadastro">Data de Entrada: 00/00/0000 00:00</span>
+            </div>
+            <div style="text-align: right;">
+                <span style="display: block; font-size: 0.75rem; color: #64748b;">LOCALIZAÇÃO FÍSICA / CAIXA:</span>
+                <strong style="font-size: 1rem; color: #d31124;" id="print-local-caixa">Caixa Geral</strong>
+            </div>
+        </div>
+
+        <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px;">
+            <h4 style="font-size: 0.85rem; color: #004b9b; text-transform: uppercase; margin: 0 0 6px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">1. Titular Falecido</h4>
+            <div style="font-size: 0.9rem; line-height: 1.5;">
+                <p style="margin: 0;"><strong>Nome:</strong> <span id="print-falecido-nome">---</span></p>
+                <p style="margin: 0;"><strong>CPF:</strong> <span id="print-falecido-cpf">---</span> • <strong>Matrícula:</strong> <span id="print-falecido-mat">---</span></p>
+                <p style="margin: 0;"><strong>Regional:</strong> <span id="print-falecido-regional">---</span> • <strong>Ação:</strong> <span id="print-falecido-acao">---</span></p>
+            </div>
+        </div>
+
+        <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px;">
+            <h4 style="font-size: 0.85rem; color: #004b9b; text-transform: uppercase; margin: 0 0 6px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">2. Herdeiros Habilitados</h4>
+            <div id="print-herdeiros-lista" style="font-size: 0.85rem; line-height: 1.4;">
+                <!-- Lista de herdeiros impressa -->
+            </div>
+        </div>
+
+        <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; margin-bottom: 16px;">
+            <h4 style="font-size: 0.85rem; color: #004b9b; text-transform: uppercase; margin: 0 0 6px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">3. Documentos Recebidos</h4>
+            <div id="print-checklist-docs" style="font-size: 0.82rem; line-height: 1.5;">
+                <!-- Checklist impresso -->
+            </div>
+        </div>
+
+        <div style="margin-top: 25px; display: flex; justify-content: space-between; text-align: center; font-size: 0.8rem;">
+            <div style="width: 45%; border-top: 1px solid #000; padding-top: 5px;">
+                Atendimento Jurídico SINTE-PI
+            </div>
+            <div style="width: 45%; border-top: 1px solid #000; padding-top: 5px;">
+                Herdeiro Responsável
             </div>
         </div>
     </div>
@@ -1731,16 +3289,18 @@
         }
 
         function formatCPF(cpf) {
-            if (!cpf || cpf === 'Não informado' || cpf === 'NAN') return 'Não informado';
-            let cleaned = cpf.replace(/\D/g, '');
-            if (cleaned.length === 11) {
+            if (!cpf || cpf === 'Não informado' || cpf === 'NAN' || cpf === '0' || cpf === '-') return 'Não informado';
+            let cleaned = String(cpf).replace(/\D/g, '');
+            if (!cleaned || /^0+$/.test(cleaned)) return 'Não informado';
+            if (cleaned.length <= 11) {
+                cleaned = cleaned.padStart(11, '0');
                 return cleaned.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
             }
             return cpf;
         }
 
         function formatMatricula(mat) {
-            if (!mat || mat === 'Não informada' || mat === 'NAN') return 'Não informada';
+            if (!mat || mat === 'Não informada' || mat === 'NAN' || mat === '0' || mat === '-') return 'Não informada';
             return mat;
         }
 
@@ -1821,7 +3381,33 @@
                 const server = grouped[key];
                 const occurrenceText = server.links.length === 1 ? '1 ocorrência' : server.links.length + ' ocorrências / vínculos';
 
-                html += '<div class="server-card"><div class="card-header"><div class="server-name-container"><h3 class="server-name">' + escapeHTML(server.nome) + '</h3></div><span class="occurrence-badge">' + occurrenceText + '</span></div><div class="card-body">';
+                // Verifica se há vínculo de herdeiros em algum dos registros do servidor
+                let herdeiroInfoGeral = null;
+                for (const l of server.links) {
+                    if (l.herdeiro_info) {
+                        herdeiroInfoGeral = l.herdeiro_info;
+                        break;
+                    }
+                }
+
+                let badgeHerdeiroHtml = '';
+                if (herdeiroInfoGeral) {
+                    const cxTxt = herdeiroInfoGeral.caixa ? ' • Arquivado na ' + escapeHTML(herdeiroInfoGeral.caixa) : ' • Em andamento no Jurídico';
+                    badgeHerdeiroHtml = `
+                        <div class="herdeiro-card-badge" onclick="irParaHerdeiro('${escapeHTML(herdeiroInfoGeral.id)}')" title="Clique para abrir o processo de herdeiros deste titular">
+                            <div style="display:flex; align-items:center; gap:0.65rem;">
+                                <span class="herdeiro-badge-icon">⚖️</span>
+                                <div>
+                                    <strong style="color:var(--primary); font-size:0.88rem;">Processo de Herdeiros Cadastrado (${escapeHTML(herdeiroInfoGeral.status_label)})</strong>
+                                    <span style="display:block; font-size:0.75rem; color:var(--text-muted);">${escapeHTML(herdeiroInfoGeral.id)}${cxTxt}</span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-goto-herdeiro" onclick="event.stopPropagation(); irParaHerdeiro('${escapeHTML(herdeiroInfoGeral.id)}')">Ver Ficha &raquo;</button>
+                        </div>
+                    `;
+                }
+
+                html += '<div class="server-card"><div class="card-header"><div class="server-name-container"><h3 class="server-name">' + escapeHTML(server.nome) + '</h3></div><span class="occurrence-badge">' + occurrenceText + '</span></div><div class="card-body">' + badgeHerdeiroHtml;
 
                 server.links.forEach(link => {
                     const detalheExibir = link.info || link.detalhes || 'Nenhum detalhe adicional informado.';
@@ -1928,7 +3514,13 @@
         const clearRegionalBtn = document.getElementById('clear-regional-btn');
         const regionaisList = document.getElementById('regionais-list');
 
-        let modoBusca = 'servidor'; // 'servidor' ou 'regional'
+        const tabHerdeiros = document.getElementById('tab-herdeiros');
+        const herdeirosSection = document.getElementById('herdeiros-section');
+        const badgeHerdeirosPendentes = document.getElementById('badge-herdeiros-pendentes');
+        const searchSection = document.querySelector('.search-section');
+        const resultsSection = document.querySelector('.results-section');
+
+        let modoBusca = 'servidor'; // 'servidor', 'regional' ou 'herdeiros'
         let listaCidades = [];
 
         // Alterna entre abas
@@ -1938,6 +3530,11 @@
             
             tabServidor.classList.add('active');
             tabRegional.classList.remove('active');
+            if (tabHerdeiros) tabHerdeiros.classList.remove('active');
+            
+            if (herdeirosSection) herdeirosSection.style.display = 'none';
+            if (searchSection) searchSection.style.display = '';
+            if (resultsSection) resultsSection.style.display = '';
             
             wrapperServidor.style.display = 'flex';
             wrapperRegional.style.display = 'none';
@@ -1957,6 +3554,11 @@
             
             tabRegional.classList.add('active');
             tabServidor.classList.remove('active');
+            if (tabHerdeiros) tabHerdeiros.classList.remove('active');
+            
+            if (herdeirosSection) herdeirosSection.style.display = 'none';
+            if (searchSection) searchSection.style.display = '';
+            if (resultsSection) resultsSection.style.display = '';
             
             wrapperRegional.style.display = 'flex';
             wrapperServidor.style.display = 'none';
@@ -1972,6 +3574,24 @@
             performSearchRegional(regionalInput.value);
             regionalInput.focus();
         });
+
+        if (tabHerdeiros) {
+            tabHerdeiros.addEventListener('click', () => {
+                if (modoBusca === 'herdeiros') return;
+                modoBusca = 'herdeiros';
+                
+                tabHerdeiros.classList.add('active');
+                tabServidor.classList.remove('active');
+                tabRegional.classList.remove('active');
+                
+                if (searchSection) searchSection.style.display = 'none';
+                if (resultsSection) resultsSection.style.display = 'none';
+                if (herdeirosSection) herdeirosSection.style.display = 'flex';
+                
+                carregarHerdeiros();
+                carregarCaixasFiltro();
+            });
+        }
 
 
 
@@ -2238,7 +3858,7 @@
             // Fallback para Guilherme Melo / FUNDEF / Filiações
             if (!url) {
                 if (limpo.includes("GUILHERME") || limpo.includes("FUNDEF") || limpo.includes("FILIA")) {
-                    url = mapaPlanilhasUrls["AÇÃO GUILHERME MELO COMPLETO"] || "https://docs.google.com/spreadsheets/d/1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw/edit?usp=drivesdk";
+                    url = mapaPlanilhasUrls["AÇÃO GUILHERME MELO COMPLETO"] || "https://docs.google.com/spreadsheets/d/1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c/edit?usp=drivesdk";
                 }
             }
 
@@ -2485,36 +4105,1308 @@
             renderPlanilhas(filtradas);
         });
 
-        // Controle do Modal de Atualização (Exibido apenas uma vez)
+        // Controle do Modal de Atualização
         const modalAtualizacao = document.getElementById('modal-atualizacao');
         const btnCloseAtualizacao = document.getElementById('btn-close-atualizacao');
         const btnCloseAtualizacaoX = document.getElementById('btn-close-atualizacao-x');
+        const btnNovidades = document.getElementById('btn-novidades');
+        const tipDestaqueCpf = document.getElementById('tip-destaque-cpf');
 
-        if (modalAtualizacao && btnCloseAtualizacao && btnCloseAtualizacaoX) {
-            const fecharModalAtualizacao = () => {
-                modalAtualizacao.style.display = 'none';
-            };
+        const abrirModalAtualizacao = () => {
+            if (modalAtualizacao) modalAtualizacao.style.display = 'flex';
+        };
 
-            btnCloseAtualizacao.addEventListener('click', fecharModalAtualizacao);
-            btnCloseAtualizacaoX.addEventListener('click', fecharModalAtualizacao);
+        const fecharModalAtualizacao = () => {
+            if (modalAtualizacao) modalAtualizacao.style.display = 'none';
+        };
 
+        if (btnCloseAtualizacao) btnCloseAtualizacao.addEventListener('click', fecharModalAtualizacao);
+        if (btnCloseAtualizacaoX) btnCloseAtualizacaoX.addEventListener('click', fecharModalAtualizacao);
+        if (btnNovidades) btnNovidades.addEventListener('click', abrirModalAtualizacao);
+        if (tipDestaqueCpf) tipDestaqueCpf.addEventListener('click', abrirModalAtualizacao);
+
+        if (modalAtualizacao) {
             modalAtualizacao.addEventListener('click', (e) => {
                 if (e.target === modalAtualizacao) {
                     fecharModalAtualizacao();
                 }
             });
 
-            // Verifica se o usuário já visualizou a atualização no localStorage
-            if (!localStorage.getItem('sinte_atualizacao_planilhas_vista_v2')) {
-                // Abre o modal após um pequeno delay para suavizar a entrada
+            // Exibe automaticamente o aviso da atualização do CPF se ainda não visto
+            if (!localStorage.getItem('sinte_atualizacao_cpf_zero_v3')) {
                 setTimeout(() => {
-                    modalAtualizacao.style.display = 'flex';
-                    // Marca como visualizado para não exibir mais
-                    localStorage.setItem('sinte_atualizacao_planilhas_vista_v2', 'true');
-                }, 800);
+                    abrirModalAtualizacao();
+                    localStorage.setItem('sinte_atualizacao_cpf_zero_v3', 'true');
+                }, 600);
             }
         }
+
+        // ==============================================================
+        // LÓGICA DO MÓDULO DE GESTÃO DE HERDEIROS (SINTE-PI)
+        // ==============================================================
+        let listaHerdeirosCache = [];
+        let casoHerdeiroAtual = null;
+        let herdeirosViewModo = 'kanban';
+        let herdeiroIdParaArquivar = null;
+        let filtroStatusKpi = '';
+
+        const STATUS_MAP_TEXT = {
+            'fila_espera': 'Fila de Espera (Doc Recebida)',
+            'em_producao': 'Em Produção / Minuta',
+            'enviado_assinatura': 'Enviado p/ Assinatura',
+            'concluido': 'Concluído & Arquivado'
+        };
+
+        // --- INICIALIZAÇÃO E CARREGAMENTO DE DADOS ---
+        async function carregarHerdeiros() {
+            try {
+                const searchVal = document.getElementById('herdeiros-search-input')?.value || '';
+                const acaoVal = document.getElementById('herdeiros-filter-acao')?.value || 'TODAS';
+                const caixaVal = document.getElementById('herdeiros-filter-caixa')?.value || 'TODAS';
+
+                let url = '/api/herdeiros?';
+                const params = [];
+                if (searchVal.trim()) params.push('q=' + encodeURIComponent(searchVal.trim()));
+                if (filtroStatusKpi) params.push('status=' + encodeURIComponent(filtroStatusKpi));
+                if (acaoVal !== 'TODAS') params.push('acao=' + encodeURIComponent(acaoVal));
+                if (caixaVal !== 'TODAS') params.push('caixa=' + encodeURIComponent(caixaVal));
+                url += params.join('&');
+
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.success) {
+                    listaHerdeirosCache = data.herdeiros || [];
+                    renderizarVisaoHerdeiros();
+                }
+                await atualizarStatsHerdeiros();
+            } catch (err) {
+                console.error('Erro ao carregar herdeiros:', err);
+                showToast('Erro ao carregar lista de herdeiros.', 'error');
+            }
+        }
+
+        async function atualizarStatsHerdeiros() {
+            try {
+                const res = await fetch('/api/herdeiros/stats');
+                const data = await res.json();
+                if (data.success && data.stats) {
+                    const st = data.stats;
+                    const countEspera = document.getElementById('kpi-count-espera');
+                    const countProducao = document.getElementById('kpi-count-producao');
+                    const countAssinatura = document.getElementById('kpi-count-assinatura');
+                    const countConcluido = document.getElementById('kpi-count-concluido');
+
+                    if (countEspera) countEspera.textContent = st.fila_espera || 0;
+                    if (countProducao) countProducao.textContent = st.em_producao || 0;
+                    if (countAssinatura) countAssinatura.textContent = st.enviado_assinatura || 0;
+                    if (countConcluido) countConcluido.textContent = st.concluido || 0;
+
+                    const totalPendentes = (st.fila_espera || 0) + (st.em_producao || 0) + (st.enviado_assinatura || 0);
+                    if (badgeHerdeirosPendentes) {
+                        badgeHerdeirosPendentes.textContent = totalPendentes;
+                        badgeHerdeirosPendentes.style.display = totalPendentes > 0 ? 'inline-block' : 'none';
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao buscar stats de herdeiros:', err);
+            }
+        }
+
+        async function carregarCaixasFiltro() {
+            try {
+                const selectCaixa = document.getElementById('herdeiros-filter-caixa');
+                const datalistCaixas = document.getElementById('caixas-existentes-list');
+                if (!selectCaixa) return;
+
+                const res = await fetch('/api/herdeiros/caixas');
+                const data = await res.json();
+                if (data.success && data.caixas) {
+                    const caixas = data.caixas;
+                    const valorAtual = selectCaixa.value;
+                    
+                    let optionsHtml = '<option value="TODAS">Todas as Caixas Físicas</option>';
+                    let datalistHtml = '';
+
+                    caixas.forEach(c => {
+                        optionsHtml += `<option value="${escapeHTML(c.nome)}">${escapeHTML(c.nome)} (${c.total})</option>`;
+                        datalistHtml += `<option value="${escapeHTML(c.nome)}">`;
+                    });
+
+                    selectCaixa.innerHTML = optionsHtml;
+                    selectCaixa.value = valorAtual || 'TODAS';
+
+                    if (datalistCaixas) {
+                        datalistCaixas.innerHTML = datalistHtml;
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao carregar caixas para filtro:', err);
+            }
+        }
+
+        // --- RENDERIZAÇÃO KANBAN E TABELA ---
+        function renderizarVisaoHerdeiros() {
+            if (herdeirosViewModo === 'kanban') {
+                renderizarKanban(listaHerdeirosCache);
+            } else {
+                renderizarTabela(listaHerdeirosCache);
+            }
+        }
+
+        function formatarTempoAtras(dataStr) {
+            if (!dataStr) return 'Recente';
+            try {
+                const partes = dataStr.split(' ');
+                const partesData = partes[0].split('-');
+                if (partesData.length === 3) {
+                    const dataObj = new Date(partesData[0], partesData[1] - 1, partesData[2]);
+                    const diffDias = Math.floor((new Date() - dataObj) / (1000 * 60 * 60 * 24));
+                    if (diffDias <= 0) return 'Hoje';
+                    if (diffDias === 1) return 'Ontem';
+                    return `Há ${diffDias} dias`;
+                }
+            } catch (e) {}
+            return dataStr.substring(0, 10);
+        }
+
+        function renderizarKanban(casos) {
+            const colunas = {
+                'fila_espera': document.getElementById('cards-wrapper-espera'),
+                'em_producao': document.getElementById('cards-wrapper-producao'),
+                'enviado_assinatura': document.getElementById('cards-wrapper-assinatura'),
+                'concluido': document.getElementById('cards-wrapper-concluido')
+            };
+
+            const contadores = {
+                'fila_espera': document.getElementById('count-badge-espera'),
+                'em_producao': document.getElementById('count-badge-producao'),
+                'enviado_assinatura': document.getElementById('count-badge-assinatura'),
+                'concluido': document.getElementById('count-badge-concluido')
+            };
+
+            // Limpa colunas
+            Object.values(colunas).forEach(col => { if (col) col.innerHTML = ''; });
+            const counts = { fila_espera: 0, em_producao: 0, enviado_assinatura: 0, concluido: 0 };
+
+            casos.forEach(caso => {
+                const st = (caso.status || 'fila_espera').toLowerCase();
+                if (colunas[st]) {
+                    counts[st] = (counts[st] || 0) + 1;
+                    const cardHtml = criarCardKanbanHtml(caso);
+                    colunas[st].insertAdjacentHTML('beforeend', cardHtml);
+                }
+            });
+
+            // Atualiza contadores
+            Object.keys(counts).forEach(k => {
+                if (contadores[k]) contadores[k].textContent = counts[k];
+            });
+
+            // Empty states nas colunas vazias
+            Object.keys(colunas).forEach(k => {
+                const col = colunas[k];
+                if (col && counts[k] === 0) {
+                    col.innerHTML = `
+                        <div style="text-align: center; padding: 2rem 0.5rem; color: #94a3b8; font-size: 0.82rem;">
+                            <span>Nenhum processo nesta fase</span>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function criarCardKanbanHtml(caso) {
+            const fal = caso.falecido || {};
+            const herds = caso.herdeiros || [];
+            const herdeiroPrincipal = herds.find(h => h.is_principal) || herds[0] || {};
+            const tempoStr = formatarTempoAtras(caso.ultima_atualizacao || caso.data_cadastro);
+            
+            // Badge de localização física
+            let localBadgeHtml = '';
+            if (caso.status === 'concluido' && caso.caixa_concluido) {
+                localBadgeHtml = `<span class="card-location-badge loc-caixa-concluido" title="Arquivado na caixa">📦 ${escapeHTML(caso.caixa_concluido)}</span>`;
+            } else if (caso.localizacao_provisoria) {
+                localBadgeHtml = `<span class="card-location-badge loc-provisorio" title="Guarda provisória">📁 ${escapeHTML(caso.localizacao_provisoria)}</span>`;
+            }
+
+            // Info de herdeiro para contato rápido
+            let contatoHerdeiroHtml = '';
+            if (herdeiroPrincipal && herdeiroPrincipal.nome) {
+                const telExibir = herdeiroPrincipal.telefone || 'Sem telefone';
+                const parentescoTxt = herdeiroPrincipal.parentesco ? ` (${herdeiroPrincipal.parentesco})` : '';
+                contatoHerdeiroHtml = `
+                    <div class="card-herdeiro-info">
+                        <span class="herdeiro-label">Herdeiro Responsável:</span>
+                        <div class="herdeiro-name-row">
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px;">
+                                ${escapeHTML(herdeiroPrincipal.nome)}${escapeHTML(parentescoTxt)}
+                            </span>
+                            <span style="font-size: 0.72rem; color: #64748b;">${escapeHTML(telExibir)}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Ações específicas de rodapé conforme o estágio
+            let botoesRodape = '';
+            if (caso.status === 'fila_espera') {
+                botoesRodape = `
+                    <button type="button" class="btn-card-action btn-action-primary" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'em_producao');" title="Iniciar elaboração da minuta jurídica">
+                        <span>▶ Iniciar Produção</span>
+                    </button>
+                    <button type="button" class="btn-card-action" style="background:#f1f5f9; color:#475569;" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');">
+                        <span>Detalhes</span>
+                    </button>
+                `;
+            } else if (caso.status === 'em_producao') {
+                botoesRodape = `
+                    <button type="button" class="btn-card-action btn-action-primary" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura');" title="Minuta concluída: avançar para envio aos herdeiros">
+                        <span>✅ Minuta Pronta</span>
+                    </button>
+                    <button type="button" class="btn-card-action" style="background:#f1f5f9; color:#475569;" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');">
+                        <span>Detalhes</span>
+                    </button>
+                `;
+            } else if (caso.status === 'enviado_assinatura') {
+                const telDigits = (herdeiroPrincipal.telefone || '').replace(/\D/g, '');
+                const btnWhats = telDigits ? `
+                    <button type="button" class="btn-card-action btn-whatsapp" onclick="event.stopPropagation(); dispararWhatsAppHerdeiro('${escapeHTML(caso.id)}', '${telDigits}', '${escapeHTML(herdeiroPrincipal.nome || '')}', '${escapeHTML(fal.nome || '')}', '${escapeHTML(fal.acao_juridica || '')}');" title="Abrir WhatsApp com texto pronto">
+                        <span>💬 WhatsApp</span>
+                    </button>
+                ` : '';
+                botoesRodape = `
+                    ${btnWhats}
+                    <button type="button" class="btn-card-action btn-concluir" onclick="event.stopPropagation(); abrirModalArquivar('${escapeHTML(caso.id)}');" title="Herdeiros assinaram: arquivar na caixa definitiva">
+                        <span>🗃️ Arquivar</span>
+                    </button>
+                `;
+            } else {
+                botoesRodape = `
+                    <button type="button" class="btn-card-action" style="background:#ecfdf5; color:#047857; border-color:#a7f3d0;" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');">
+                        <span>👁️ Ver Ficha Completa</span>
+                    </button>
+                `;
+            }
+
+            // Contagem de checklist
+            const chk = caso.documentos_checklist || {};
+            const qtdDocs = Object.keys(chk).filter(k => k !== 'outros' && chk[k] === true).length;
+            const docBadge = `<span class="meta-pill" style="background:#f8fafc; border:1px solid #e2e8f0;">📄 ${qtdDocs}/7 docs</span>`;
+
+            return `
+                <div class="kanban-card" onclick="abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}')">
+                    <div class="card-top">
+                        <span class="card-id-badge">${escapeHTML(caso.id)}</span>
+                        <span class="card-time-badge">⏱️ ${tempoStr}</span>
+                    </div>
+
+                    <div class="card-falecido-nome">${escapeHTML(fal.nome || 'SEM NOME')}</div>
+
+                    <div class="card-meta-pills">
+                        <span class="meta-pill pill-acao">${escapeHTML(fal.acao_juridica || 'Ação Geral')}</span>
+                        ${fal.cpf ? `<span class="meta-pill">CPF: ${escapeHTML(formatCPF(fal.cpf))}</span>` : ''}
+                        ${fal.matricula ? `<span class="meta-pill">Mat: ${escapeHTML(formatMatricula(fal.matricula))}</span>` : ''}
+                        ${docBadge}
+                    </div>
+
+                    ${contatoHerdeiroHtml}
+                    ${localBadgeHtml}
+
+                    <div class="card-actions-footer">
+                        ${botoesRodape}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderizarTabela(casos) {
+            const tbody = document.getElementById('herdeiros-table-body');
+            if (!tbody) return;
+
+            if (casos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">Nenhum processo de herdeiros encontrado com os filtros atuais.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            casos.forEach(c => {
+                const fal = c.falecido || {};
+                const herds = c.herdeiros || [];
+                const principal = herds.find(h => h.is_principal) || herds[0] || {};
+                const st = c.status || 'fila_espera';
+                const stLabel = STATUS_MAP_TEXT[st] || st;
+
+                const localTxt = (st === 'concluido' && c.caixa_concluido) 
+                    ? `📦 <strong>${escapeHTML(c.caixa_concluido)}</strong>` 
+                    : `📁 ${escapeHTML(c.localizacao_provisoria || 'Recepção')}`;
+
+                html += `
+                    <tr onclick="abrirModalDetalhesHerdeiro('${escapeHTML(c.id)}')" style="cursor: pointer;">
+                        <td><span class="card-id-badge">${escapeHTML(c.id)}</span></td>
+                        <td><strong>${escapeHTML(fal.nome || '---')}</strong></td>
+                        <td>${escapeHTML(formatCPF(fal.cpf || ''))} / ${escapeHTML(formatMatricula(fal.matricula || ''))}</td>
+                        <td><span class="meta-pill pill-acao">${escapeHTML(fal.acao_juridica || '---')}</span></td>
+                        <td>${escapeHTML(principal.nome || '---')} ${principal.telefone ? `<br><small style="color:#64748b;">${escapeHTML(principal.telefone)}</small>` : ''}</td>
+                        <td>${localTxt}</td>
+                        <td><span class="status-badge status-${st}">${stLabel}</span></td>
+                        <td style="text-align: right;" onclick="event.stopPropagation();">
+                            <button type="button" class="btn-outline-action" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="abrirModalDetalhesHerdeiro('${escapeHTML(c.id)}');">
+                                <span>Abrir</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // --- NAVEGAÇÃO E TRANSIÇÕES DE VISÃO ---
+        const btnViewKanban = document.getElementById('btn-view-kanban');
+        const btnViewTabela = document.getElementById('btn-view-tabela');
+        const kanbanView = document.getElementById('herdeiros-kanban-view');
+        const tableView = document.getElementById('herdeiros-table-view');
+
+        if (btnViewKanban) {
+            btnViewKanban.addEventListener('click', () => {
+                herdeirosViewModo = 'kanban';
+                btnViewKanban.classList.add('active');
+                if (btnViewTabela) btnViewTabela.classList.remove('active');
+                if (kanbanView) kanbanView.style.display = 'grid';
+                if (tableView) tableView.style.display = 'none';
+                renderizarVisaoHerdeiros();
+            });
+        }
+
+        if (btnViewTabela) {
+            btnViewTabela.addEventListener('click', () => {
+                herdeirosViewModo = 'tabela';
+                btnViewTabela.classList.add('active');
+                if (btnViewKanban) btnViewKanban.classList.remove('active');
+                if (kanbanView) kanbanView.style.display = 'none';
+                if (tableView) tableView.style.display = 'block';
+                renderizarVisaoHerdeiros();
+            });
+        }
+
+        // Cliques nos KPI cards para filtrar por status
+        const kpiCards = [
+            { id: 'kpi-card-espera', status: 'fila_espera' },
+            { id: 'kpi-card-producao', status: 'em_producao' },
+            { id: 'kpi-card-assinatura', status: 'enviado_assinatura' },
+            { id: 'kpi-card-concluido', status: 'concluido' }
+        ];
+
+        kpiCards.forEach(item => {
+            const el = document.getElementById(item.id);
+            if (el) {
+                el.addEventListener('click', () => {
+                    if (filtroStatusKpi === item.status) {
+                        filtroStatusKpi = ''; // Toggle off
+                        el.style.borderColor = '';
+                    } else {
+                        filtroStatusKpi = item.status;
+                        kpiCards.forEach(c => {
+                            const other = document.getElementById(c.id);
+                            if (other) other.style.borderColor = '';
+                        });
+                        el.style.borderColor = 'var(--accent)';
+                    }
+                    carregarHerdeiros();
+                });
+            }
+        });
+
+        // Eventos dos filtros da Toolbar
+        const inputBuscaHerdeiro = document.getElementById('herdeiros-search-input');
+        if (inputBuscaHerdeiro) {
+            let debounceBusca;
+            inputBuscaHerdeiro.addEventListener('input', () => {
+                clearTimeout(debounceBusca);
+                debounceBusca = setTimeout(() => {
+                    carregarHerdeiros();
+                }, 300);
+            });
+        }
+
+        const filterAcaoHerdeiro = document.getElementById('herdeiros-filter-acao');
+        if (filterAcaoHerdeiro) {
+            filterAcaoHerdeiro.addEventListener('change', () => carregarHerdeiros());
+        }
+
+        const filterCaixaHerdeiro = document.getElementById('herdeiros-filter-caixa');
+        if (filterCaixaHerdeiro) {
+            filterCaixaHerdeiro.addEventListener('change', () => carregarHerdeiros());
+        }
+
+        const btnExportarHerdeiros = document.getElementById('btn-exportar-herdeiros');
+        if (btnExportarHerdeiros) {
+            btnExportarHerdeiros.addEventListener('click', () => {
+                window.location.href = '/api/herdeiros/exportar';
+                showToast('Gerando exportação Excel dos Herdeiros...', 'info');
+            });
+        }
+
+        // --- TRANSIÇÃO RÁPIDA DE STATUS ---
+        async function transicionarStatus(id, novoStatus, caixa = '', obs = '') {
+            try {
+                const res = await fetch(`/api/herdeiros/${encodeURIComponent(id)}/mover-status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        novo_status: novoStatus,
+                        caixa_concluido: caixa,
+                        observacao: obs
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`Processo ${id} movido para: ${STATUS_MAP_TEXT[novoStatus] || novoStatus}!`, 'success');
+                    await carregarHerdeiros();
+                    if (casoHerdeiroAtual && casoHerdeiroAtual.id === id) {
+                        await abrirModalDetalhesHerdeiro(id);
+                    }
+                } else {
+                    showToast(data.error || 'Erro ao mover processo.', 'error');
+                }
+            } catch (err) {
+                console.error('Erro na transição:', err);
+                showToast('Erro de comunicação com o servidor.', 'error');
+            }
+        }
+
+        // --- DISPARO DE WHATSAPP ---
+        async function dispararWhatsAppHerdeiro(casoId, telefone, nomeHerdeiro, nomeFalecido, acaoJuridica) {
+            const digits = (telefone || '').replace(/\D/g, '');
+            if (!digits) {
+                showToast('Herdeiro sem telefone cadastrado.', 'error');
+                return;
+            }
+
+            const dddNumero = digits.length <= 11 ? '55' + digits : digits;
+            const textoMensagem = `Olá, ${nomeHerdeiro || 'tudo bem'}! Aqui é do Departamento Jurídico do SINTE-PI.\n\nInformamos que a minuta/documentação referente ao processo de habilitação de herdeiros de *${nomeFalecido}* (*${acaoJuridica || 'Ação Jurídica'}*) está pronta para conferência e assinatura.\n\nPor favor, entre em contato ou compareça ao sindicato para darmos prosseguimento ao arquivamento.`;
+
+            const urlWhats = `https://api.whatsapp.com/send?phone=${dddNumero}&text=${encodeURIComponent(textoMensagem)}`;
+            window.open(urlWhats, '_blank');
+
+            // Registra notificação no backend
+            try {
+                await fetch(`/api/herdeiros/${encodeURIComponent(casoId)}/notificar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        canal: 'whatsapp',
+                        destinatario: `${nomeHerdeiro} (${digits})`,
+                        texto: textoMensagem
+                    })
+                });
+                showToast('Notificação WhatsApp registrada no histórico!', 'success');
+            } catch (e) {
+                console.error('Erro ao registrar notificação:', e);
+            }
+        }
+
+        // --- MODAL DE CADASTRO / EDIÇÃO DE HERDEIROS ---
+        const modalCadHerdeiro = document.getElementById('modal-herdeiro-cadastro');
+        const btnNovoHerdeiro = document.getElementById('btn-novo-herdeiro');
+        const btnCloseCadHerdeiroX = document.getElementById('btn-close-cad-herdeiro-x');
+        const btnCancelCadHerdeiro = document.getElementById('btn-cancel-cad-herdeiro');
+        const btnSalvarCadHerdeiro = document.getElementById('btn-salvar-cad-herdeiro');
+        const btnAddHerdeiroCard = document.getElementById('btn-add-herdeiro-card');
+        const containerHerdeirosCards = document.getElementById('cad-herdeiros-cards-container');
+
+        if (btnNovoHerdeiro) {
+            btnNovoHerdeiro.addEventListener('click', () => abrirModalCadastroHerdeiro());
+        }
+        if (btnCloseCadHerdeiroX) btnCloseCadHerdeiroX.addEventListener('click', fecharModalCadastroHerdeiro);
+        if (btnCancelCadHerdeiro) btnCancelCadHerdeiro.addEventListener('click', fecharModalCadastroHerdeiro);
+
+        function abrirModalCadastroHerdeiro(caso = null) {
+            if (!modalCadHerdeiro) return;
+            const editIdInput = document.getElementById('cad-herd-id-editando');
+            const titleEl = document.getElementById('cad-modal-title');
+
+            if (caso) {
+                if (titleEl) titleEl.textContent = `Editar Processo de Herdeiros (${caso.id})`;
+                if (editIdInput) editIdInput.value = caso.id;
+
+                const fal = caso.falecido || {};
+                document.getElementById('cad-falecido-nome').value = fal.nome || '';
+                document.getElementById('cad-falecido-cpf').value = fal.cpf || '';
+                document.getElementById('cad-falecido-matricula').value = fal.matricula || '';
+                document.getElementById('cad-falecido-regional').value = fal.regional || '';
+                document.getElementById('cad-falecido-acao').value = fal.acao_juridica || 'Ação Guilherme Melo';
+                document.getElementById('cad-falecido-obito').value = fal.data_obito || '';
+                document.getElementById('cad-local-provisorio').value = caso.localizacao_provisoria || '';
+                document.getElementById('cad-caixa-concluido').value = caso.caixa_concluido || '';
+                document.getElementById('cad-observacoes').value = caso.observacoes || '';
+
+                // Checklist
+                const chk = caso.documentos_checklist || {};
+                document.getElementById('chk-doc-obito').checked = !!chk.certidao_obito;
+                document.getElementById('chk-doc-rg-falecido').checked = !!chk.rg_cpf_falecido;
+                document.getElementById('chk-doc-rg-herdeiros').checked = !!chk.rg_cpf_herdeiros;
+                document.getElementById('chk-doc-residencia').checked = !!chk.comprovante_residencia;
+                document.getElementById('chk-doc-dependentes').checked = !!chk.declaracao_dependentes;
+                document.getElementById('chk-doc-casamento').checked = !!chk.certidao_casamento_nascimento;
+                document.getElementById('chk-doc-procuracao').checked = !!chk.procuracao;
+                document.getElementById('cad-doc-outros').value = chk.outros || '';
+
+                // Herdeiros
+                if (containerHerdeirosCards) containerHerdeirosCards.innerHTML = '';
+                const herds = caso.herdeiros || [];
+                if (herds.length > 0) {
+                    herds.forEach(h => adicionarLinhaHerdeiro(h));
+                } else {
+                    adicionarLinhaHerdeiro();
+                }
+            } else {
+                if (titleEl) titleEl.textContent = 'Registrar Entrada de Herdeiros';
+                if (editIdInput) editIdInput.value = '';
+
+                // Reseta formulário
+                document.getElementById('cad-falecido-nome').value = '';
+                document.getElementById('cad-falecido-cpf').value = '';
+                document.getElementById('cad-falecido-matricula').value = '';
+                document.getElementById('cad-falecido-regional').value = '';
+                document.getElementById('cad-falecido-acao').value = 'Ação Guilherme Melo';
+                document.getElementById('cad-falecido-obito').value = '';
+                document.getElementById('cad-local-provisorio').value = 'Recepção / Entrada Jurídico';
+                document.getElementById('cad-caixa-concluido').value = '';
+                document.getElementById('cad-observacoes').value = '';
+
+                document.getElementById('chk-doc-obito').checked = true;
+                document.getElementById('chk-doc-rg-falecido').checked = true;
+                document.getElementById('chk-doc-rg-herdeiros').checked = true;
+                document.getElementById('chk-doc-residencia').checked = true;
+                document.getElementById('chk-doc-dependentes').checked = false;
+                document.getElementById('chk-doc-casamento').checked = false;
+                document.getElementById('chk-doc-procuracao').checked = false;
+                document.getElementById('cad-doc-outros').value = '';
+
+                if (containerHerdeirosCards) containerHerdeirosCards.innerHTML = '';
+                adicionarLinhaHerdeiro({ parentesco: 'Filho(a)', is_principal: true });
+            }
+
+            modalCadHerdeiro.style.display = 'flex';
+        }
+
+        function fecharModalCadastroHerdeiro() {
+            if (modalCadHerdeiro) modalCadHerdeiro.style.display = 'none';
+        }
+
+        function adicionarLinhaHerdeiro(dados = null) {
+            if (!containerHerdeirosCards) return;
+            const index = containerHerdeirosCards.children.length + 1;
+            const hNome = dados?.nome || '';
+            const hParentesco = dados?.parentesco || 'Herdeiro(a)';
+            const hCpf = dados?.cpf || '';
+            const hTel = dados?.telefone || '';
+            const hEmail = dados?.email || '';
+            const hPrincipal = dados?.is_principal ? 'checked' : (index === 1 ? 'checked' : '');
+
+            const card = document.createElement('div');
+            card.className = 'dynamic-heir-card';
+            card.innerHTML = `
+                ${index > 1 ? `<button type="button" class="btn-remove-heir" onclick="this.closest('.dynamic-heir-card').remove();">✕ Remover</button>` : ''}
+                <strong style="font-size: 0.8rem; color: var(--accent); display: block; margin-bottom: 0.4rem;">Herdeiro #${index}</strong>
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>Nome do Herdeiro *</label>
+                        <input type="text" class="form-control h-nome" placeholder="Nome completo..." value="${escapeHTML(hNome)}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Parentesco</label>
+                        <select class="form-control h-parentesco">
+                            <option value="Cônjuge / Viúvo(a)" ${hParentesco.includes('Cônjuge') ? 'selected' : ''}>Cônjuge / Viúvo(a)</option>
+                            <option value="Filho(a)" ${hParentesco.includes('Filho') ? 'selected' : ''}>Filho(a)</option>
+                            <option value="Pai / Mãe" ${hParentesco.includes('Pai') ? 'selected' : ''}>Pai / Mãe</option>
+                            <option value="Irmão(ã)" ${hParentesco.includes('Irmão') ? 'selected' : ''}>Irmão(ã)</option>
+                            <option value="Neto(a)" ${hParentesco.includes('Neto') ? 'selected' : ''}>Neto(a)</option>
+                            <option value="Outro Parentesco" ${(!hParentesco.includes('Cônjuge') && !hParentesco.includes('Filho') && !hParentesco.includes('Pai') && !hParentesco.includes('Irmão') && !hParentesco.includes('Neto')) ? 'selected' : ''}>Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>CPF do Herdeiro</label>
+                        <input type="text" class="form-control h-cpf" placeholder="000.000.000-00" value="${escapeHTML(hCpf)}">
+                    </div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>WhatsApp / Telefone *</label>
+                        <input type="text" class="form-control h-tel" placeholder="(86) 90000-0000" value="${escapeHTML(hTel)}">
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" class="form-control h-email" placeholder="email@exemplo.com" value="${escapeHTML(hEmail)}">
+                    </div>
+                </div>
+                <div style="margin-top: 0.25rem;">
+                    <label style="font-size: 0.78rem; display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; color: var(--text-main); font-weight: 600;">
+                        <input type="checkbox" class="h-principal" ${hPrincipal}>
+                        <span>Contato Principal para Avisos / WhatsApp</span>
+                    </label>
+                </div>
+            `;
+            containerHerdeirosCards.appendChild(card);
+        }
+
+        if (btnAddHerdeiroCard) {
+            btnAddHerdeiroCard.addEventListener('click', () => adicionarLinhaHerdeiro());
+        }
+
+        // Helper de Auto-preenchimento ao buscar falecido no banco
+        const btnCadBuscarTitular = document.getElementById('btn-cad-buscar-titular');
+        const inputCadBuscaTitular = document.getElementById('cad-busca-titular-input');
+        const boxSugestoesTitular = document.getElementById('cad-titular-sugestoes');
+
+        async function buscarTitularHelper() {
+            const query = inputCadBuscaTitular ? inputCadBuscaTitular.value.trim() : '';
+            if (!query || query.length < 2) {
+                showToast('Digite ao menos 2 caracteres para buscar o titular.', 'info');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                const resultados = data.results || [];
+
+                if (resultados.length === 0) {
+                    if (boxSugestoesTitular) {
+                        boxSugestoesTitular.style.display = 'block';
+                        boxSugestoesTitular.innerHTML = `<div style="padding:0.65rem; color:#64748b; font-size:0.82rem;">Nenhum registro encontrado no banco SINTE para "${escapeHTML(query)}". Preencha manualmente os campos abaixo.</div>`;
+                    }
+                    return;
+                }
+
+                if (boxSugestoesTitular) {
+                    boxSugestoesTitular.style.display = 'block';
+                    let listHtml = '';
+                    resultados.slice(0, 8).forEach((r, idx) => {
+                        const nome = r.nome || 'SEM NOME';
+                        const cpf = r.cpf || 'Sem CPF';
+                        const mat = r.matricula || 'Sem Matrícula';
+                        const arq = r.arquivo || '';
+                        const reg = r.regional || '';
+                        listHtml += `
+                            <div class="sugestao-item" style="padding:0.6rem 0.8rem; border-bottom:1px solid #f1f5f9; cursor:pointer; font-size:0.85rem;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''" onclick="selecionarTitularSugestao('${escapeHTML(nome)}', '${escapeHTML(cpf)}', '${escapeHTML(mat)}', '${escapeHTML(reg)}', '${escapeHTML(arq)}')">
+                                <strong style="color:var(--text-main);">${escapeHTML(nome)}</strong>
+                                <span style="display:block; font-size:0.75rem; color:#64748b;">CPF: ${escapeHTML(cpf)} • Mat: ${escapeHTML(mat)} • Regional: ${escapeHTML(reg || 'N/I')} • ${escapeHTML(arq)}</span>
+                            </div>
+                        `;
+                    });
+                    boxSugestoesTitular.innerHTML = listHtml;
+                }
+            } catch (err) {
+                console.error('Erro no helper de busca:', err);
+                showToast('Erro ao consultar banco do SINTE.', 'error');
+            }
+        }
+
+        function selecionarTitularSugestao(nome, cpf, mat, regional, acao) {
+            document.getElementById('cad-falecido-nome').value = nome;
+            document.getElementById('cad-falecido-cpf').value = cpf;
+            document.getElementById('cad-falecido-matricula').value = mat;
+            document.getElementById('cad-falecido-regional').value = regional;
+
+            const selectAcao = document.getElementById('cad-falecido-acao');
+            if (selectAcao) {
+                let achou = false;
+                for (let i = 0; i < selectAcao.options.length; i++) {
+                    if (acao.toUpperCase().includes(selectAcao.options[i].value.toUpperCase())) {
+                        selectAcao.selectedIndex = i;
+                        achou = true;
+                        break;
+                    }
+                }
+                if (!achou) selectAcao.value = 'Ação Guilherme Melo';
+            }
+
+            if (boxSugestoesTitular) boxSugestoesTitular.style.display = 'none';
+            showToast(`Dados de ${nome} preenchidos com sucesso!`, 'success');
+        }
+
+        if (btnCadBuscarTitular) btnCadBuscarTitular.addEventListener('click', buscarTitularHelper);
+        if (inputCadBuscaTitular) {
+            inputCadBuscaTitular.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    buscarTitularHelper();
+                }
+            });
+        }
+
+        // Salvar cadastro de herdeiro
+        if (btnSalvarCadHerdeiro) {
+            btnSalvarCadHerdeiro.addEventListener('click', async () => {
+                const nomeFalecido = document.getElementById('cad-falecido-nome').value.trim();
+                if (!nomeFalecido) {
+                    showToast('Informe o nome do titular falecido.', 'error');
+                    document.getElementById('cad-falecido-nome').focus();
+                    return;
+                }
+
+                // Coleta herdeiros
+                const herdeirosList = [];
+                const heirCards = containerHerdeirosCards.querySelectorAll('.dynamic-heir-card');
+                heirCards.forEach(card => {
+                    const nome = card.querySelector('.h-nome')?.value.trim();
+                    if (nome) {
+                        herdeirosList.push({
+                            nome: nome,
+                            parentesco: card.querySelector('.h-parentesco')?.value || 'Herdeiro(a)',
+                            cpf: card.querySelector('.h-cpf')?.value.trim() || '',
+                            telefone: card.querySelector('.h-tel')?.value.trim() || '',
+                            email: card.querySelector('.h-email')?.value.trim() || '',
+                            is_principal: card.querySelector('.h-principal')?.checked || false
+                        });
+                    }
+                });
+
+                if (herdeirosList.length === 0) {
+                    showToast('Cadastre ao menos 1 herdeiro com nome.', 'error');
+                    return;
+                }
+
+                const checklist = {
+                    certidao_obito: document.getElementById('chk-doc-obito').checked,
+                    rg_cpf_falecido: document.getElementById('chk-doc-rg-falecido').checked,
+                    rg_cpf_herdeiros: document.getElementById('chk-doc-rg-herdeiros').checked,
+                    comprovante_residencia: document.getElementById('chk-doc-residencia').checked,
+                    declaracao_dependentes: document.getElementById('chk-doc-dependentes').checked,
+                    certidao_casamento_nascimento: document.getElementById('chk-doc-casamento').checked,
+                    procuracao: document.getElementById('chk-doc-procuracao').checked,
+                    outros: document.getElementById('cad-doc-outros').value.trim()
+                };
+
+                const editId = document.getElementById('cad-herd-id-editando').value.trim();
+                const payload = {
+                    falecido: {
+                        nome: nomeFalecido,
+                        cpf: document.getElementById('cad-falecido-cpf').value.trim(),
+                        matricula: document.getElementById('cad-falecido-matricula').value.trim(),
+                        regional: document.getElementById('cad-falecido-regional').value.trim(),
+                        acao_juridica: document.getElementById('cad-falecido-acao').value,
+                        data_obito: document.getElementById('cad-falecido-obito').value
+                    },
+                    herdeiros: herdeirosList,
+                    documentos_checklist: checklist,
+                    localizacao_provisoria: document.getElementById('cad-local-provisorio').value.trim() || 'Recepção / Entrada Jurídico',
+                    caixa_concluido: document.getElementById('cad-caixa-concluido').value.trim(),
+                    observacoes: document.getElementById('cad-observacoes').value.trim()
+                };
+
+                try {
+                    btnSalvarCadHerdeiro.disabled = true;
+                    btnSalvarCadHerdeiro.textContent = 'Salvando...';
+
+                    let res;
+                    if (editId) {
+                        res = await fetch(`/api/herdeiros/${encodeURIComponent(editId)}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                    } else {
+                        res = await fetch('/api/herdeiros', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                    }
+
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(editId ? `Processo ${editId} atualizado!` : `Entrada ${data.id} registrada com sucesso!`, 'success');
+                        fecharModalCadastroHerdeiro();
+                        await carregarHerdeiros();
+                        if (editId) {
+                            await abrirModalDetalhesHerdeiro(editId);
+                        }
+                    } else {
+                        showToast(data.error || 'Erro ao salvar processo.', 'error');
+                    }
+                } catch (err) {
+                    console.error('Erro ao salvar:', err);
+                    showToast('Erro de comunicação ao salvar herdeiro.', 'error');
+                } finally {
+                    btnSalvarCadHerdeiro.disabled = false;
+                    btnSalvarCadHerdeiro.textContent = 'Salvar Processo de Herdeiros';
+                }
+            });
+        }
+
+        // --- MODAL DE DETALHES & HISTÓRICO ---
+        const modalDetHerdeiro = document.getElementById('modal-herdeiro-detalhes');
+        const btnCloseDetHerdeiroX = document.getElementById('btn-close-det-herdeiro-x');
+        const btnCloseDetHerdeiro = document.getElementById('btn-close-det-herdeiro');
+        const btnDetEditar = document.getElementById('btn-det-editar');
+        const btnDetExcluir = document.getElementById('btn-det-excluir');
+        const btnImprimirFicha = document.getElementById('btn-imprimir-ficha');
+        const btnEnviarAnexo = document.getElementById('btn-enviar-anexo');
+
+        if (btnCloseDetHerdeiroX) btnCloseDetHerdeiroX.addEventListener('click', () => { if (modalDetHerdeiro) modalDetHerdeiro.style.display = 'none'; });
+        if (btnCloseDetHerdeiro) btnCloseDetHerdeiro.addEventListener('click', () => { if (modalDetHerdeiro) modalDetHerdeiro.style.display = 'none'; });
+
+        async function abrirModalDetalhesHerdeiro(id) {
+            try {
+                const res = await fetch(`/api/herdeiros/${encodeURIComponent(id)}`);
+                const data = await res.json();
+                if (!data.success || !data.caso) {
+                    showToast('Processo de herdeiro não encontrado.', 'error');
+                    return;
+                }
+
+                const caso = data.caso;
+                casoHerdeiroAtual = caso;
+                const fal = caso.falecido || {};
+
+                // Header
+                document.getElementById('det-caso-id').textContent = caso.id;
+                const stBadge = document.getElementById('det-caso-status-badge');
+                stBadge.className = `status-badge status-${caso.status || 'fila_espera'}`;
+                stBadge.textContent = STATUS_MAP_TEXT[caso.status] || caso.status;
+
+                document.getElementById('det-caso-nome-falecido').textContent = fal.nome || 'SEM NOME';
+                document.getElementById('det-caso-subtitulo').textContent = `CPF: ${formatCPF(fal.cpf || 'S/N')} • Matrícula: ${formatMatricula(fal.matricula || 'S/N')} • Ação: ${fal.acao_juridica || 'Geral'} • Regional: ${fal.regional || 'N/I'}`;
+
+                // Botões de transição
+                const boxTransicoes = document.getElementById('det-botoes-transicao');
+                let btnsTransHtml = '';
+                if (caso.status === 'fila_espera') {
+                    btnsTransHtml = `<button type="button" class="btn-card-action btn-action-primary" style="padding:0.4rem 0.8rem;" onclick="transicionarStatus('${escapeHTML(caso.id)}', 'em_producao')">▶ Iniciar Minuta (Mover p/ Em Produção)</button>`;
+                } else if (caso.status === 'em_producao') {
+                    btnsTransHtml = `<button type="button" class="btn-card-action btn-action-primary" style="padding:0.4rem 0.8rem;" onclick="transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura')">📤 Minuta Pronta (Mover p/ Enviado p/ Assinatura)</button>`;
+                } else if (caso.status === 'enviado_assinatura') {
+                    btnsTransHtml = `<button type="button" class="btn-card-action btn-concluir" style="padding:0.4rem 0.8rem;" onclick="abrirModalArquivar('${escapeHTML(caso.id)}')">🗃️ Assinado / Concluir na Caixa Específica</button>`;
+                } else {
+                    btnsTransHtml = `<span style="font-size:0.85rem; color:#047857; font-weight:700;">✅ Processo Arquivado em Definitivo</span>`;
+                }
+                if (boxTransicoes) boxTransicoes.innerHTML = btnsTransHtml;
+
+                // Guarda Física
+                const boxLoc = document.getElementById('det-localizacao-box');
+                if (boxLoc) {
+                    if (caso.status === 'concluido' && caso.caixa_concluido) {
+                        boxLoc.innerHTML = `<span class="card-location-badge loc-caixa-concluido" style="font-size:0.95rem; padding:0.4rem 0.75rem;">📦 Caixa Definitiva: ${escapeHTML(caso.caixa_concluido)}</span>`;
+                    } else {
+                        boxLoc.innerHTML = `<span class="card-location-badge loc-provisorio" style="font-size:0.95rem; padding:0.4rem 0.75rem;">📁 Guarda Provisória: ${escapeHTML(caso.localizacao_provisoria || 'Recepção')}</span>`;
+                    }
+                }
+
+                // Herdeiros
+                const boxHerds = document.getElementById('det-herdeiros-lista');
+                if (boxHerds) {
+                    let herdsHtml = '';
+                    const herds = caso.herdeiros || [];
+                    if (herds.length === 0) {
+                        herdsHtml = '<div style="color:#64748b; font-size:0.82rem;">Nenhum herdeiro registrado.</div>';
+                    } else {
+                        herds.forEach(h => {
+                            const telDigits = (h.telefone || '').replace(/\D/g, '');
+                            const btnWhats = telDigits ? `
+                                <button type="button" class="btn-card-action btn-whatsapp" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="dispararWhatsAppHerdeiro('${escapeHTML(caso.id)}', '${telDigits}', '${escapeHTML(h.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}')">
+                                    💬 WhatsApp
+                                </button>
+                            ` : '';
+
+                            const btnMail = h.email ? `
+                                <a href="mailto:${escapeHTML(h.email)}?subject=SINTE-PI%20-%20Processo%20de%20Herdeiros%20${encodeURIComponent(fal.nome)}" class="btn-outline-action" style="padding:0.3rem 0.6rem; font-size:0.75rem; text-decoration:none;">
+                                    ✉️ E-mail
+                                </a>
+                            ` : '';
+
+                            herdsHtml += `
+                                <div style="background:#ffffff; border:1px solid var(--surface-border); border-radius:8px; padding:0.65rem 0.85rem;">
+                                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                        <div>
+                                            <strong style="font-size:0.9rem; color:var(--text-main);">${escapeHTML(h.nome)}</strong>
+                                            ${h.is_principal ? '<span style="background:#eff6ff; color:#1d4ed8; font-size:0.68rem; font-weight:700; padding:0.1rem 0.35rem; border-radius:4px; margin-left:0.35rem;">PRINCIPAL</span>' : ''}
+                                            <span style="display:block; font-size:0.75rem; color:#64748b;">${escapeHTML(h.parentesco || 'Herdeiro')} • CPF: ${escapeHTML(formatCPF(h.cpf || '---'))}</span>
+                                            <span style="display:block; font-size:0.78rem; color:var(--text-main); font-weight:600; margin-top:0.2rem;">📞 ${escapeHTML(h.telefone || 'Sem telefone')}</span>
+                                        </div>
+                                        <div style="display:flex; gap:0.35rem;">
+                                            ${btnWhats}
+                                            ${btnMail}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    boxHerds.innerHTML = herdsHtml;
+                }
+
+                // Checklist
+                const boxChk = document.getElementById('det-checklist-view');
+                if (boxChk) {
+                    const chk = caso.documentos_checklist || {};
+                    const itens = [
+                        { label: 'Certidão de Óbito do Titular', val: chk.certidao_obito },
+                        { label: 'RG e CPF do Titular Falecido', val: chk.rg_cpf_falecido },
+                        { label: 'RG e CPF dos Herdeiros', val: chk.rg_cpf_herdeiros },
+                        { label: 'Comprovante de Residência', val: chk.comprovante_residencia },
+                        { label: 'Declaração de Inexistência de Dependentes (INSS/RPPS)', val: chk.declaracao_dependentes },
+                        { label: 'Certidão de Casamento / Nascimento', val: chk.certidao_casamento_nascimento },
+                        { label: 'Procuração Jurídica Assinada', val: chk.procuracao }
+                    ];
+
+                    let chkHtml = '';
+                    itens.forEach(it => {
+                        const icon = it.val ? '✅' : '⚪';
+                        const cor = it.val ? '#047857' : '#94a3b8';
+                        chkHtml += `<div style="display:flex; align-items:center; gap:0.45rem; color:${cor};"><span>${icon}</span> <span>${escapeHTML(it.label)}</span></div>`;
+                    });
+                    if (chk.outros) {
+                        chkHtml += `<div style="margin-top:0.4rem; padding-top:0.4rem; border-top:1px dashed #e2e8f0; font-size:0.78rem; color:#475569;"><strong>Outros:</strong> ${escapeHTML(chk.outros)}</div>`;
+                    }
+                    boxChk.innerHTML = chkHtml;
+                }
+
+                // Anexos
+                const boxAnexos = document.getElementById('det-anexos-lista');
+                if (boxAnexos) {
+                    const anexos = caso.anexos || [];
+                    if (anexos.length === 0) {
+                        boxAnexos.innerHTML = '<div style="color:#64748b; font-size:0.8rem; padding:0.35rem 0;">Nenhum arquivo digitalizado anexado ainda.</div>';
+                    } else {
+                        let anexosHtml = '';
+                        anexos.forEach(a => {
+                            anexosHtml += `
+                                <div style="display:flex; align-items:center; justify-content:space-between; background:#f8fafc; border:1px solid var(--surface-border); border-radius:6px; padding:0.45rem 0.65rem; font-size:0.8rem;">
+                                    <div>
+                                        <strong style="color:var(--text-main); display:block;">${escapeHTML(a.original_name || a.filename)}</strong>
+                                        <span style="color:#64748b; font-size:0.72rem;">${escapeHTML(a.tipo || 'Documento')} • ${escapeHTML(a.data_upload || '')}</span>
+                                    </div>
+                                    <a href="${escapeHTML(a.url)}" target="_blank" class="btn-outline-action" style="padding:0.25rem 0.5rem; font-size:0.72rem; text-decoration:none;">
+                                        <span>Visualizar</span>
+                                    </a>
+                                </div>
+                            `;
+                        });
+                        boxAnexos.innerHTML = anexosHtml;
+                    }
+                }
+
+                // Histórico Timeline
+                const boxTimeline = document.getElementById('det-timeline-view');
+                if (boxTimeline) {
+                    const hist = (caso.historico || []).slice().reverse();
+                    let histHtml = '';
+                    hist.forEach(ev => {
+                        histHtml += `
+                            <div class="timeline-event">
+                                <div class="timeline-header">
+                                    <span>${escapeHTML(ev.acao)}</span>
+                                    <span class="timeline-date">${escapeHTML(ev.data)}</span>
+                                </div>
+                                <div class="timeline-details">${escapeHTML(ev.detalhes || '')} ${ev.usuario ? `• <em style="font-size:0.7rem;">${escapeHTML(ev.usuario)}</em>` : ''}</div>
+                            </div>
+                        `;
+                    });
+                    boxTimeline.innerHTML = histHtml || '<div style="color:#64748b; font-size:0.8rem;">Nenhum evento registrado.</div>';
+                }
+
+                if (modalDetHerdeiro) modalDetHerdeiro.style.display = 'flex';
+            } catch (err) {
+                console.error('Erro ao abrir detalhes:', err);
+                showToast('Erro ao carregar detalhes do caso.', 'error');
+            }
+        }
+
+        // Upload de anexo
+        if (btnEnviarAnexo) {
+            btnEnviarAnexo.addEventListener('click', async () => {
+                if (!casoHerdeiroAtual) return;
+                const fileInput = document.getElementById('upload-arquivo-input');
+                const tipoSelect = document.getElementById('upload-tipo-anexo');
+
+                if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                    showToast('Selecione um arquivo para enviar.', 'error');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('tipo', tipoSelect ? tipoSelect.value : 'Documento');
+
+                try {
+                    btnEnviarAnexo.disabled = true;
+                    btnEnviarAnexo.textContent = 'Enviando...';
+
+                    const res = await fetch(`/api/herdeiros/${encodeURIComponent(casoHerdeiroAtual.id)}/anexos`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('Arquivo anexado com sucesso!', 'success');
+                        fileInput.value = '';
+                        await abrirModalDetalhesHerdeiro(casoHerdeiroAtual.id);
+                    } else {
+                        showToast(data.error || 'Erro ao fazer upload.', 'error');
+                    }
+                } catch (err) {
+                    console.error('Erro no upload:', err);
+                    showToast('Erro ao enviar anexo.', 'error');
+                } finally {
+                    btnEnviarAnexo.disabled = false;
+                    btnEnviarAnexo.textContent = 'Upload';
+                }
+            });
+        }
+
+        // Editar caso do modal de detalhes
+        if (btnDetEditar) {
+            btnDetEditar.addEventListener('click', () => {
+                if (casoHerdeiroAtual) {
+                    if (modalDetHerdeiro) modalDetHerdeiro.style.display = 'none';
+                    abrirModalCadastroHerdeiro(casoHerdeiroAtual);
+                }
+            });
+        }
+
+        // Excluir caso do modal de detalhes
+        if (btnDetExcluir) {
+            btnDetExcluir.addEventListener('click', async () => {
+                if (!casoHerdeiroAtual) return;
+                const confirma = confirm(`Tem certeza que deseja remover o processo de herdeiros de ${casoHerdeiroAtual.falecido?.nome || casoHerdeiroAtual.id}? Esta ação não pode ser desfeita.`);
+                if (!confirma) return;
+
+                try {
+                    const res = await fetch(`/api/herdeiros/${encodeURIComponent(casoHerdeiroAtual.id)}`, {
+                        method: 'DELETE'
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(`Processo ${casoHerdeiroAtual.id} excluído com sucesso.`, 'success');
+                        if (modalDetHerdeiro) modalDetHerdeiro.style.display = 'none';
+                        await carregarHerdeiros();
+                    } else {
+                        showToast(data.error || 'Erro ao excluir.', 'error');
+                    }
+                } catch (err) {
+                    console.error('Erro na exclusão:', err);
+                    showToast('Erro de comunicação ao excluir processo.', 'error');
+                }
+            });
+        }
+
+        // Impressão da Ficha de Protocolo
+        if (btnImprimirFicha) {
+            btnImprimirFicha.addEventListener('click', () => {
+                if (!casoHerdeiroAtual) return;
+                const c = casoHerdeiroAtual;
+                const fal = c.falecido || {};
+
+                document.getElementById('print-protocol-id').textContent = c.id;
+                document.getElementById('print-data-cadastro').textContent = `Data de Entrada: ${c.data_cadastro || ''}`;
+                document.getElementById('print-local-caixa').textContent = (c.status === 'concluido' && c.caixa_concluido) 
+                    ? `Caixa: ${c.caixa_concluido}` 
+                    : `Local Provisório: ${c.localizacao_provisoria || 'Recepção'}`;
+
+                document.getElementById('print-falecido-nome').textContent = fal.nome || '---';
+                document.getElementById('print-falecido-cpf').textContent = formatCPF(fal.cpf || '---');
+                document.getElementById('print-falecido-mat').textContent = formatMatricula(fal.matricula || '---');
+                document.getElementById('print-falecido-regional').textContent = fal.regional || 'N/I';
+                document.getElementById('print-falecido-acao').textContent = fal.acao_juridica || '---';
+
+                const boxPrintHerds = document.getElementById('print-herdeiros-lista');
+                if (boxPrintHerds) {
+                    let listHtml = '';
+                    (c.herdeiros || []).forEach((h, i) => {
+                        listHtml += `<p style="margin:2px 0;"><strong>${i + 1}. ${escapeHTML(h.nome)}</strong> (${escapeHTML(h.parentesco || 'Herdeiro')}) • CPF: ${escapeHTML(formatCPF(h.cpf || 'S/N'))} • Tel: ${escapeHTML(h.telefone || 'S/N')}</p>`;
+                    });
+                    boxPrintHerds.innerHTML = listHtml;
+                }
+
+                const boxPrintChk = document.getElementById('print-checklist-docs');
+                if (boxPrintChk) {
+                    const chk = c.documentos_checklist || {};
+                    let chkHtml = '';
+                    const lista = [
+                        { label: 'Certidão de Óbito', val: chk.certidao_obito },
+                        { label: 'RG e CPF do Titular Falecido', val: chk.rg_cpf_falecido },
+                        { label: 'RG e CPF dos Herdeiros', val: chk.rg_cpf_herdeiros },
+                        { label: 'Comprovante de Residência', val: chk.comprovante_residencia },
+                        { label: 'Declaração Inexistência de Dependentes', val: chk.declaracao_dependentes },
+                        { label: 'Certidão Casamento/Nascimento', val: chk.certidao_casamento_nascimento },
+                        { label: 'Procuração Jurídica', val: chk.procuracao }
+                    ];
+                    lista.forEach(item => {
+                        chkHtml += `<span style="margin-right:15px; display:inline-block;">[${item.val ? 'X' : ' '}] ${item.label}</span> `;
+                    });
+                    if (chk.outros) chkHtml += `<br><span>Outros: ${escapeHTML(chk.outros)}</span>`;
+                    boxPrintChk.innerHTML = chkHtml;
+                }
+
+                window.print();
+            });
+        }
+
+        // --- MODAL DE ARQUIVAMENTO EM CAIXA ---
+        const modalArquivar = document.getElementById('modal-herdeiro-arquivar');
+        const btnCloseArquivarX = document.getElementById('btn-close-arquivar-x');
+        const btnCancelArquivar = document.getElementById('btn-cancel-arquivar');
+        const btnConfirmarArquivar = document.getElementById('btn-confirmar-arquivar');
+
+        function abrirModalArquivar(id) {
+            herdeiroIdParaArquivar = id;
+            const inputCaixa = document.getElementById('arquivar-caixa-nome');
+            const inputObs = document.getElementById('arquivar-caixa-obs');
+            if (inputCaixa) inputCaixa.value = '';
+            if (inputObs) inputObs.value = '';
+            if (modalArquivar) modalArquivar.style.display = 'flex';
+        }
+
+        if (btnCloseArquivarX) btnCloseArquivarX.addEventListener('click', () => { if (modalArquivar) modalArquivar.style.display = 'none'; });
+        if (btnCancelArquivar) btnCancelArquivar.addEventListener('click', () => { if (modalArquivar) modalArquivar.style.display = 'none'; });
+
+        if (btnConfirmarArquivar) {
+            btnConfirmarArquivar.addEventListener('click', async () => {
+                if (!herdeiroIdParaArquivar) return;
+                const caixaNome = document.getElementById('arquivar-caixa-nome')?.value.trim();
+                if (!caixaNome) {
+                    showToast('Informe o nome ou número da Caixa Física.', 'error');
+                    return;
+                }
+                const obs = document.getElementById('arquivar-caixa-obs')?.value.trim() || '';
+
+                await transicionarStatus(herdeiroIdParaArquivar, 'concluido', caixaNome, obs);
+                if (modalArquivar) modalArquivar.style.display = 'none';
+            });
+        }
+
+        // --- MODAL DE GESTÃO DE CAIXAS FÍSICAS ---
+        const modalCaixas = document.getElementById('modal-caixas-gerenciador');
+        const btnAbrirCaixas = document.getElementById('btn-abrir-caixas');
+        const btnCloseCaixasX = document.getElementById('btn-close-caixas-x');
+        const btnCloseCaixas = document.getElementById('btn-close-caixas');
+        const btnVoltarCaixas = document.getElementById('btn-voltar-caixas');
+        const containerCaixasGrid = document.getElementById('caixas-grid-container');
+        const containerCaixaDetalhes = document.getElementById('caixa-detalhes-container');
+
+        if (btnAbrirCaixas) btnAbrirCaixas.addEventListener('click', abrirModalCaixas);
+        if (btnCloseCaixasX) btnCloseCaixasX.addEventListener('click', () => { if (modalCaixas) modalCaixas.style.display = 'none'; });
+        if (btnCloseCaixas) btnCloseCaixas.addEventListener('click', () => { if (modalCaixas) modalCaixas.style.display = 'none'; });
+
+        async function abrirModalCaixas() {
+            if (!modalCaixas) return;
+            if (containerCaixaDetalhes) containerCaixaDetalhes.style.display = 'none';
+            if (containerCaixasGrid) containerCaixasGrid.style.display = 'grid';
+
+            try {
+                const res = await fetch('/api/herdeiros/caixas');
+                const data = await res.json();
+                if (data.success && containerCaixasGrid) {
+                    const caixas = data.caixas || [];
+                    if (caixas.length === 0) {
+                        containerCaixasGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem 1rem; color:#64748b;">Nenhuma caixa de arquivo registrada ainda. Conclua processos para arquivar em caixas.</div>`;
+                    } else {
+                        let html = '';
+                        caixas.forEach(c => {
+                            html += `
+                                <div class="caixa-card" onclick="mostrarProcessosDaCaixa('${escapeHTML(c.nome)}')">
+                                    <div class="caixa-card-header">
+                                        <span class="caixa-icon">📦</span>
+                                        <span class="caixa-total-badge">${c.total} processo(s)</span>
+                                    </div>
+                                    <div class="caixa-nome">${escapeHTML(c.nome)}</div>
+                                    <span style="font-size:0.75rem; color:#64748b;">Clique para listar as pastas guardadas nesta caixa &raquo;</span>
+                                </div>
+                            `;
+                        });
+                        containerCaixasGrid.innerHTML = html;
+                    }
+                }
+                modalCaixas.style.display = 'flex';
+            } catch (err) {
+                console.error('Erro ao listar caixas:', err);
+                showToast('Erro ao carregar caixas de arquivo.', 'error');
+            }
+        }
+
+        async function mostrarProcessosDaCaixa(nomeCaixa) {
+            try {
+                const res = await fetch('/api/herdeiros/caixas');
+                const data = await res.json();
+                if (data.success) {
+                    const caixaObj = (data.caixas || []).find(c => c.nome === nomeCaixa);
+                    if (!caixaObj) return;
+
+                    if (containerCaixasGrid) containerCaixasGrid.style.display = 'none';
+                    if (containerCaixaDetalhes) containerCaixaDetalhes.style.display = 'block';
+
+                    document.getElementById('caixa-detalhes-titulo').textContent = `📦 ${nomeCaixa} (${caixaObj.total} processos)`;
+
+                    const wrapper = document.getElementById('caixa-detalhes-tabela-wrapper');
+                    let tableHtml = `
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Titular Falecido</th>
+                                    <th>CPF / Matrícula</th>
+                                    <th>Ação Jurídica</th>
+                                    <th style="text-align: right;">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    caixaObj.casos.forEach(item => {
+                        tableHtml += `
+                            <tr>
+                                <td><span class="card-id-badge">${escapeHTML(item.id)}</span></td>
+                                <td><strong>${escapeHTML(item.falecido_nome || '---')}</strong></td>
+                                <td>${escapeHTML(formatCPF(item.cpf || ''))} / ${escapeHTML(formatMatricula(item.matricula || ''))}</td>
+                                <td><span class="meta-pill pill-acao">${escapeHTML(item.acao || '---')}</span></td>
+                                <td style="text-align: right;">
+                                    <button type="button" class="btn-outline-action" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="fecharModalCaixasEAbrirHerdeiro('${escapeHTML(item.id)}');">
+                                        Ver Ficha
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    tableHtml += `</tbody></table>`;
+                    wrapper.innerHTML = tableHtml;
+                }
+            } catch (err) {
+                console.error('Erro ao mostrar processos da caixa:', err);
+            }
+        }
+
+        function fecharModalCaixasEAbrirHerdeiro(id) {
+            if (modalCaixas) modalCaixas.style.display = 'none';
+            abrirModalDetalhesHerdeiro(id);
+        }
+
+        if (btnVoltarCaixas) {
+            btnVoltarCaixas.addEventListener('click', () => {
+                if (containerCaixaDetalhes) containerCaixaDetalhes.style.display = 'none';
+                if (containerCaixasGrid) containerCaixasGrid.style.display = 'grid';
+            });
+        }
+
+        // --- ATALHO GERAL DE TRANSIÇÃO (CHAMADO POR QUALQUER TELA) ---
+        function irParaHerdeiro(id) {
+            if (tabHerdeiros) {
+                tabHerdeiros.click();
+                setTimeout(() => {
+                    abrirModalDetalhesHerdeiro(id);
+                }, 200);
+            }
+        }
+
+        // Carrega contadores do badge logo na inicialização
+        setTimeout(() => {
+            atualizarStatsHerdeiros();
+        }, 800);
     </script>
 </body>
 
 </html>
+

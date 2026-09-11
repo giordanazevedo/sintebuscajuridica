@@ -1,6 +1,7 @@
 import os
 import glob
 import io
+import json
 import re
 import sys
 import threading
@@ -10,7 +11,8 @@ import pandas as pd
 import requests
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, send_file
+from werkzeug.utils import secure_filename
 
 if hasattr(sys.stdout, 'reconfigure'):
     try:
@@ -40,18 +42,109 @@ PLANILHAS_GOOGLE = [
     {"nome_acao": "MAO SANTA II", "id": "1z9tGbxd1BrezQwfnI0gTA9UDnA1CWYxG"},
     {"nome_acao": "MÃO SANTA III", "id": "1GMHtlfXB3bRzknUZh2ILzfEeSny4etkj"},
     {"nome_acao": "MÃO SANTA IV A VII", "id": "1LLxcb-STxF8Y2qhzsmMYTy-n-L9-lu33"},
-    {"nome_acao": "Ação Guilherme Melo COMPLETO", "id": "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"},
+    {"nome_acao": "Ação Guilherme Melo COMPLETO", "id": "1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c"},
     {"nome_acao": "SEGUNDA AÇÃO", "id": "1_tfg7-uoslZaVJCDDpOyiNXh_LVxvWak"},
     {"nome_acao": "HERDEIROS CONCLUIDOS GUILHERME MELO E MÃO SANTA", "id": "1CxixmGKhtV-MdF6xM3h6RhfxKqzbiyIQ"},
     {"nome_acao": "SEGUNDA AÇÃO - HERDEIROS CONCLUÍDOS", "id": "1eF_NFwNhbR7PeJJmQXLK27z69O3cqhXq"}
 ]
 
 MAPA_IDS_ACOES = {p["nome_acao"]: p["id"] for p in PLANILHAS_GOOGLE}
-MAPA_IDS_ACOES["FUNDEF"] = "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"
-MAPA_IDS_ACOES["GUILHERME MELO"] = "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"
-MAPA_IDS_ACOES["FILIAÇÕES"] = "1RcO2WxsflWWeTAeZeAaRGhGwbdrZBDJw"
+MAPA_IDS_ACOES["FUNDEF"] = "1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c"
+MAPA_IDS_ACOES["GUILHERME MELO"] = "1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c"
+MAPA_IDS_ACOES["FILIAÇÕES"] = "1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c"
 
 ARQUIVO_CADASTROS_MANUAIS = "novos_cadastros_sinte.xlsx"
+
+# ----------------------------------------------------------------------
+# CONSTANTES E PERSISTÊNCIA ATÔMICA DO MÓDULO DE HERDEIROS
+# ----------------------------------------------------------------------
+ARQUIVO_HERDEIROS = "dados_herdeiros.json"
+ARQUIVO_HERDEIROS_EXCEL = "herdeiros_cadastros.xlsx"
+DIR_UPLOADS_HERDEIROS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads_herdeiros")
+os.makedirs(DIR_UPLOADS_HERDEIROS, exist_ok=True)
+herdeiros_lock = threading.Lock()
+
+STATUS_HERDEIROS_MAP = {
+    "fila_espera": "Fila de Espera",
+    "em_producao": "Em Produção",
+    "enviado_assinatura": "Enviado p/ Assinatura",
+    "concluido": "Concluído & Arquivado"
+}
+
+def carregar_herdeiros():
+    """Lê atomicamente a lista de processos de herdeiros do arquivo JSON persistente."""
+    with herdeiros_lock:
+        if not os.path.exists(ARQUIVO_HERDEIROS):
+            return []
+        try:
+            with open(ARQUIVO_HERDEIROS, "r", encoding="utf-8") as f:
+                dados = json.load(f)
+                return dados if isinstance(dados, list) else []
+        except Exception as e:
+            print(f"⚠️ Erro ao carregar {ARQUIVO_HERDEIROS}: {e}")
+            return []
+
+def salvar_herdeiros(dados):
+    """Salva com segurança atômica e atualiza planilha Excel de backup."""
+    with herdeiros_lock:
+        # Gravação atômica em arquivo temporário
+        temp_file = f"{ARQUIVO_HERDEIROS}.tmp"
+        try:
+            with open(temp_file, "w", encoding="utf-8") as f:
+                json.dump(dados, f, ensure_ascii=False, indent=2)
+            if os.path.exists(ARQUIVO_HERDEIROS):
+                os.replace(temp_file, ARQUIVO_HERDEIROS)
+            else:
+                os.rename(temp_file, ARQUIVO_HERDEIROS)
+        except Exception as e:
+            if os.path.exists(temp_file):
+                try: os.remove(temp_file)
+                except Exception: pass
+            raise e
+
+        # Exportação / Backup em Excel
+        try:
+            linhas_excel = []
+            for item in dados:
+                fal = item.get("falecido", {})
+                herds = item.get("herdeiros", [])
+                nomes_herdeiros = ", ".join(h.get("nome", "") for h in herds if h.get("nome"))
+                contatos_herdeiros = ", ".join(f"{h.get('nome')}: {h.get('telefone') or h.get('email') or 'S/C'}" for h in herds if h.get("nome"))
+                linhas_excel.append({
+                    "ID": item.get("id"),
+                    "STATUS": STATUS_HERDEIROS_MAP.get(item.get("status"), item.get("status")),
+                    "FALECIDO": fal.get("nome"),
+                    "CPF FALECIDO": fal.get("cpf"),
+                    "MATRÍCULA": fal.get("matricula"),
+                    "REGIONAL": fal.get("regional"),
+                    "AÇÃO": fal.get("acao_juridica"),
+                    "DATA ÓBITO": fal.get("data_obito"),
+                    "QTD HERDEIROS": len(herds),
+                    "NOMES HERDEIROS": nomes_herdeiros,
+                    "CONTATOS HERDEIROS": contatos_herdeiros,
+                    "LOCAL PROVISÓRIO": item.get("localizacao_provisoria"),
+                    "CAIXA CONCLUÍDO": item.get("caixa_concluido"),
+                    "DATA CADASTRO": item.get("data_cadastro"),
+                    "ÚLTIMA ATUALIZAÇÃO": item.get("ultima_atualizacao"),
+                    "OBSERVAÇÕES": item.get("observacoes")
+                })
+            df_herd = pd.DataFrame(linhas_excel)
+            df_herd.to_excel(ARQUIVO_HERDEIROS_EXCEL, index=False)
+        except Exception as e_xl:
+            print(f"⚠️ Aviso ao salvar backup Excel de herdeiros: {e_xl}")
+
+def gerar_proximo_id_herdeiro(dados):
+    """Gera o próximo ID sequencial HERD-XXXX."""
+    maior_num = 0
+    for item in dados:
+        item_id = str(item.get("id", ""))
+        m = re.search(r'HERD-(\d+)', item_id)
+        if m:
+            num = int(m.group(1))
+            if num > maior_num:
+                maior_num = num
+    novo_num = maior_num + 1
+    return f"HERD-{novo_num:04d}"
 
 # ----------------------------------------------------------------------
 # 2. ESCRITA NA PLANILHA CORRESPONDENTE VIA CREDENTIALS.JSON
@@ -180,6 +273,32 @@ def background_sync_worker():
         except Exception as e:
             print(f"⚠️ [Auto-Sync] Erro na sincronização automática: {e}")
             time.sleep(60)
+
+
+def normalizar_cpf(val):
+    """
+    Normaliza CPF para exatamente 11 dígitos se for numérico.
+    Preenche zeros à esquerda caso o Excel/planilha tenha removido (ex: 3567931334 vira 03567931334).
+    Descarta valores inválidos como '0', '0.0', 'NAN', etc.
+    """
+    if val is None or pd.isna(val):
+        return ""
+    s = str(val).strip()
+    if s.endswith(".0"):
+        s = s[:-2].strip()
+    s_upper = s.upper()
+    if s_upper in ["NAN", "NONE", "N/I", "-", "NULL", "UNDEFINED", "0", "00", "000", ""]:
+        return ""
+    
+    apenas_digitos = re.sub(r"\D", "", s)
+    if not apenas_digitos or set(apenas_digitos) == {"0"}:
+        return ""
+    
+    # Se tiver até 11 dígitos, completa com zeros à esquerda (padrão CPF brasileiro)
+    if len(apenas_digitos) <= 11:
+        return apenas_digitos.zfill(11)
+        
+    return s
 
 
 def processar_dataframe(df, arquivo_nome, aba_nome, destino_lista=None):
@@ -329,6 +448,9 @@ def processar_dataframe(df, arquivo_nome, aba_nome, destino_lista=None):
         if eh_titulo_ou_divisor:
             continue
 
+        # Normaliza CPF com 11 dígitos (preenchendo zeros à esquerda perdidos no Excel)
+        cpf = normalizar_cpf(cpf)
+
         detalhes_extras = []
         indices_principais = {col_mat_idx, col_nome_idx, col_cpf_idx, col_reg_idx}
         
@@ -443,6 +565,7 @@ def search():
     encontrados_diretos = []
     matriculas_validas = set()
     nomes_validos = set()
+    cpfs_validos = set()
     
     # 1º Passo: Localiza correspondências DIRETAS e PRECISAS
     for reg in banco_dados:
@@ -452,10 +575,36 @@ def search():
         
         match = False
         for tp in termos_processados:
+            t_num = tp["limpa"]
             if tp["eh_numerico"]:
-                # Exige correspondência EXATA ou que o registro comece exatamente com o termo numérico
-                if (mat_limpa and (mat_limpa == tp["limpa"] or mat_limpa.startswith(tp["limpa"]))) or \
-                   (cpf_limpo and (cpf_limpo == tp["limpa"] or cpf_limpo.startswith(tp["limpa"]))):
+                # Match de Matrícula flexível (com ou sem zeros à esquerda)
+                match_mat = False
+                if mat_limpa:
+                    if mat_limpa == t_num or mat_limpa.startswith(t_num):
+                        match_mat = True
+                    else:
+                        mat_sem_zero = mat_limpa.lstrip("0")
+                        t_sem_zero = t_num.lstrip("0")
+                        if t_sem_zero and len(t_sem_zero) >= 2:
+                            if mat_sem_zero == t_sem_zero or mat_sem_zero.startswith(t_sem_zero):
+                                match_mat = True
+
+                # Match de CPF flexível (com zero, sem zero, prefixo e zfill 11)
+                match_cpf = False
+                if cpf_limpo:
+                    if cpf_limpo == t_num or cpf_limpo.startswith(t_num):
+                        match_cpf = True
+                    elif t_num.isdigit():
+                        if len(t_num) <= 11 and len(cpf_limpo) <= 11 and cpf_limpo.zfill(11) == t_num.zfill(11):
+                            match_cpf = True
+                        else:
+                            cpf_sem_zero = cpf_limpo.lstrip("0")
+                            t_sem_zero = t_num.lstrip("0")
+                            if t_sem_zero and len(t_sem_zero) >= 2:
+                                if cpf_sem_zero == t_sem_zero or cpf_sem_zero.startswith(t_sem_zero):
+                                    match_cpf = True
+
+                if match_mat or match_cpf:
                     match = True
                     break
             else:
@@ -470,6 +619,15 @@ def search():
             # Só coleta dados para consolidação se o termo buscado for consistente
             if mat_limpa and mat_limpa not in ['NAN', 'NONE', 'N/I', '0', '-'] and len(mat_limpa) >= 3:
                 matriculas_validas.add(mat_limpa)
+                mat_sz = mat_limpa.lstrip("0")
+                if mat_sz:
+                    matriculas_validas.add(mat_sz)
+
+            if cpf_limpo and len(cpf_limpo) >= 8:
+                cpfs_validos.add(cpf_limpo.zfill(11))
+                cpf_sz = cpf_limpo.lstrip("0")
+                if cpf_sz:
+                    cpfs_validos.add(cpf_sz)
                 
             if nome_reg and nome_reg not in ['NAN', 'NONE', 'SEM NOME'] and len(nome_reg) >= 5:
                 nomes_validos.add(nome_reg)
@@ -481,20 +639,68 @@ def search():
     resultados_finais = list(encontrados_diretos)
     chaves_ja_incluidas = set((r["arquivo"], r["aba"], r["nome"], r["matricula"]) for r in resultados_finais)
     
-    if matriculas_validas or nomes_validos:
+    if matriculas_validas or nomes_validos or cpfs_validos:
         for reg in banco_dados:
             chave_reg = (reg["arquivo"], reg["aba"], reg["nome"], reg["matricula"])
             if chave_reg in chaves_ja_incluidas:
                 continue
                 
             mat_reg_limpa = reg["matricula"].replace(".", "").replace("-", "").replace("/", "").upper()
+            cpf_reg_limpo = reg["cpf"].replace(".", "").replace("-", "").replace("/", "")
             nome_reg = reg["nome"].upper()
             
-            if (mat_reg_limpa and mat_reg_limpa in matriculas_validas) or \
-               (nome_reg and nome_reg in nomes_validos):
+            mat_match = (mat_reg_limpa and (mat_reg_limpa in matriculas_validas or mat_reg_limpa.lstrip("0") in matriculas_validas))
+            cpf_match = (cpf_reg_limpo and (cpf_reg_limpo in cpfs_validos or cpf_reg_limpo.zfill(11) in cpfs_validos or cpf_reg_limpo.lstrip("0") in cpfs_validos))
+            nome_match = (nome_reg and nome_reg in nomes_validos)
+
+            if mat_match or cpf_match or nome_match:
                 resultados_finais.append(reg)
                 chaves_ja_incluidas.add(chave_reg)
             
+    # Anexa informação de herdeiros se houver caso cadastrado para o servidor
+    try:
+        herdeiros_lista = carregar_herdeiros()
+        if herdeiros_lista:
+            mapa_falecidos = {}
+            for h in herdeiros_lista:
+                f = h.get("falecido", {})
+                h_cpf = str(f.get("cpf", "")).replace(".", "").replace("-", "").replace("/", "").strip()
+                h_mat = str(f.get("matricula", "")).replace(".", "").replace("-", "").replace("/", "").strip().upper()
+                h_nome = str(f.get("nome", "")).strip().upper()
+                info = {
+                    "id": h.get("id"),
+                    "status": h.get("status"),
+                    "status_label": STATUS_HERDEIROS_MAP.get(h.get("status"), h.get("status")),
+                    "caixa": h.get("caixa_concluido", ""),
+                    "data_cadastro": h.get("data_cadastro", "")
+                }
+                if h_cpf and len(h_cpf) >= 8:
+                    mapa_falecidos[f"CPF_{h_cpf.zfill(11)}"] = info
+                    mapa_falecidos[f"CPF_{h_cpf.lstrip('0')}"] = info
+                if h_mat and h_mat not in ['NAN', '0', '']:
+                    mapa_falecidos[f"MAT_{h_mat}"] = info
+                    mapa_falecidos[f"MAT_{h_mat.lstrip('0')}"] = info
+                if h_nome and len(h_nome) >= 4:
+                    mapa_falecidos[f"NOME_{h_nome}"] = info
+
+            for r in resultados_finais:
+                r_cpf = str(r.get("cpf", "")).replace(".", "").replace("-", "").replace("/", "").strip()
+                r_mat = str(r.get("matricula", "")).replace(".", "").replace("-", "").replace("/", "").strip().upper()
+                r_nome = str(r.get("nome", "")).strip().upper()
+                
+                h_info = None
+                if r_cpf:
+                    h_info = mapa_falecidos.get(f"CPF_{r_cpf.zfill(11)}") or mapa_falecidos.get(f"CPF_{r_cpf.lstrip('0')}")
+                if not h_info and r_mat:
+                    h_info = mapa_falecidos.get(f"MAT_{r_mat}") or mapa_falecidos.get(f"MAT_{r_mat.lstrip('0')}")
+                if not h_info and r_nome:
+                    h_info = mapa_falecidos.get(f"NOME_{r_nome}")
+
+                if h_info:
+                    r["herdeiro_info"] = h_info
+    except Exception as e_herd:
+        print(f"⚠️ Erro ao enriquecer busca com dados de herdeiros: {e_herd}")
+
     return jsonify({"results": resultados_finais})
 
 
@@ -528,7 +734,7 @@ def cadastrar():
         dados = request.json
         nome = dados.get("nome", "").strip().upper()
         matricula = dados.get("matricula", "").strip()
-        cpf = dados.get("cpf", "").strip()
+        cpf = normalizar_cpf(dados.get("cpf", ""))
         regional = dados.get("regional", "").strip().upper()
         acao = dados.get("acao", "AUTORIZAÇÕES ASSINADAS - MÃO SANTA 99").strip()
         detalhes = dados.get("detalhes", "Sem detalhes").strip()
@@ -675,16 +881,25 @@ def stats_guilherme_fundef():
         for reg in banco_dados:
             arq = reg.get("arquivo", "")
             mat_raw = reg.get("matricula", "").strip()
+            cpf_raw = reg.get("cpf", "").strip()
             nome = reg.get("nome", "").strip().upper()
             reg_regional = reg.get("regional", "").strip().upper()
             mat = normalizar_mat(mat_raw) if mat_raw else ""
+            cpf_norm = normalizar_cpf(cpf_raw) if cpf_raw else ""
 
             # Aplica filtro de regional se informado
             if regional_filtro and reg_regional != regional_filtro:
                 continue
 
-            # Chave de identificação: matrícula se existir, senão nome
-            chave = mat if mat and mat not in ["NAN", "NONE", "0", "N/I", "-"] else (f"NOME:{nome}" if nome else None)
+            # Chave de identificação: matrícula se existir, senão CPF, senão nome
+            if mat and mat not in ["NAN", "NONE", "0", "N/I", "-"]:
+                chave = mat
+            elif cpf_norm:
+                chave = f"CPF:{cpf_norm}"
+            elif nome:
+                chave = f"NOME:{nome}"
+            else:
+                continue
             if not chave:
                 continue
 
@@ -721,11 +936,552 @@ def stats_guilherme_fundef():
 
 
 # ----------------------------------------------------------------------
-# 5. INICIALIZAÇÃO DOS DADOS E BACKGROUND SYNC DAEMON
+# 5. ROTAS REST DO MÓDULO DE GESTÃO DE HERDEIROS
 # ----------------------------------------------------------------------
-carregar_dados()
-sync_thread = threading.Thread(target=background_sync_worker, daemon=True)
-sync_thread.start()
+
+@app.route("/api/herdeiros", methods=["GET"])
+def api_listar_herdeiros():
+    """Retorna lista de processos de herdeiros com suporte a filtros."""
+    try:
+        dados = carregar_herdeiros()
+        
+        q = request.args.get("q", "").strip().upper()
+        status_filtro = request.args.get("status", "").strip().lower()
+        caixa_filtro = request.args.get("caixa", "").strip().upper()
+        acao_filtro = request.args.get("acao", "").strip().upper()
+        
+        filtrados = []
+        for caso in dados:
+            # Filtro por status
+            if status_filtro and caso.get("status", "").lower() != status_filtro:
+                continue
+                
+            # Filtro por caixa de arquivamento
+            if caixa_filtro and caixa_filtro != "TODAS":
+                caso_caixa = str(caso.get("caixa_concluido", "")).strip().upper()
+                if caixa_filtro not in caso_caixa:
+                    continue
+                    
+            # Filtro por ação jurídica
+            fal = caso.get("falecido", {})
+            if acao_filtro and acao_filtro != "TODAS":
+                caso_acao = str(fal.get("acao_juridica", "")).strip().upper()
+                if acao_filtro not in caso_acao:
+                    continue
+                    
+            # Filtro por termo geral (busca textual em falecido, herdeiros, telefone, matrícula, CPF, caixa)
+            if q:
+                texto_busca = f"{caso.get('id', '')} {fal.get('nome', '')} {fal.get('cpf', '')} {fal.get('matricula', '')} {caso.get('caixa_concluido', '')} {caso.get('localizacao_provisoria', '')}".upper()
+                for h in caso.get("herdeiros", []):
+                    texto_busca += f" {h.get('nome', '')} {h.get('cpf', '')} {h.get('telefone', '')} {h.get('email', '')}".upper()
+                
+                # Suporta busca por CPF sem pontuação ou com pontuação
+                q_limpa = q.replace(".", "").replace("-", "").replace("/", "")
+                texto_busca_limpa = texto_busca.replace(".", "").replace("-", "").replace("/", "")
+                
+                if q not in texto_busca and (not q_limpa or q_limpa not in texto_busca_limpa):
+                    continue
+                    
+            filtrados.append(caso)
+            
+        # Ordenação: mais recentes primeiro
+        filtrados.sort(key=lambda x: x.get("ultima_atualizacao") or x.get("data_cadastro") or "", reverse=True)
+        
+        return jsonify({
+            "success": True,
+            "total": len(filtrados),
+            "herdeiros": filtrados
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/herdeiros", methods=["POST"])
+def api_criar_herdeiro():
+    """Cadastra um novo processo de herdeiros com validação e histórico inicial."""
+    try:
+        payload = request.get_json(force=True) or {}
+        
+        falecido = payload.get("falecido", {})
+        nome_falecido = falecido.get("nome", "").strip().upper()
+        if not nome_falecido:
+            return jsonify({"success": False, "error": "Informe o nome do titular falecido."}), 400
+            
+        cpf_falecido = normalizar_cpf(falecido.get("cpf", ""))
+        matricula_falecido = str(falecido.get("matricula", "")).strip()
+        regional_falecido = falecido.get("regional", "").strip().upper()
+        acao_juridica = falecido.get("acao_juridica", "Ação Guilherme Melo").strip()
+        data_obito = falecido.get("data_obito", "").strip()
+        
+        herdeiros_raw = payload.get("herdeiros", [])
+        herdeiros_processados = []
+        for idx, h in enumerate(herdeiros_raw):
+            nome_h = h.get("nome", "").strip().upper()
+            if not nome_h:
+                continue
+            herdeiros_processados.append({
+                "id": idx + 1,
+                "nome": nome_h,
+                "parentesco": h.get("parentesco", "Herdeiro(a)").strip(),
+                "cpf": normalizar_cpf(h.get("cpf", "")),
+                "telefone": h.get("telefone", "").strip(),
+                "email": h.get("email", "").strip(),
+                "is_principal": bool(h.get("is_principal", idx == 0)),
+                "observacao": h.get("observacao", "").strip()
+            })
+            
+        agora_iso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        dados = carregar_herdeiros()
+        novo_id = gerar_proximo_id_herdeiro(dados)
+        
+        status_inicial = payload.get("status", "fila_espera").strip().lower()
+        if status_inicial not in STATUS_HERDEIROS_MAP:
+            status_inicial = "fila_espera"
+            
+        novo_caso = {
+            "id": novo_id,
+            "data_cadastro": agora_iso,
+            "ultima_atualizacao": agora_iso,
+            "status": status_inicial,
+            "falecido": {
+                "nome": nome_falecido,
+                "cpf": cpf_falecido,
+                "matricula": matricula_falecido,
+                "regional": regional_falecido,
+                "acao_juridica": acao_juridica,
+                "data_obito": data_obito
+            },
+            "herdeiros": herdeiros_processados,
+            "documentos_checklist": payload.get("documentos_checklist", {
+                "certidao_obito": False,
+                "rg_cpf_falecido": False,
+                "rg_cpf_herdeiros": False,
+                "comprovante_residencia": False,
+                "declaracao_dependentes": False,
+                "certidao_casamento_nascimento": False,
+                "procuracao": False,
+                "outros": ""
+            }),
+            "localizacao_provisoria": payload.get("localizacao_provisoria", "Recepção / Entrada Jurídico").strip(),
+            "caixa_concluido": payload.get("caixa_concluido", "").strip().upper(),
+            "observacoes": payload.get("observacoes", "").strip(),
+            "historico": [
+                {
+                    "data": agora_iso,
+                    "acao": "Recepção e Cadastro de Herdeiros",
+                    "usuario": "Atendimento Jurídico",
+                    "detalhes": f"Processo registrado na {STATUS_HERDEIROS_MAP.get(status_inicial)} com {len(herdeiros_processados)} herdeiro(s)."
+                }
+            ],
+            "notificacoes": [],
+            "anexos": []
+        }
+        
+        dados.append(novo_caso)
+        salvar_herdeiros(dados)
+        
+        return jsonify({"success": True, "id": novo_id, "caso": novo_caso})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/herdeiros/<id>", methods=["GET"])
+def api_obter_herdeiro(id):
+    """Retorna dados detalhados de um caso de herdeiros pelo ID."""
+    try:
+        dados = carregar_herdeiros()
+        id_upper = id.strip().upper()
+        for c in dados:
+            if c.get("id", "").upper() == id_upper:
+                return jsonify({"success": True, "caso": c})
+        return jsonify({"success": False, "error": f"Caso {id} não encontrado."}), 404
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/herdeiros/<id>", methods=["PUT"])
+def api_atualizar_herdeiro(id):
+    """Atualiza dados cadastrais, herdeiros ou checklist de um caso."""
+    try:
+        payload = request.get_json(force=True) or {}
+        dados = carregar_herdeiros()
+        id_upper = id.strip().upper()
+        
+        caso_encontrado = None
+        for c in dados:
+            if c.get("id", "").upper() == id_upper:
+                caso_encontrado = c
+                break
+                
+        if not caso_encontrado:
+            return jsonify({"success": False, "error": f"Caso {id} não encontrado."}), 404
+            
+        agora_iso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        if "falecido" in payload:
+            fal = payload["falecido"]
+            if fal.get("nome"): caso_encontrado["falecido"]["nome"] = fal.get("nome", "").strip().upper()
+            if "cpf" in fal: caso_encontrado["falecido"]["cpf"] = normalizar_cpf(fal.get("cpf", ""))
+            if "matricula" in fal: caso_encontrado["falecido"]["matricula"] = str(fal.get("matricula", "")).strip()
+            if "regional" in fal: caso_encontrado["falecido"]["regional"] = str(fal.get("regional", "")).strip().upper()
+            if "acao_juridica" in fal: caso_encontrado["falecido"]["acao_juridica"] = str(fal.get("acao_juridica", "")).strip()
+            if "data_obito" in fal: caso_encontrado["falecido"]["data_obito"] = str(fal.get("data_obito", "")).strip()
+            
+        if "herdeiros" in payload:
+            herdeiros_proc = []
+            for idx, h in enumerate(payload["herdeiros"]):
+                nome_h = h.get("nome", "").strip().upper()
+                if not nome_h: continue
+                herdeiros_proc.append({
+                    "id": idx + 1,
+                    "nome": nome_h,
+                    "parentesco": h.get("parentesco", "Herdeiro(a)").strip(),
+                    "cpf": normalizar_cpf(h.get("cpf", "")),
+                    "telefone": h.get("telefone", "").strip(),
+                    "email": h.get("email", "").strip(),
+                    "is_principal": bool(h.get("is_principal", False)),
+                    "observacao": h.get("observacao", "").strip()
+                })
+            caso_encontrado["herdeiros"] = herdeiros_proc
+            
+        if "documentos_checklist" in payload:
+            caso_encontrado["documentos_checklist"] = payload["documentos_checklist"]
+            
+        if "localizacao_provisoria" in payload:
+            caso_encontrado["localizacao_provisoria"] = payload["localizacao_provisoria"].strip()
+            
+        if "caixa_concluido" in payload:
+            caso_encontrado["caixa_concluido"] = payload["caixa_concluido"].strip().upper()
+            
+        if "observacoes" in payload:
+            caso_encontrado["observacoes"] = payload["observacoes"].strip()
+            
+        caso_encontrado["ultima_atualizacao"] = agora_iso
+        caso_encontrado["historico"].append({
+            "data": agora_iso,
+            "acao": "Atualização Cadastral",
+            "usuario": "Jurídico",
+            "detalhes": payload.get("motivo_edicao", "Dados do processo de herdeiros editados pelo operador.")
+        })
+        
+        salvar_herdeiros(dados)
+        return jsonify({"success": True, "caso": caso_encontrado})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/herdeiros/<id>/mover-status", methods=["POST"])
+def api_mover_status_herdeiro(id):
+    """Altera o estágio do processo no Kanban e registra histórico."""
+    try:
+        payload = request.get_json(force=True) or {}
+        novo_status = payload.get("novo_status", "").strip().lower()
+        
+        if novo_status not in STATUS_HERDEIROS_MAP:
+            return jsonify({"success": False, "error": f"Status '{novo_status}' inválido."}), 400
+            
+        dados = carregar_herdeiros()
+        id_upper = id.strip().upper()
+        
+        caso_encontrado = None
+        for c in dados:
+            if c.get("id", "").upper() == id_upper:
+                caso_encontrado = c
+                break
+                
+        if not caso_encontrado:
+            return jsonify({"success": False, "error": f"Caso {id} não encontrado."}), 404
+            
+        status_anterior = caso_encontrado.get("status", "fila_espera")
+        caixa_concluido = payload.get("caixa_concluido", "").strip().upper()
+        observacao = payload.get("observacao", "").strip()
+        
+        agora_iso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        caso_encontrado["status"] = novo_status
+        caso_encontrado["ultima_atualizacao"] = agora_iso
+        
+        if caixa_concluido:
+            caso_encontrado["caixa_concluido"] = caixa_concluido
+            
+        detalhes_msg = f"De '{STATUS_HERDEIROS_MAP.get(status_anterior, status_anterior)}' para '{STATUS_HERDEIROS_MAP.get(novo_status, novo_status)}'."
+        if caixa_concluido:
+            detalhes_msg += f" Arquivado na {caixa_concluido}."
+        if observacao:
+            detalhes_msg += f" Obs: {observacao}"
+            
+        caso_encontrado["historico"].append({
+            "data": agora_iso,
+            "acao": f"Transição: {STATUS_HERDEIROS_MAP.get(novo_status)}",
+            "usuario": "Equipe Jurídica",
+            "detalhes": detalhes_msg
+        })
+        
+        salvar_herdeiros(dados)
+        return jsonify({"success": True, "caso": caso_encontrado})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/herdeiros/<id>/notificar", methods=["POST"])
+def api_notificar_herdeiro(id):
+    """Registra envio de notificação (WhatsApp, Ligação ou E-mail) para os herdeiros."""
+    try:
+        payload = request.get_json(force=True) or {}
+        canal = payload.get("canal", "whatsapp").strip().lower()
+        destinatario = payload.get("destinatario", "").strip()
+        texto = payload.get("texto", "").strip()
+        
+        dados = carregar_herdeiros()
+        id_upper = id.strip().upper()
+        caso_encontrado = None
+        for c in dados:
+            if c.get("id", "").upper() == id_upper:
+                caso_encontrado = c
+                break
+                
+        if not caso_encontrado:
+            return jsonify({"success": False, "error": f"Caso {id} não encontrado."}), 404
+            
+        agora_iso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        notif_item = {
+            "data": agora_iso,
+            "canal": canal,
+            "destinatario": destinatario,
+            "texto": texto
+        }
+        caso_encontrado.setdefault("notificacoes", []).append(notif_item)
+        caso_encontrado["ultima_atualizacao"] = agora_iso
+        
+        canal_nome = "WhatsApp" if canal == "whatsapp" else ("E-mail" if canal == "email" else "Telefone")
+        caso_encontrado["historico"].append({
+            "data": agora_iso,
+            "acao": f"Notificação via {canal_nome}",
+            "usuario": "Atendimento Jurídico",
+            "detalhes": f"Contato enviado para {destinatario}."
+        })
+        
+        salvar_herdeiros(dados)
+        return jsonify({"success": True, "notificacao": notif_item, "caso": caso_encontrado})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/herdeiros/<id>/anexos", methods=["POST"])
+def api_upload_anexo_herdeiro(id):
+    """Recebe e armazena arquivo digitalizado anexado ao caso de herdeiros."""
+    try:
+        if "file" not in request.files:
+            return jsonify({"success": False, "error": "Nenhum arquivo enviado."}), 400
+            
+        file = request.files["file"]
+        if not file.filename:
+            return jsonify({"success": False, "error": "Nome de arquivo vazio."}), 400
+            
+        dados = carregar_herdeiros()
+        id_upper = id.strip().upper()
+        caso_encontrado = None
+        for c in dados:
+            if c.get("id", "").upper() == id_upper:
+                caso_encontrado = c
+                break
+                
+        if not caso_encontrado:
+            return jsonify({"success": False, "error": f"Caso {id} não encontrado."}), 404
+            
+        # Cria pasta específica para o caso
+        pasta_caso = os.path.join(DIR_UPLOADS_HERDEIROS, id_upper)
+        os.makedirs(pasta_caso, exist_ok=True)
+        
+        original_name = file.filename
+        safe_name = secure_filename(original_name)
+        if not safe_name:
+            safe_name = f"documento_{int(time.time())}"
+            
+        timestamp_prefix = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename_final = f"{timestamp_prefix}_{safe_name}"
+        destino_arquivo = os.path.join(pasta_caso, filename_final)
+        
+        file.save(destino_arquivo)
+        tamanho_bytes = os.path.getsize(destino_arquivo)
+        
+        tipo_anexo = request.form.get("tipo", "Documento Digitalizado").strip()
+        agora_iso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        novo_anexo = {
+            "filename": filename_final,
+            "original_name": original_name,
+            "tipo": tipo_anexo,
+            "tamanho": tamanho_bytes,
+            "data_upload": agora_iso,
+            "url": f"/api/herdeiros/anexos/{id_upper}/{filename_final}"
+        }
+        
+        caso_encontrado.setdefault("anexos", []).append(novo_anexo)
+        caso_encontrado["ultima_atualizacao"] = agora_iso
+        caso_encontrado["historico"].append({
+            "data": agora_iso,
+            "acao": f"Anexo Adicionado: {tipo_anexo}",
+            "usuario": "Jurídico",
+            "detalhes": f"Arquivo '{original_name}' anexado com sucesso."
+        })
+        
+        salvar_herdeiros(dados)
+        return jsonify({"success": True, "anexo": novo_anexo, "caso": caso_encontrado})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/herdeiros/anexos/<id>/<path:filename>")
+def api_download_anexo_herdeiro(id, filename):
+    """Permite visualização/download seguro de anexo do processo de herdeiros."""
+    try:
+        id_upper = id.strip().upper()
+        pasta_caso = os.path.join(DIR_UPLOADS_HERDEIROS, id_upper)
+        filename_safe = os.path.basename(filename)
+        return send_from_directory(pasta_caso, filename_safe, as_attachment=False)
+    except Exception as e:
+        return f"Arquivo não encontrado ou erro de acesso: {e}", 404
+
+
+@app.route("/api/herdeiros/<id>", methods=["DELETE"])
+def api_deletar_herdeiro(id):
+    """Remove um processo de herdeiros do banco de dados persistente."""
+    try:
+        dados = carregar_herdeiros()
+        id_upper = id.strip().upper()
+        
+        novos_dados = [c for c in dados if c.get("id", "").upper() != id_upper]
+        if len(novos_dados) == len(dados):
+            return jsonify({"success": False, "error": f"Caso {id} não encontrado."}), 404
+            
+        salvar_herdeiros(novos_dados)
+        return jsonify({"success": True, "message": f"Caso {id} removido com sucesso."})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/herdeiros/caixas")
+def api_caixas_herdeiros():
+    """Retorna agrupamento consolidado de todas as caixas físicas de arquivamento."""
+    try:
+        dados = carregar_herdeiros()
+        caixas_map = {}
+        
+        for c in dados:
+            cx = str(c.get("caixa_concluido", "")).strip().upper()
+            if not cx:
+                if c.get("status") == "concluido":
+                    cx = "CAIXA GERAL / NÃO ESPECIFICADA"
+                else:
+                    continue
+                    
+            if cx not in caixas_map:
+                caixas_map[cx] = {
+                    "nome": cx,
+                    "total": 0,
+                    "casos": []
+                }
+                
+            caixas_map[cx]["total"] += 1
+            fal = c.get("falecido", {})
+            caixas_map[cx]["casos"].append({
+                "id": c.get("id"),
+                "falecido_nome": fal.get("nome"),
+                "cpf": fal.get("cpf"),
+                "matricula": fal.get("matricula"),
+                "acao": fal.get("acao_juridica"),
+                "data_cadastro": c.get("data_cadastro"),
+                "status": c.get("status")
+            })
+            
+        # Lista ordenada alfabeticamente pelo nome da caixa
+        caixas_lista = sorted(list(caixas_map.values()), key=lambda x: x["nome"])
+        return jsonify({"success": True, "caixas": caixas_lista, "total_caixas": len(caixas_lista)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/herdeiros/stats")
+def api_stats_herdeiros():
+    """Retorna métricas da esteira de herdeiros para o dashboard."""
+    try:
+        dados = carregar_herdeiros()
+        stats = {
+            "fila_espera": 0,
+            "em_producao": 0,
+            "enviado_assinatura": 0,
+            "concluido": 0,
+            "total": len(dados)
+        }
+        for c in dados:
+            st = c.get("status", "fila_espera").lower()
+            if st in stats:
+                stats[st] += 1
+            else:
+                stats["fila_espera"] += 1
+                
+        return jsonify({"success": True, "stats": stats})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/herdeiros/exportar")
+def api_exportar_herdeiros():
+    """Exporta os processos de herdeiros para arquivo Excel com download direto."""
+    try:
+        dados = carregar_herdeiros()
+        linhas = []
+        for item in dados:
+            fal = item.get("falecido", {})
+            herds = item.get("herdeiros", [])
+            nomes_h = ", ".join(h.get("nome", "") for h in herds if h.get("nome"))
+            contatos_h = ", ".join(f"{h.get('nome')}: {h.get('telefone') or h.get('email') or 'S/C'}" for h in herds if h.get("nome"))
+            
+            linhas.append({
+                "ID": item.get("id"),
+                "STATUS": STATUS_HERDEIROS_MAP.get(item.get("status"), item.get("status")),
+                "FALECIDO": fal.get("nome"),
+                "CPF FALECIDO": fal.get("cpf"),
+                "MATRÍCULA": fal.get("matricula"),
+                "REGIONAL": fal.get("regional"),
+                "AÇÃO JURÍDICA": fal.get("acao_juridica"),
+                "DATA ÓBITO": fal.get("data_obito"),
+                "QTD HERDEIROS": len(herds),
+                "HERDEIROS (NOMES)": nomes_h,
+                "HERDEIROS (CONTATOS)": contatos_h,
+                "LOCAL PROVISÓRIO": item.get("localizacao_provisoria"),
+                "CAIXA CONCLUÍDO": item.get("caixa_concluido"),
+                "DATA CADASTRO": item.get("data_cadastro"),
+                "ÚLTIMA ATUALIZAÇÃO": item.get("ultima_atualizacao"),
+                "OBSERVAÇÕES": item.get("observacoes")
+            })
+            
+        df = pd.DataFrame(linhas)
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine="openpyxl") as writer:
+            df.to_excel(writer, index=False, sheet_name="Herdeiros")
+        output.seek(0)
+        
+        data_str = datetime.now().strftime("%Y%m%d_%H%M")
+        nome_arq = f"herdeiros_sinte_{data_str}.xlsx"
+        
+        return send_file(
+            output,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            as_attachment=True,
+            download_name=nome_arq
+        )
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ----------------------------------------------------------------------
+# 6. INICIALIZAÇÃO DOS DADOS E BACKGROUND SYNC DAEMON
+# ----------------------------------------------------------------------
+if not os.environ.get("TESTING"):
+    carregar_dados()
+    sync_thread = threading.Thread(target=background_sync_worker, daemon=True)
+    sync_thread.start()
 
 
 if __name__ == "__main__":
