@@ -939,6 +939,21 @@ def stats_guilherme_fundef():
 # 5. ROTAS REST DO MÓDULO DE GESTÃO DE HERDEIROS
 # ----------------------------------------------------------------------
 
+@app.route("/api/herdeiros/planilha", methods=["GET"])
+def api_herdeiros_planilha():
+    try:
+        url = "https://docs.google.com/spreadsheets/d/1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c/export?format=csv&gid=1430431385"
+        res = requests.get(url, timeout=15)
+        res.encoding = 'utf-8'
+        import csv
+        from io import StringIO
+        reader = csv.DictReader(StringIO(res.text))
+        dados = [row for row in reader]
+        return jsonify({"success": True, "data": dados})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 @app.route("/api/herdeiros", methods=["GET"])
 def api_listar_herdeiros():
     """Retorna lista de processos de herdeiros com suporte a filtros."""

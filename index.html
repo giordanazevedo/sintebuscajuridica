@@ -157,7 +157,8 @@
         main {
             flex: 1;
             width: 100%;
-            max-width: 1050px;
+            max-width: 1400px; /* Aumentado de 1050px para 1400px para reduzir espaços laterais */
+            width: 95%; /* Garante que o layout pode se expandir em telas largas */
             margin: 0 auto;
             padding: 3rem 1.5rem;
             display: flex;
@@ -519,7 +520,10 @@
         /* ESTILO DO MODAL DE PLANILHAS */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
             display: none;
@@ -684,7 +688,9 @@
         .planilha-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
             width: 5px;
             background: var(--accent);
             transition: var(--transition);
@@ -703,7 +709,7 @@
             border-color: rgba(5, 150, 105, 0.4);
             background: #f8fafc;
         }
-        
+
         .planilha-card.tipo-google:hover {
             border-color: rgba(0, 75, 155, 0.4);
             background: #f8fafc;
@@ -714,7 +720,8 @@
             flex-direction: column;
             gap: 0.35rem;
             flex-grow: 1;
-            min-width: 0; /* allows text truncation/wrap calculation */
+            min-width: 0;
+            /* allows text truncation/wrap calculation */
         }
 
         .planilha-name {
@@ -945,18 +952,37 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         footer {
@@ -985,29 +1011,70 @@
                 justify-content: center;
             }
 
-            .logo-title h1 { font-size: 1.15rem; }
-            .logo-title p { display: none; }
+            .logo-title h1 {
+                font-size: 1.15rem;
+            }
+
+            .logo-title p {
+                display: none;
+            }
 
             .header-actions {
                 width: 100%;
                 flex-direction: column;
             }
 
-            .btn-sync, .btn-add {
+            .btn-sync,
+            .btn-add {
                 width: 100%;
                 justify-content: center;
                 padding: 0.75rem;
             }
 
-            main { padding: 1.5rem 1rem; gap: 1.5rem; }
-            .search-section h2 { font-size: 1.75rem; }
-            .search-icon { width: 40px; }
-            .search-input { font-size: 1rem; padding: 0.6rem 0.5rem; }
-            .search-tips { flex-direction: column; align-items: center; gap: 0.75rem; }
-            .card-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
-            .server-name { font-size: 1.15rem; }
-            .toast-container { left: 1rem; right: 1rem; bottom: 1rem; }
-            .toast { min-width: unset; width: 100%; }
+            main {
+                padding: 1.5rem 1rem;
+                gap: 1.5rem;
+            }
+
+            .search-section h2 {
+                font-size: 1.75rem;
+            }
+
+            .search-icon {
+                width: 40px;
+            }
+
+            .search-input {
+                font-size: 1rem;
+                padding: 0.6rem 0.5rem;
+            }
+
+            .search-tips {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .server-name {
+                font-size: 1.15rem;
+            }
+
+            .toast-container {
+                left: 1rem;
+                right: 1rem;
+                bottom: 1rem;
+            }
+
+            .toast {
+                min-width: unset;
+                width: 100%;
+            }
         }
 
         /* ====== Painel Guilherme Melo + FUNDEF ====== */
@@ -1015,16 +1082,19 @@
             width: 100%;
             animation: fadeIn 0.35s ease-out;
         }
+
         .gm-fundef-header {
             display: flex;
             align-items: center;
             gap: 0.75rem;
             margin-bottom: 1.5rem;
         }
+
         .gm-fundef-header h3 {
             font-size: 1.3rem;
             color: var(--text-main);
         }
+
         .gm-fundef-header span.badge-gm {
             background: #eff6ff;
             color: #1d4ed8;
@@ -1036,15 +1106,20 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
         .gm-stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
+
         @media (min-width: 680px) {
-            .gm-stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .gm-stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
+
         .gm-stat-card {
             background: var(--surface);
             border: 1px solid var(--surface-border);
@@ -1057,11 +1132,28 @@
             transition: var(--transition);
             border-left: 5px solid transparent;
         }
-        .gm-stat-card:hover { transform: translateY(-2px); box-shadow: var(--card-shadow-hover); }
-        .gm-stat-card.total  { border-left-color: #7c3aed; }
-        .gm-stat-card.gm     { border-left-color: #2563eb; }
-        .gm-stat-card.fu     { border-left-color: #d97706; }
-        .gm-stat-card.inter  { border-left-color: #059669; }
+
+        .gm-stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .gm-stat-card.total {
+            border-left-color: #7c3aed;
+        }
+
+        .gm-stat-card.gm {
+            border-left-color: #2563eb;
+        }
+
+        .gm-stat-card.fu {
+            border-left-color: #d97706;
+        }
+
+        .gm-stat-card.inter {
+            border-left-color: #059669;
+        }
+
         .gm-stat-card .sc-label {
             font-size: 0.72rem;
             text-transform: uppercase;
@@ -1069,29 +1161,48 @@
             font-weight: 700;
             color: var(--text-muted);
         }
+
         .gm-stat-card .sc-num {
             font-family: 'Outfit', sans-serif;
             font-size: 2rem;
             font-weight: 800;
             line-height: 1;
         }
-        .gm-stat-card.total .sc-num  { color: #7c3aed; }
-        .gm-stat-card.gm    .sc-num  { color: #2563eb; }
-        .gm-stat-card.fu    .sc-num  { color: #d97706; }
-        .gm-stat-card.inter .sc-num  { color: #059669; }
+
+        .gm-stat-card.total .sc-num {
+            color: #7c3aed;
+        }
+
+        .gm-stat-card.gm .sc-num {
+            color: #2563eb;
+        }
+
+        .gm-stat-card.fu .sc-num {
+            color: #d97706;
+        }
+
+        .gm-stat-card.inter .sc-num {
+            color: #059669;
+        }
+
         .gm-stat-card .sc-sub {
             font-size: 0.78rem;
             color: var(--text-muted);
             margin-top: 0.1rem;
         }
+
         .gm-detail-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 1rem;
         }
+
         @media (min-width: 768px) {
-            .gm-detail-grid { grid-template-columns: 1fr 1fr; }
+            .gm-detail-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
+
         .gm-list-card {
             background: var(--surface);
             border: 1px solid var(--surface-border);
@@ -1099,6 +1210,7 @@
             padding: 1.25rem;
             box-shadow: var(--card-shadow);
         }
+
         .gm-list-card h4 {
             font-size: 1rem;
             color: var(--text-main);
@@ -1109,9 +1221,15 @@
             align-items: center;
             gap: 0.5rem;
         }
+
         .gm-list-card h4 .dot {
-            width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
         }
+
         .gm-pessoas-list {
             max-height: 280px;
             overflow-y: auto;
@@ -1120,6 +1238,7 @@
             gap: 0.5rem;
             padding-right: 0.2rem;
         }
+
         .gm-pessoa-item {
             display: flex;
             justify-content: space-between;
@@ -1130,8 +1249,19 @@
             font-size: 0.82rem;
             gap: 0.5rem;
         }
-        .gm-pessoa-nome { font-weight: 600; color: var(--text-main); flex: 1; }
-        .gm-pessoa-mat  { font-size: 0.74rem; color: var(--text-muted); white-space: nowrap; }
+
+        .gm-pessoa-nome {
+            font-weight: 600;
+            color: var(--text-main);
+            flex: 1;
+        }
+
+        .gm-pessoa-mat {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
         .gm-loading {
             display: flex;
             flex-direction: column;
@@ -1142,7 +1272,14 @@
             color: var(--text-muted);
             font-size: 0.95rem;
         }
-        .gm-loading svg { width: 32px; height: 32px; animation: spin 1s linear infinite; stroke: var(--accent); }
+
+        .gm-loading svg {
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+            stroke: var(--accent);
+        }
+
         .gm-btn-refresh {
             display: inline-flex;
             align-items: center;
@@ -1158,8 +1295,19 @@
             transition: var(--transition);
             font-family: 'Outfit', sans-serif;
         }
-        .gm-btn-refresh:hover { opacity: 0.88; transform: translateY(-1px); }
-        .gm-btn-refresh svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+
+        .gm-btn-refresh:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        .gm-btn-refresh svg {
+            width: 15px;
+            height: 15px;
+            stroke: currentColor;
+            fill: none;
+        }
+
         /* Novas Estilizações de Busca por Regional e Abas */
         .search-tabs {
             display: flex;
@@ -1375,10 +1523,12 @@
                 transform: scale(0.95);
                 box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
             }
+
             70% {
                 transform: scale(1);
                 box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
             }
+
             100% {
                 transform: scale(0.95);
                 box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
@@ -1390,10 +1540,12 @@
                 transform: scale(0.95);
                 box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7);
             }
+
             70% {
                 transform: scale(1);
                 box-shadow: 0 0 0 6px rgba(234, 179, 8, 0);
             }
+
             100% {
                 transform: scale(0.95);
                 box-shadow: 0 0 0 0 rgba(234, 179, 8, 0);
@@ -1532,10 +1684,21 @@
             width: 4px;
         }
 
-        .kpi-card.kpi-espera::before { background: #f59e0b; }
-        .kpi-card.kpi-producao::before { background: #3b82f6; }
-        .kpi-card.kpi-assinatura::before { background: #8b5cf6; }
-        .kpi-card.kpi-concluido::before { background: #10b981; }
+        .kpi-card.kpi-espera::before {
+            background: #f59e0b;
+        }
+
+        .kpi-card.kpi-producao::before {
+            background: #3b82f6;
+        }
+
+        .kpi-card.kpi-assinatura::before {
+            background: #8b5cf6;
+        }
+
+        .kpi-card.kpi-concluido::before {
+            background: #10b981;
+        }
 
         .kpi-icon {
             width: 46px;
@@ -1548,10 +1711,25 @@
             flex-shrink: 0;
         }
 
-        .kpi-espera .kpi-icon { background: #fef3c7; color: #b45309; }
-        .kpi-producao .kpi-icon { background: #dbeafe; color: #1d4ed8; }
-        .kpi-assinatura .kpi-icon { background: #ede9fe; color: #6d28d9; }
-        .kpi-concluido .kpi-icon { background: #d1fae5; color: #047857; }
+        .kpi-espera .kpi-icon {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .kpi-producao .kpi-icon {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .kpi-assinatura .kpi-icon {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .kpi-concluido .kpi-icon {
+            background: #d1fae5;
+            color: #047857;
+        }
 
         .kpi-info {
             display: flex;
@@ -1682,7 +1860,7 @@
         .btn-view-opt.active {
             background: #ffffff;
             color: var(--accent);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .btn-cta-primary {
@@ -1755,7 +1933,7 @@
             display: flex;
             flex-direction: column;
             min-height: 500px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
             position: relative;
         }
 
@@ -1771,10 +1949,21 @@
             border-top: 4px solid transparent;
         }
 
-        .col-espera .kanban-column-header { border-top-color: #f59e0b; }
-        .col-producao .kanban-column-header { border-top-color: #3b82f6; }
-        .col-assinatura .kanban-column-header { border-top-color: #8b5cf6; }
-        .col-concluido .kanban-column-header { border-top-color: #10b981; }
+        .col-espera .kanban-column-header {
+            border-top-color: #f59e0b;
+        }
+
+        .col-producao .kanban-column-header {
+            border-top-color: #3b82f6;
+        }
+
+        .col-assinatura .kanban-column-header {
+            border-top-color: #8b5cf6;
+        }
+
+        .col-concluido .kanban-column-header {
+            border-top-color: #10b981;
+        }
 
         .kanban-title {
             display: flex;
@@ -1794,10 +1983,25 @@
             color: var(--text-muted);
         }
 
-        .col-espera .kanban-counter { background: #fef3c7; color: #b45309; }
-        .col-producao .kanban-counter { background: #dbeafe; color: #1d4ed8; }
-        .col-assinatura .kanban-counter { background: #ede9fe; color: #6d28d9; }
-        .col-concluido .kanban-counter { background: #d1fae5; color: #047857; }
+        .col-espera .kanban-counter {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .col-producao .kanban-counter {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .col-assinatura .kanban-counter {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .col-concluido .kanban-counter {
+            background: #d1fae5;
+            color: #047857;
+        }
 
         .kanban-cards-wrapper {
             padding: 0.85rem;
@@ -1814,7 +2018,7 @@
             border: 1px solid var(--surface-border);
             border-radius: 10px;
             padding: 0.95rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
             cursor: pointer;
             transition: var(--transition);
             display: flex;
@@ -1825,7 +2029,7 @@
 
         .kanban-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
             border-color: #cbd5e1;
         }
 
@@ -2034,10 +2238,25 @@
             font-weight: 700;
         }
 
-        .status-badge.status-fila_espera { background: #fef3c7; color: #b45309; }
-        .status-badge.status-em_producao { background: #dbeafe; color: #1d4ed8; }
-        .status-badge.status-enviado_assinatura { background: #ede9fe; color: #6d28d9; }
-        .status-badge.status-concluido { background: #d1fae5; color: #047857; }
+        .status-badge.status-fila_espera {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status-badge.status-em_producao {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-badge.status-enviado_assinatura {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .status-badge.status-concluido {
+            background: #d1fae5;
+            color: #047857;
+        }
 
         /* Integração nos Cards da Busca Geral */
         .herdeiro-card-badge {
@@ -2115,7 +2334,9 @@
         }
 
         @media (max-width: 640px) {
-            .form-row-2, .form-row-3 {
+
+            .form-row-2,
+            .form-row-3 {
                 grid-template-columns: 1fr;
             }
         }
@@ -2298,9 +2519,12 @@
             body * {
                 visibility: hidden !important;
             }
-            #printable-protocol, #printable-protocol * {
+
+            #printable-protocol,
+            #printable-protocol * {
                 visibility: visible !important;
             }
+
             #printable-protocol {
                 position: absolute;
                 left: 0;
@@ -2318,6 +2542,14 @@
 <body>
 
     <header>
+        <button onclick="location.reload()" class="btn-outline-action"
+            style="margin-right: 1rem; padding: 0.5rem 1rem; border: none; background: transparent; font-weight: 600; font-size: 1rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Voltar
+        </button>
         <div class="logo-container">
             <img src="https://www.sintepiaui.org.br/images/logos/1/logomarcaa24.png" alt="SINTE-PI Logo"
                 class="logo-img">
@@ -2330,19 +2562,24 @@
         <div class="header-actions">
             <button id="btn-novidades" class="btn-novidades" title="Ver detalhes da última atualização">
                 <span class="novidade-dot"></span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polygon
+                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                    </polygon>
                 </svg>
                 <span>Novidades</span>
             </button>
 
-            <div class="sync-status-container" id="sync-status-container" title="Sincronização automática em segundo plano ativa">
+            <div class="sync-status-container" id="sync-status-container"
+                title="Sincronização automática em segundo plano ativa">
                 <span class="sync-status-dot" id="sync-status-dot"></span>
                 <span class="sync-status-text" id="sync-status-text">Auto-Sync Ativo</span>
             </div>
 
             <button id="btn-open-planilhas" class="btn-add">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
                     <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6z"></path>
                     <polyline points="14 2 14 8 20 8"></polyline>
                     <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -2364,24 +2601,27 @@
     <main>
         <section class="search-section">
             <h2>Consulta de Ações Jurídicas</h2>
-            
+
             <div class="search-tabs">
                 <button class="search-tab active" id="tab-servidor">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
                     <span>Busca por Servidor</span>
                 </button>
                 <button class="search-tab" id="tab-regional">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                         <circle cx="12" cy="10" r="3"></circle>
                     </svg>
                     <span>Busca por Regional (Cidades)</span>
                 </button>
                 <button class="search-tab" id="tab-herdeiros">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                         <circle cx="9" cy="7" r="4"></circle>
                         <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -2402,7 +2642,8 @@
                         </svg>
                     </div>
                     <input type="text" id="search-input" class="search-input"
-                        placeholder="Digite CPF, Matrícula ou Nome (separe por vírgula para múltiplos)..." autofocus autocomplete="off">
+                        placeholder="Digite CPF, Matrícula ou Nome (separe por vírgula para múltiplos)..." autofocus
+                        autocomplete="off">
                     <button id="clear-btn" class="clear-btn" title="Limpar pesquisa">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -2414,7 +2655,8 @@
                 <!-- Wrapper Busca Regional -->
                 <div class="search-input-wrapper" id="wrapper-regional" style="display: none;">
                     <div class="search-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                             <circle cx="12" cy="10" r="3"></circle>
                         </svg>
@@ -2430,7 +2672,7 @@
                     </button>
                 </div>
             </div>
-            
+
             <div class="search-tips" id="tips-servidor">
                 <span>Busca por <strong>CPF</strong></span>
                 <span>Busca por <strong>Matrícula</strong></span>
@@ -2456,7 +2698,8 @@
                         <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <h3>Sistema Pronto para Consulta</h3>
-                    <p>Digite CPF (com ou sem zero no início), Matrícula ou Nome do professor/servidor acima para pesquisar instantaneamente.</p>
+                    <p>Digite CPF (com ou sem zero no início), Matrícula ou Nome do professor/servidor acima para
+                        pesquisar instantaneamente.</p>
                 </div>
             </div>
 
@@ -2466,7 +2709,7 @@
         <section class="herdeiros-section" id="herdeiros-section" style="display: none;">
             <!-- KPI Cards Dashboard -->
             <div class="kpi-grid">
-                <div class="kpi-card kpi-espera" id="kpi-card-espera" title="Filtrar casos aguardando minuta">
+                <div class="kpi-card kpi-espera" id="kpi-card-espera" title="Filtrar casos aguardando produção">
                     <div class="kpi-icon">📥</div>
                     <div class="kpi-info">
                         <span class="kpi-value" id="kpi-count-espera">0</span>
@@ -2474,15 +2717,17 @@
                     </div>
                 </div>
 
-                <div class="kpi-card kpi-producao" id="kpi-card-producao" title="Filtrar casos em produção pelo jurídico">
+                <div class="kpi-card kpi-producao" id="kpi-card-producao"
+                    title="Filtrar casos em produção pelo jurídico">
                     <div class="kpi-icon">⚖️</div>
                     <div class="kpi-info">
                         <span class="kpi-value" id="kpi-count-producao">0</span>
-                        <span class="kpi-label">Em Produção / Minuta</span>
+                        <span class="kpi-label">Em Produção</span>
                     </div>
                 </div>
 
-                <div class="kpi-card kpi-assinatura" id="kpi-card-assinatura" title="Filtrar casos aguardando retorno dos herdeiros">
+                <div class="kpi-card kpi-assinatura" id="kpi-card-assinatura"
+                    title="Filtrar casos aguardando retorno dos herdeiros">
                     <div class="kpi-icon">📲</div>
                     <div class="kpi-info">
                         <span class="kpi-value" id="kpi-count-assinatura">0</span>
@@ -2490,7 +2735,8 @@
                     </div>
                 </div>
 
-                <div class="kpi-card kpi-concluido" id="kpi-card-concluido" title="Filtrar processos finalizados e arquivados">
+                <div class="kpi-card kpi-concluido" id="kpi-card-concluido"
+                    title="Filtrar processos finalizados e arquivados">
                     <div class="kpi-icon">🗃️</div>
                     <div class="kpi-info">
                         <span class="kpi-value" id="kpi-count-concluido">0</span>
@@ -2507,7 +2753,8 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
-                        <input type="text" id="herdeiros-search-input" placeholder="Buscar por falecido, herdeiro, CPF ou caixa...">
+                        <input type="text" id="herdeiros-search-input"
+                            placeholder="Buscar por falecido, herdeiro, CPF ou caixa...">
                     </div>
 
                     <select id="herdeiros-filter-acao" class="toolbar-select">
@@ -2525,15 +2772,19 @@
 
                 <div class="toolbar-right">
                     <div class="btn-view-toggle">
-                        <button type="button" class="btn-view-opt active" id="btn-view-kanban" title="Visualização em Pipeline">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                        <button type="button" class="btn-view-opt active" id="btn-view-kanban"
+                            title="Visualização em Pipeline">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                style="width:14px;height:14px;">
                                 <rect x="3" y="3" width="7" height="18" rx="1"></rect>
                                 <rect x="14" y="3" width="7" height="18" rx="1"></rect>
                             </svg>
                             <span>Kanban</span>
                         </button>
-                        <button type="button" class="btn-view-opt" id="btn-view-tabela" title="Visualização em Lista/Tabela">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                        <button type="button" class="btn-view-opt" id="btn-view-tabela"
+                            title="Visualização em Lista/Tabela">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                style="width:14px;height:14px;">
                                 <line x1="8" y1="6" x2="21" y2="6"></line>
                                 <line x1="8" y1="12" x2="21" y2="12"></line>
                                 <line x1="8" y1="18" x2="21" y2="18"></line>
@@ -2545,17 +2796,23 @@
                         </button>
                     </div>
 
-                    <button type="button" class="btn-outline-action" id="btn-abrir-caixas" title="Ver lista de caixas e processos físicos">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    <button type="button" class="btn-outline-action" id="btn-abrir-caixas"
+                        title="Ver lista de caixas e processos físicos">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            style="width:15px;height:15px;">
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                            </path>
                             <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
                             <line x1="12" y1="22.08" x2="12" y2="12"></line>
                         </svg>
                         <span>Caixas de Arquivo</span>
                     </button>
 
-                    <button type="button" class="btn-outline-action" id="btn-exportar-herdeiros" title="Exportar planilha Excel">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;">
+                    <button type="button" class="btn-outline-action" id="btn-exportar-herdeiros"
+                        title="Exportar planilha Excel">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            style="width:15px;height:15px;">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -2564,7 +2821,8 @@
                     </button>
 
                     <button type="button" class="btn-cta-primary" id="btn-novo-herdeiro">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            style="width:16px;height:16px;">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
@@ -2592,7 +2850,7 @@
                 <div class="kanban-column col-producao" id="kanban-col-producao">
                     <div class="kanban-column-header">
                         <div class="kanban-title">
-                            <span>⚖️ Em Produção / Minuta</span>
+                            <span>⚖️ Em Produção</span>
                         </div>
                         <span class="kanban-counter" id="count-badge-producao">0</span>
                     </div>
@@ -2657,19 +2915,23 @@
             <div class="modal-header">
                 <h3 class="modal-title">Acesso Restrito</h3>
                 <button class="btn-close-x" id="btn-close-senha-x" title="Fechar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                 </button>
             </div>
-            
-            <p class="modal-subtitle">Insira a senha de acesso para visualizar as planilhas do departamento jurídico.</p>
-            
+
+            <p class="modal-subtitle">Insira a senha de acesso para visualizar as planilhas do departamento jurídico.
+            </p>
+
             <div class="form-group" style="margin-top: 1rem;">
                 <label for="senha-acesso-input">Senha de Acesso</label>
-                <input type="password" id="senha-acesso-input" class="form-control" placeholder="Digite a senha..." style="height: 42px;">
-                <div id="senha-erro-msg" style="color: var(--danger); font-size: 0.85rem; font-weight: 600; display: none; margin-top: 0.25rem;">
+                <input type="password" id="senha-acesso-input" class="form-control" placeholder="Digite a senha..."
+                    style="height: 42px;">
+                <div id="senha-erro-msg"
+                    style="color: var(--danger); font-size: 0.85rem; font-weight: 600; display: none; margin-top: 0.25rem;">
                     Senha incorreta. Tente novamente.
                 </div>
             </div>
@@ -2687,15 +2949,17 @@
             <div class="modal-header">
                 <h3 class="modal-title">Bases de Dados e Planilhas</h3>
                 <button class="btn-close-x" id="btn-close-modal-x" title="Fechar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                 </button>
             </div>
-            
-            <p class="modal-subtitle">Selecione uma planilha para visualizar no Google Drive ou baixar a cópia local mais recente.</p>
-            
+
+            <p class="modal-subtitle">Selecione uma planilha para visualizar no Google Drive ou baixar a cópia local
+                mais recente.</p>
+
             <div class="modal-search-wrapper">
                 <div class="modal-search-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2703,7 +2967,8 @@
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </div>
-                <input type="text" id="modal-search-input" class="form-control" placeholder="Buscar planilha pelo nome...">
+                <input type="text" id="modal-search-input" class="form-control"
+                    placeholder="Buscar planilha pelo nome...">
             </div>
 
             <div class="planilhas-grid" id="planilhas-grid">
@@ -2721,21 +2986,26 @@
         <div class="modal-card" style="border-top: 5px solid var(--accent); max-width: 580px;">
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="background: rgba(0, 75, 155, 0.1); color: var(--accent); font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.7rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <span
+                        style="background: rgba(0, 75, 155, 0.1); color: var(--accent); font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.7rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px;">
                         ✨ Nova Atualização
                     </span>
                 </div>
                 <button class="btn-close-x" id="btn-close-atualizacao-x" title="Fechar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                 </button>
             </div>
-            
-            <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.15rem; padding: 0.5rem 0;">
-                <div style="background: linear-gradient(135deg, rgba(0, 75, 155, 0.12) 0%, rgba(211, 17, 36, 0.08) 100%); color: var(--accent); width: 66px; height: 66px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0, 75, 155, 0.15);">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px;">
+
+            <div
+                style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.15rem; padding: 0.5rem 0;">
+                <div
+                    style="background: linear-gradient(135deg, rgba(0, 75, 155, 0.12) 0%, rgba(211, 17, 36, 0.08) 100%); color: var(--accent); width: 66px; height: 66px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0, 75, 155, 0.15);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" style="width: 32px; height: 32px;">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
@@ -2745,38 +3015,58 @@
                     <h3 style="font-size: 1.35rem; color: var(--accent); margin-bottom: 0.35rem;">
                         Busca por CPF com Zero Inicial Liberada!
                     </h3>
-                    <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; max-width: 480px; margin: 0 auto;">
-                        Agora você pode pesquisar digitando o <strong>zero no início do CPF</strong> ou sem o zero. O sistema encontra o associado em qualquer formato!
+                    <p
+                        style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; max-width: 480px; margin: 0 auto;">
+                        Agora você pode pesquisar digitando o <strong>zero no início do CPF</strong> ou sem o zero. O
+                        sistema encontra o associado em qualquer formato!
                     </p>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 0.85rem; width: 100%; text-align: left; background: #f8fafc; border: 1px solid var(--surface-border); border-radius: 12px; padding: 1.1rem 1.25rem;">
+                <div
+                    style="display: flex; flex-direction: column; gap: 0.85rem; width: 100%; text-align: left; background: #f8fafc; border: 1px solid var(--surface-border); border-radius: 12px; padding: 1.1rem 1.25rem;">
                     <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
-                        <span style="background: #e0f2fe; color: #0284c7; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">0️⃣</span>
+                        <span
+                            style="background: #e0f2fe; color: #0284c7; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">0️⃣</span>
                         <div>
-                            <strong style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Pesquisa flexível com ou sem zero</strong>
+                            <strong
+                                style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Pesquisa
+                                flexível com ou sem zero</strong>
                             <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
-                                Pesquise com zero inicial (ex: <code style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">03567931334</code> ou formatado <code style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">035.679.313-34</code>) ou sem zero (<code style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">3567931334</code>).
+                                Pesquise com zero inicial (ex: <code
+                                    style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">03567931334</code>
+                                ou formatado <code
+                                    style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">035.679.313-34</code>)
+                                ou sem zero (<code
+                                    style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">3567931334</code>).
                             </p>
                         </div>
                     </div>
 
                     <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
-                        <span style="background: #dcfce7; color: #16a34a; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">✨</span>
+                        <span
+                            style="background: #dcfce7; color: #16a34a; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">✨</span>
                         <div>
-                            <strong style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Exibição completa de 11 dígitos</strong>
+                            <strong
+                                style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Exibição
+                                completa de 11 dígitos</strong>
                             <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
-                                Mesmo quando o Excel retirava os zeros da planilha, o sistema agora normaliza e exibe todos os <strong>11 dígitos</strong> com a máscara oficial (<code style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">000.000.000-00</code>).
+                                Mesmo quando o Excel retirava os zeros da planilha, o sistema agora normaliza e exibe
+                                todos os <strong>11 dígitos</strong> com a máscara oficial (<code
+                                    style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">000.000.000-00</code>).
                             </p>
                         </div>
                     </div>
 
                     <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
-                        <span style="background: #fef3c7; color: #d97706; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">📁</span>
+                        <span
+                            style="background: #fef3c7; color: #d97706; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">📁</span>
                         <div>
-                            <strong style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Planilha Guilherme Melo Atualizada</strong>
+                            <strong
+                                style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Planilha
+                                Guilherme Melo Atualizada</strong>
                             <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
-                                A nova versão da planilha da <em>Ação Guilherme Melo COMPLETO</em> já foi conectada e sincronizada ao sistema.
+                                A nova versão da planilha da <em>Ação Guilherme Melo COMPLETO</em> já foi conectada e
+                                sincronizada ao sistema.
                             </p>
                         </div>
                     </div>
@@ -2784,9 +3074,11 @@
             </div>
 
             <div class="modal-footer-buttons" style="justify-content: center; border-top: none; padding-top: 0.25rem;">
-                <button class="btn-save" id="btn-close-atualizacao" style="padding: 0.8rem 2.5rem; font-size: 0.95rem; font-weight: 700; width: 100%; max-width: 250px; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 75, 155, 0.3);">
+                <button class="btn-save" id="btn-close-atualizacao"
+                    style="padding: 0.8rem 2.5rem; font-size: 0.95rem; font-weight: 700; width: 100%; max-width: 250px; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 75, 155, 0.3);">
                     <span>Entendido!</span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" style="width: 16px; height: 16px;">
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                 </button>
@@ -2796,11 +3088,13 @@
 
     <!-- MODAL DE CADASTRO / ENTRADA DE HERDEIROS -->
     <div class="modal-overlay" id="modal-herdeiro-cadastro">
-        <div class="modal-card modal-large" style="max-width: 820px; max-height: 90vh; display: flex; flex-direction: column;">
+        <div class="modal-card modal-large"
+            style="max-width: 820px; max-height: 90vh; display: flex; flex-direction: column;">
             <div class="modal-header">
                 <div>
                     <h3 class="modal-title" id="cad-modal-title">Registrar Entrada de Herdeiros</h3>
-                    <p class="modal-subtitle">Preencha os dados do titular falecido, os herdeiros e a localização provisória dos documentos.</p>
+                    <p class="modal-subtitle">Preencha os dados do titular falecido, os herdeiros e a localização
+                        provisória dos documentos.</p>
                 </div>
                 <button class="btn-close-x" id="btn-close-cad-herdeiro-x" title="Fechar">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2819,22 +3113,29 @@
                         <span>1. Dados do Titular Falecido</span>
                     </div>
 
-                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.85rem;">
-                        <label style="font-size: 0.78rem; font-weight: 700; color: var(--accent); display: block; margin-bottom: 0.35rem;">
+                    <div
+                        style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.85rem;">
+                        <label
+                            style="font-size: 0.78rem; font-weight: 700; color: var(--accent); display: block; margin-bottom: 0.35rem;">
                             ⚡ Busca Rápida no Banco SINTE (Auto-preenchimento):
                         </label>
                         <div style="display: flex; gap: 0.5rem;">
-                            <input type="text" id="cad-busca-titular-input" class="form-control" placeholder="Digite CPF, Matrícula ou Nome do falecido..." style="height: 38px;">
-                            <button type="button" class="btn-outline-action" id="btn-cad-buscar-titular" style="height: 38px; padding: 0 1rem; flex-shrink: 0;">
+                            <input type="text" id="cad-busca-titular-input" class="form-control"
+                                placeholder="Digite CPF, Matrícula ou Nome do falecido..." style="height: 38px;">
+                            <button type="button" class="btn-outline-action" id="btn-cad-buscar-titular"
+                                style="height: 38px; padding: 0 1rem; flex-shrink: 0;">
                                 <span>Localizar</span>
                             </button>
                         </div>
-                        <div id="cad-titular-sugestoes" style="display: none; margin-top: 0.5rem; max-height: 140px; overflow-y: auto; background: #ffffff; border: 1px solid var(--surface-border); border-radius: 6px;"></div>
+                        <div id="cad-titular-sugestoes"
+                            style="display: none; margin-top: 0.5rem; max-height: 140px; overflow-y: auto; background: #ffffff; border: 1px solid var(--surface-border); border-radius: 6px;">
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label for="cad-falecido-nome">Nome Completo do Falecido *</label>
-                        <input type="text" id="cad-falecido-nome" class="form-control" placeholder="Nome completo..." required>
+                        <input type="text" id="cad-falecido-nome" class="form-control" placeholder="Nome completo..."
+                            required>
                     </div>
 
                     <div class="form-row-2">
@@ -2844,14 +3145,16 @@
                         </div>
                         <div class="form-group">
                             <label for="cad-falecido-matricula">Matrícula</label>
-                            <input type="text" id="cad-falecido-matricula" class="form-control" placeholder="Matrícula funcional...">
+                            <input type="text" id="cad-falecido-matricula" class="form-control"
+                                placeholder="Matrícula funcional...">
                         </div>
                     </div>
 
                     <div class="form-row-3">
                         <div class="form-group">
                             <label for="cad-falecido-regional">Cidade / Regional</label>
-                            <input type="text" id="cad-falecido-regional" class="form-control" placeholder="Regional...">
+                            <input type="text" id="cad-falecido-regional" class="form-control"
+                                placeholder="Regional...">
                         </div>
                         <div class="form-group">
                             <label for="cad-falecido-acao">Ação Jurídica *</label>
@@ -2863,7 +3166,8 @@
                                 <option value="MÃO SANTA III">Mão Santa III</option>
                                 <option value="MÃO SANTA IV A VII">Mão Santa IV a VII</option>
                                 <option value="SEGUNDA AÇÃO">Segunda Ação</option>
-                                <option value="HERDEIROS CONCLUIDOS GUILHERME MELO E MÃO SANTA">Herdeiros Concluídos GM e MS</option>
+                                <option value="HERDEIROS CONCLUIDOS GUILHERME MELO E MÃO SANTA">Herdeiros Concluídos GM
+                                    e MS</option>
                                 <option value="OUTRA AÇÃO">Outra Ação</option>
                             </select>
                         </div>
@@ -2876,11 +3180,13 @@
 
                 <!-- Seção 2: Herdeiros -->
                 <div class="herdeiro-form-section">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
                         <div class="form-section-title" style="margin-bottom: 0;">
                             <span>2. Herdeiros Cadastrados</span>
                         </div>
-                        <button type="button" class="btn-outline-action" id="btn-add-herdeiro-card" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+                        <button type="button" class="btn-outline-action" id="btn-add-herdeiro-card"
+                            style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
                             <span>+ Adicionar Outro Herdeiro</span>
                         </button>
                     </div>
@@ -2929,7 +3235,8 @@
 
                     <div class="form-group" style="margin-top: 0.75rem;">
                         <label for="cad-doc-outros">Outros Documentos / Detalhes</label>
-                        <input type="text" id="cad-doc-outros" class="form-control" placeholder="Ex: Termo de renúncia, declaração de herdeiros...">
+                        <input type="text" id="cad-doc-outros" class="form-control"
+                            placeholder="Ex: Termo de renúncia, declaração de herdeiros...">
                     </div>
                 </div>
 
@@ -2942,39 +3249,48 @@
                     <div class="form-row-2">
                         <div class="form-group">
                             <label for="cad-local-provisorio">Local Provisório dos Documentos Físicos *</label>
-                            <input type="text" id="cad-local-provisorio" class="form-control" placeholder="Ex: Pasta Vermelha 03 - Entrada Jurídico..." value="Recepção / Entrada Jurídico">
+                            <input type="text" id="cad-local-provisorio" class="form-control"
+                                placeholder="Ex: Pasta Vermelha 03 - Entrada Jurídico..."
+                                value="Recepção / Entrada Jurídico">
                         </div>
                         <div class="form-group">
                             <label for="cad-caixa-concluido">Caixa de Concluídos (se já arquivado)</label>
-                            <input type="text" id="cad-caixa-concluido" class="form-control" placeholder="Ex: Caixa 01 - GM Herdeiros">
+                            <input type="text" id="cad-caixa-concluido" class="form-control"
+                                placeholder="Ex: Caixa 01 - GM Herdeiros">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="cad-observacoes">Observações Gerais</label>
-                        <textarea id="cad-observacoes" class="form-control" rows="2" placeholder="Anotações internas sobre o caso..."></textarea>
+                        <textarea id="cad-observacoes" class="form-control" rows="2"
+                            placeholder="Anotações internas sobre o caso..."></textarea>
                     </div>
                 </div>
             </div>
 
             <div class="modal-footer-buttons" style="margin-top: 1rem;">
                 <button type="button" class="btn-cancel" id="btn-cancel-cad-herdeiro">Cancelar</button>
-                <button type="button" class="btn-save" id="btn-salvar-cad-herdeiro">Salvar Processo de Herdeiros</button>
+                <button type="button" class="btn-save" id="btn-salvar-cad-herdeiro">Salvar Processo de
+                    Herdeiros</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL DE DETALHES & HISTÓRICO DE HERDEIROS -->
     <div class="modal-overlay" id="modal-herdeiro-detalhes">
-        <div class="modal-card modal-large" style="max-width: 880px; max-height: 92vh; display: flex; flex-direction: column;">
+        <div class="modal-card modal-large"
+            style="max-width: 880px; max-height: 92vh; display: flex; flex-direction: column;">
             <div class="modal-header" style="align-items: flex-start;">
                 <div>
                     <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.25rem;">
-                        <span class="card-id-badge" id="det-caso-id" style="font-size: 0.85rem; padding: 0.2rem 0.6rem;">HERD-0000</span>
+                        <span class="card-id-badge" id="det-caso-id"
+                            style="font-size: 0.85rem; padding: 0.2rem 0.6rem;">HERD-0000</span>
                         <span class="status-badge" id="det-caso-status-badge">Fila de Espera</span>
                     </div>
-                    <h3 class="modal-title" id="det-caso-nome-falecido" style="font-size: 1.35rem; color: var(--text-main);">NOME DO TITULAR FALECIDO</h3>
-                    <p class="modal-subtitle" id="det-caso-subtitulo">CPF: 000.000.000-00 • Matrícula: 00000 • Ação: Ação Guilherme Melo</p>
+                    <h3 class="modal-title" id="det-caso-nome-falecido"
+                        style="font-size: 1.35rem; color: var(--text-main);">NOME DO TITULAR FALECIDO</h3>
+                    <p class="modal-subtitle" id="det-caso-subtitulo">CPF: 000.000.000-00 • Matrícula: 00000 • Ação:
+                        Ação Guilherme Melo</p>
                 </div>
                 <button class="btn-close-x" id="btn-close-det-herdeiro-x" title="Fechar">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2984,20 +3300,27 @@
                 </button>
             </div>
 
-            <div style="overflow-y: auto; padding-right: 0.5rem; flex: 1; display: flex; flex-direction: column; gap: 1rem;">
+            <div
+                style="overflow-y: auto; padding-right: 0.5rem; flex: 1; display: flex; flex-direction: column; gap: 1rem;">
                 <!-- Barra de Ações Rápidas de Fase -->
-                <div style="background: #f8fafc; border: 1px solid var(--surface-border); border-radius: 10px; padding: 0.85rem 1rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                <div
+                    style="background: #f8fafc; border: 1px solid var(--surface-border); border-radius: 10px; padding: 0.85rem 1rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;">
                     <div>
-                        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Avançar Estágio do Processo:</span>
-                        <div id="det-botoes-transicao" style="display: flex; gap: 0.5rem; margin-top: 0.35rem; flex-wrap: wrap;">
+                        <span
+                            style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Avançar
+                            Estágio do Processo:</span>
+                        <div id="det-botoes-transicao"
+                            style="display: flex; gap: 0.5rem; margin-top: 0.35rem; flex-wrap: wrap;">
                             <!-- Botões de transição inseridos via JS -->
                         </div>
                     </div>
                     <div style="display: flex; gap: 0.5rem;">
-                        <button type="button" class="btn-outline-action" id="btn-det-editar" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">
+                        <button type="button" class="btn-outline-action" id="btn-det-editar"
+                            style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">
                             <span>✏️ Editar</span>
                         </button>
-                        <button type="button" class="btn-outline-action" id="btn-det-excluir" style="font-size: 0.8rem; padding: 0.4rem 0.75rem; color: var(--danger); border-color: #fecdd3;">
+                        <button type="button" class="btn-outline-action" id="btn-det-excluir"
+                            style="font-size: 0.8rem; padding: 0.4rem 0.75rem; color: var(--danger); border-color: #fecdd3;">
                             <span>🗑️ Excluir</span>
                         </button>
                     </div>
@@ -3012,7 +3335,8 @@
                             <div class="form-section-title">
                                 <span>📁 Guarda Física dos Documentos</span>
                             </div>
-                            <div id="det-localizacao-box" style="font-size: 0.9rem; font-weight: 600; color: var(--text-main);">
+                            <div id="det-localizacao-box"
+                                style="font-size: 0.9rem; font-weight: 600; color: var(--text-main);">
                                 <!-- Local ou Caixa -->
                             </div>
                         </div>
@@ -3032,7 +3356,8 @@
                             <div class="form-section-title">
                                 <span>📋 Documentos Recebidos</span>
                             </div>
-                            <div id="det-checklist-view" style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.82rem;">
+                            <div id="det-checklist-view"
+                                style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.82rem;">
                                 <!-- Itens do checklist -->
                             </div>
                         </div>
@@ -3046,24 +3371,32 @@
                                 <span>📎 Documentos Digitalizados (Anexos)</span>
                             </div>
 
-                            <div id="det-anexos-lista" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem;">
+                            <div id="det-anexos-lista"
+                                style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem;">
                                 <!-- Anexos existentes -->
                             </div>
 
                             <!-- Form para upload rápido de anexo -->
-                            <div style="background: #ffffff; border: 1px dashed var(--surface-border); border-radius: 8px; padding: 0.75rem;">
-                                <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">+ Anexar Novo Arquivo (PDF, Imagem, Minuta):</span>
+                            <div
+                                style="background: #ffffff; border: 1px dashed var(--surface-border); border-radius: 8px; padding: 0.75rem;">
+                                <span
+                                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">+
+                                    Anexar Novo Arquivo (PDF, Imagem, Minuta):</span>
                                 <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-                                    <select id="upload-tipo-anexo" class="form-control" style="font-size: 0.8rem; height: 34px;">
+                                    <select id="upload-tipo-anexo" class="form-control"
+                                        style="font-size: 0.8rem; height: 34px;">
                                         <option value="Minuta Jurídica">Minuta Jurídica</option>
-                                        <option value="Termo Assinado pelos Herdeiros">Termo Assinado pelos Herdeiros</option>
+                                        <option value="Termo Assinado pelos Herdeiros">Termo Assinado pelos Herdeiros
+                                        </option>
                                         <option value="Certidão de Óbito">Certidão de Óbito</option>
                                         <option value="Documentos Pessoais">Documentos Pessoais</option>
                                         <option value="Outro Documento">Outro Documento</option>
                                     </select>
                                     <div style="display: flex; gap: 0.4rem;">
-                                        <input type="file" id="upload-arquivo-input" class="form-control" style="font-size: 0.78rem; height: 34px; padding: 0.2rem 0.4rem;">
-                                        <button type="button" class="btn-outline-action" id="btn-enviar-anexo" style="height: 34px; font-size: 0.78rem; flex-shrink: 0;">
+                                        <input type="file" id="upload-arquivo-input" class="form-control"
+                                            style="font-size: 0.78rem; height: 34px; padding: 0.2rem 0.4rem;">
+                                        <button type="button" class="btn-outline-action" id="btn-enviar-anexo"
+                                            style="height: 34px; font-size: 0.78rem; flex-shrink: 0;">
                                             <span>Upload</span>
                                         </button>
                                     </div>
@@ -3076,7 +3409,8 @@
                             <div class="form-section-title">
                                 <span>⏱️ Linha do Tempo e Notificações</span>
                             </div>
-                            <div class="timeline-container" id="det-timeline-view" style="max-height: 250px; overflow-y: auto;">
+                            <div class="timeline-container" id="det-timeline-view"
+                                style="max-height: 250px; overflow-y: auto;">
                                 <!-- Eventos históricos -->
                             </div>
                         </div>
@@ -3084,9 +3418,12 @@
                 </div>
             </div>
 
-            <div class="modal-footer-buttons" style="margin-top: 1rem; justify-content: space-between; align-items: center;">
-                <button type="button" class="btn-outline-action" id="btn-imprimir-ficha" style="gap: 0.5rem; font-weight: 700;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+            <div class="modal-footer-buttons"
+                style="margin-top: 1rem; justify-content: space-between; align-items: center;">
+                <button type="button" class="btn-outline-action" id="btn-imprimir-ficha"
+                    style="gap: 0.5rem; font-weight: 700;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="width: 16px; height: 16px;">
                         <polyline points="6 9 6 2 18 2 18 9"></polyline>
                         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                         <rect x="6" y="14" width="12" height="8"></rect>
@@ -3110,34 +3447,40 @@
                     </svg>
                 </button>
             </div>
-            
-            <p class="modal-subtitle">Informe a identificação da <strong>Caixa Física</strong> onde a pasta deste titular foi arquivada.</p>
+
+            <p class="modal-subtitle">Informe a identificação da <strong>Caixa Física</strong> onde a pasta deste
+                titular foi arquivada.</p>
 
             <div class="form-group" style="margin-top: 1rem;">
                 <label for="arquivar-caixa-nome">Nome / Número da Caixa Física *</label>
-                <input type="text" id="arquivar-caixa-nome" class="form-control" list="caixas-existentes-list" placeholder="Ex: Caixa 01 - GM Herdeiros" style="height: 42px;">
+                <input type="text" id="arquivar-caixa-nome" class="form-control" list="caixas-existentes-list"
+                    placeholder="Ex: Caixa 01 - GM Herdeiros" style="height: 42px;">
                 <datalist id="caixas-existentes-list"></datalist>
             </div>
 
             <div class="form-group">
                 <label for="arquivar-caixa-obs">Observação de Localização (Opcional)</label>
-                <input type="text" id="arquivar-caixa-obs" class="form-control" placeholder="Ex: Prateleira 2, Armário de Herdeiros">
+                <input type="text" id="arquivar-caixa-obs" class="form-control"
+                    placeholder="Ex: Prateleira 2, Armário de Herdeiros">
             </div>
 
             <div class="modal-buttons" style="margin-top: 1rem;">
                 <button type="button" class="btn-cancel" id="btn-cancel-arquivar">Cancelar</button>
-                <button type="button" class="btn-save" id="btn-confirmar-arquivar" style="background: #10b981; border-color: #10b981;">Concluir e Arquivar</button>
+                <button type="button" class="btn-save" id="btn-confirmar-arquivar"
+                    style="background: #10b981; border-color: #10b981;">Concluir e Arquivar</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL DE GESTÃO DE CAIXAS FÍSICAS -->
     <div class="modal-overlay" id="modal-caixas-gerenciador">
-        <div class="modal-card modal-large" style="max-width: 800px; max-height: 85vh; display: flex; flex-direction: column;">
+        <div class="modal-card modal-large"
+            style="max-width: 800px; max-height: 85vh; display: flex; flex-direction: column;">
             <div class="modal-header">
                 <div>
                     <h3 class="modal-title">Gestor de Caixas de Arquivo Físico</h3>
-                    <p class="modal-subtitle">Localize as pastas de herdeiros guardadas nas caixas físicas do arquivo jurídico.</p>
+                    <p class="modal-subtitle">Localize as pastas de herdeiros guardadas nas caixas físicas do arquivo
+                        jurídico.</p>
                 </div>
                 <button class="btn-close-x" id="btn-close-caixas-x" title="Fechar">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3152,10 +3495,14 @@
                     <!-- Cards de caixas inseridos via JS -->
                 </div>
 
-                <div id="caixa-detalhes-container" style="display: none; margin-top: 1.5rem; background: #f8fafc; border: 1px solid var(--surface-border); border-radius: 10px; padding: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                        <h4 id="caixa-detalhes-titulo" style="font-size: 1.1rem; color: var(--accent);">Processos na Caixa</h4>
-                        <button type="button" class="btn-outline-action" id="btn-voltar-caixas" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">&laquo; Voltar às Caixas</button>
+                <div id="caixa-detalhes-container"
+                    style="display: none; margin-top: 1.5rem; background: #f8fafc; border: 1px solid var(--surface-border); border-radius: 10px; padding: 1rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <h4 id="caixa-detalhes-titulo" style="font-size: 1.1rem; color: var(--accent);">Processos na
+                            Caixa</h4>
+                        <button type="button" class="btn-outline-action" id="btn-voltar-caixas"
+                            style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">&laquo; Voltar às Caixas</button>
                     </div>
                     <div id="caixa-detalhes-tabela-wrapper"></div>
                 </div>
@@ -3170,14 +3517,18 @@
     <!-- DOCUMENTO DE PROTOCOLO E ETIQUETA FORMATADO PARA IMPRESSÃO (HIDDEN ON SCREEN) -->
     <div id="printable-protocol" style="display: none;">
         <div style="text-align: center; border-bottom: 2px solid #004b9b; padding-bottom: 12px; margin-bottom: 16px;">
-            <h2 style="font-size: 1.4rem; color: #004b9b; margin: 0; text-transform: uppercase;">SINTE-PI • Sindicato dos Trabalhadores em Educação</h2>
-            <p style="font-size: 0.85rem; color: #555; margin: 4px 0 0 0;">Departamento Jurídico • Protocolo de Entrada de Herdeiros</p>
+            <h2 style="font-size: 1.4rem; color: #004b9b; margin: 0; text-transform: uppercase;">SINTE-PI • Sindicato
+                dos Trabalhadores em Educação</h2>
+            <p style="font-size: 0.85rem; color: #555; margin: 4px 0 0 0;">Departamento Jurídico • Protocolo de Entrada
+                de Herdeiros</p>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; background: #f1f5f9; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 14px;">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; background: #f1f5f9; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 14px;">
             <div>
                 <strong style="font-size: 1.1rem; color: #004b9b;" id="print-protocol-id">HERD-0000</strong>
-                <span style="display: block; font-size: 0.78rem; color: #64748b;" id="print-data-cadastro">Data de Entrada: 00/00/0000 00:00</span>
+                <span style="display: block; font-size: 0.78rem; color: #64748b;" id="print-data-cadastro">Data de
+                    Entrada: 00/00/0000 00:00</span>
             </div>
             <div style="text-align: right;">
                 <span style="display: block; font-size: 0.75rem; color: #64748b;">LOCALIZAÇÃO FÍSICA / CAIXA:</span>
@@ -3186,29 +3537,38 @@
         </div>
 
         <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px;">
-            <h4 style="font-size: 0.85rem; color: #004b9b; text-transform: uppercase; margin: 0 0 6px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">1. Titular Falecido</h4>
+            <h4
+                style="font-size: 0.85rem; color: #004b9b; text-transform: uppercase; margin: 0 0 6px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
+                1. Titular Falecido</h4>
             <div style="font-size: 0.9rem; line-height: 1.5;">
                 <p style="margin: 0;"><strong>Nome:</strong> <span id="print-falecido-nome">---</span></p>
-                <p style="margin: 0;"><strong>CPF:</strong> <span id="print-falecido-cpf">---</span> • <strong>Matrícula:</strong> <span id="print-falecido-mat">---</span></p>
-                <p style="margin: 0;"><strong>Regional:</strong> <span id="print-falecido-regional">---</span> • <strong>Ação:</strong> <span id="print-falecido-acao">---</span></p>
+                <p style="margin: 0;"><strong>CPF:</strong> <span id="print-falecido-cpf">---</span> •
+                    <strong>Matrícula:</strong> <span id="print-falecido-mat">---</span></p>
+                <p style="margin: 0;"><strong>Regional:</strong> <span id="print-falecido-regional">---</span> •
+                    <strong>Ação:</strong> <span id="print-falecido-acao">---</span></p>
             </div>
         </div>
 
         <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px;">
-            <h4 style="font-size: 0.85rem; color: #004b9b; text-transform: uppercase; margin: 0 0 6px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">2. Herdeiros Habilitados</h4>
+            <h4
+                style="font-size: 0.85rem; color: #004b9b; text-transform: uppercase; margin: 0 0 6px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
+                2. Herdeiros Habilitados</h4>
             <div id="print-herdeiros-lista" style="font-size: 0.85rem; line-height: 1.4;">
                 <!-- Lista de herdeiros impressa -->
             </div>
         </div>
 
         <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; margin-bottom: 16px;">
-            <h4 style="font-size: 0.85rem; color: #004b9b; text-transform: uppercase; margin: 0 0 6px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">3. Documentos Recebidos</h4>
+            <h4
+                style="font-size: 0.85rem; color: #004b9b; text-transform: uppercase; margin: 0 0 6px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
+                3. Documentos Recebidos</h4>
             <div id="print-checklist-docs" style="font-size: 0.82rem; line-height: 1.5;">
                 <!-- Checklist impresso -->
             </div>
         </div>
 
-        <div style="margin-top: 25px; display: flex; justify-content: space-between; text-align: center; font-size: 0.8rem;">
+        <div
+            style="margin-top: 25px; display: flex; justify-content: space-between; text-align: center; font-size: 0.8rem;">
             <div style="width: 45%; border-top: 1px solid #000; padding-top: 5px;">
                 Atendimento Jurídico SINTE-PI
             </div>
@@ -3422,7 +3782,7 @@
                     const nomeArquivoEscaped = escapeHTML(nomeArquivo);
                     const tagAbaHtml = link.aba ? '<span class="source-tag aba-tag">' + escapeHTML(link.aba) + '</span>' : '';
                     const tagRegionalHtml = link.regional ? '<span class="source-tag" style="background:#f0fdf4; border-color:#bbf7d0; color:#16a34a;"><svg viewBox="0 0 24 24" style="fill:none; stroke:currentColor; stroke-width:2; width:12px; height:12px; margin-right:2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' + escapeHTML(link.regional) + '</span>' : '';
-                    
+
                     html += '<div class="link-item"><div class="meta-field"><span class="meta-label">Matrícula</span><span class="meta-value highlight">' + escapeHTML(formatMatricula(link.matricula)) + '</span></div><div class="meta-field"><span class="meta-label">CPF</span><span class="meta-value highlight">' + escapeHTML(formatCPF(link.cpf)) + '</span></div><div class="meta-field"><span class="meta-label">Ação / Origem Jurídica</span><div class="meta-value" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem;"><button type="button" class="source-tag acao-tag clickable-tag" data-acao="' + nomeArquivoEscaped + '" title="Clique para abrir a planilha desta ação"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg><span>' + nomeArquivoEscaped + '</span></button>' + tagAbaHtml + tagRegionalHtml + '</div></div><div class="meta-field" style="grid-column: 1 / -1;"><span class="meta-label">Detalhes da Planilha</span><span class="meta-value info-tag">' + escapeHTML(detalheExibir) + '</span></div></div>';
                 });
 
@@ -3516,7 +3876,7 @@
         const wrapperRegional = document.getElementById('wrapper-regional');
         const tipsServidor = document.getElementById('tips-servidor');
         const tipsRegional = document.getElementById('tips-regional');
-        
+
         const regionalInput = document.getElementById('regional-input');
         const clearRegionalBtn = document.getElementById('clear-regional-btn');
         const regionaisList = document.getElementById('regionais-list');
@@ -3534,22 +3894,22 @@
         tabServidor.addEventListener('click', () => {
             if (modoBusca === 'servidor') return;
             modoBusca = 'servidor';
-            
+
             tabServidor.classList.add('active');
             tabRegional.classList.remove('active');
             if (tabHerdeiros) tabHerdeiros.classList.remove('active');
-            
+
             if (herdeirosSection) herdeirosSection.style.display = 'none';
             if (searchSection) searchSection.style.display = '';
             if (resultsSection) resultsSection.style.display = '';
-            
+
             wrapperServidor.style.display = 'flex';
             wrapperRegional.style.display = 'none';
             tipsServidor.style.display = 'flex';
             tipsRegional.style.display = 'none';
             resultsContent.style.display = '';
             resultsHeader.style.display = 'none';
-            
+
             // Restaura estado anterior de busca
             performSearch(searchInput.value);
             searchInput.focus();
@@ -3558,26 +3918,26 @@
         tabRegional.addEventListener('click', async () => {
             if (modoBusca === 'regional') return;
             modoBusca = 'regional';
-            
+
             tabRegional.classList.add('active');
             tabServidor.classList.remove('active');
             if (tabHerdeiros) tabHerdeiros.classList.remove('active');
-            
+
             if (herdeirosSection) herdeirosSection.style.display = 'none';
             if (searchSection) searchSection.style.display = '';
             if (resultsSection) resultsSection.style.display = '';
-            
+
             wrapperRegional.style.display = 'flex';
             wrapperServidor.style.display = 'none';
             tipsRegional.style.display = 'flex';
             tipsServidor.style.display = 'none';
             resultsContent.style.display = '';
-            
+
             // Carrega a lista de regionais se ainda não foi carregada
             if (listaCidades.length === 0) {
                 await carregarListaRegionais();
             }
-            
+
             performSearchRegional(regionalInput.value);
             regionalInput.focus();
         });
@@ -3586,15 +3946,15 @@
             tabHerdeiros.addEventListener('click', () => {
                 if (modoBusca === 'herdeiros') return;
                 modoBusca = 'herdeiros';
-                
+
                 tabHerdeiros.classList.add('active');
                 tabServidor.classList.remove('active');
                 tabRegional.classList.remove('active');
-                
+
                 if (searchSection) searchSection.style.display = 'none';
                 if (resultsSection) resultsSection.style.display = 'none';
                 if (herdeirosSection) herdeirosSection.style.display = 'flex';
-                
+
                 carregarHerdeiros();
                 carregarCaixasFiltro();
             });
@@ -3640,7 +4000,7 @@
 
         async function performSearchRegional(query) {
             const trimmed = query.trim().toUpperCase();
-            
+
             if (trimmed.length < 2) {
                 resultsHeader.style.display = 'none';
                 resultsContent.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg><h3>Busca por Regional</h3><p>Selecione ou digite o nome de uma cidade/regional acima para consultar estatísticas e visualizar os servidores cadastrados.</p></div>';
@@ -3714,7 +4074,7 @@
                 </div>
             `;
             html += '<h3 style="font-family:\'Outfit\',sans-serif; color:var(--accent); margin-bottom: 1rem; text-align:left;">Lista de Servidores</h3>';
-            
+
             // Agrupa os servidores da regional por nome
             const grouped = {};
             data.pessoas.forEach(item => {
@@ -3794,7 +4154,7 @@
                             </div>
                         </div>
                     `;
-                } catch(e) {
+                } catch (e) {
                     bloco.style.display = 'none';
                 }
             })();
@@ -3848,7 +4208,7 @@
             }
 
             const limpo = (nomeAcao || '').replace('.xlsx', '').replace('.xls', '').replace('Local: ', '').toUpperCase().trim();
-            
+
             let url = mapaPlanilhasUrls[limpo];
 
             // Busca flexível
@@ -3941,7 +4301,7 @@
 
                 if (response.ok && data.success) {
                     sessionStorage.setItem('sinte_senha_planilhas', senhaDigitada);
-                    
+
                     if (data.planilhas) {
                         planilhasData = data.planilhas;
                         data.planilhas.forEach(p => {
@@ -3995,7 +4355,7 @@
                     headers: { 'Authorization': senhaSalva }
                 });
                 const data = await response.json();
-                
+
                 if (response.status === 401 || !data.success) {
                     sessionStorage.removeItem('sinte_senha_planilhas');
                     fecharModalPlanilhas();
@@ -4056,7 +4416,7 @@
 
                 const btnIcon = p.local ? iconLocal : iconGoogle;
                 const cardClass = p.local ? 'tipo-local' : 'tipo-google';
-                
+
                 const senhaSalva = sessionStorage.getItem('sinte_senha_planilhas') || '';
                 const urlComSenha = p.local ? `${p.url}?senha=${encodeURIComponent(senhaSalva)}` : p.url;
                 const linkAttr = p.local ? `href="${urlComSenha}" download` : `href="${p.url}" target="_blank"`;
@@ -4159,7 +4519,7 @@
 
         const STATUS_MAP_TEXT = {
             'fila_espera': 'Fila de Espera (Doc Recebida)',
-            'em_producao': 'Em Produção / Minuta',
+            'em_producao': 'Em Produção',
             'enviado_assinatura': 'Enviado p/ Assinatura',
             'concluido': 'Concluído & Arquivado'
         };
@@ -4230,7 +4590,7 @@
                 if (data.success && data.caixas) {
                     const caixas = data.caixas;
                     const valorAtual = selectCaixa.value;
-                    
+
                     let optionsHtml = '<option value="TODAS">Todas as Caixas Físicas</option>';
                     let datalistHtml = '';
 
@@ -4272,7 +4632,7 @@
                     if (diffDias === 1) return 'Ontem';
                     return `Há ${diffDias} dias`;
                 }
-            } catch (e) {}
+            } catch (e) { }
             return dataStr.substring(0, 10);
         }
 
@@ -4327,7 +4687,7 @@
             const herds = caso.herdeiros || [];
             const herdeiroPrincipal = herds.find(h => h.is_principal) || herds[0] || {};
             const tempoStr = formatarTempoAtras(caso.ultima_atualizacao || caso.data_cadastro);
-            
+
             // Badge de localização física
             let localBadgeHtml = '';
             if (caso.status === 'concluido' && caso.caixa_concluido) {
@@ -4368,7 +4728,7 @@
             } else if (caso.status === 'em_producao') {
                 botoesRodape = `
                     <button type="button" class="btn-card-action btn-action-primary" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura');" title="Minuta concluída: avançar para envio aos herdeiros">
-                        <span>✅ Minuta Pronta</span>
+                        <span>✅ Documento Pronto</span>
                     </button>
                     <button type="button" class="btn-card-action" style="background:#f1f5f9; color:#475569;" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');">
                         <span>Detalhes</span>
@@ -4443,8 +4803,8 @@
                 const st = c.status || 'fila_espera';
                 const stLabel = STATUS_MAP_TEXT[st] || st;
 
-                const localTxt = (st === 'concluido' && c.caixa_concluido) 
-                    ? `📦 <strong>${escapeHTML(c.caixa_concluido)}</strong>` 
+                const localTxt = (st === 'concluido' && c.caixa_concluido)
+                    ? `📦 <strong>${escapeHTML(c.caixa_concluido)}</strong>`
                     : `📁 ${escapeHTML(c.localizacao_provisoria || 'Recepção')}`;
 
                 html += `
@@ -4591,7 +4951,7 @@
             }
 
             const dddNumero = digits.length <= 11 ? '55' + digits : digits;
-            const textoMensagem = `Olá, ${nomeHerdeiro || 'tudo bem'}! Aqui é do Departamento Jurídico do SINTE-PI.\n\nInformamos que a minuta/documentação referente ao processo de habilitação de herdeiros de *${nomeFalecido}* (*${acaoJuridica || 'Ação Jurídica'}*) está pronta para conferência e assinatura.\n\nPor favor, entre em contato ou compareça ao sindicato para darmos prosseguimento ao arquivamento.`;
+            const textoMensagem = `Olá, ${nomeHerdeiro || 'tudo bem'}! Aqui é do Departamento Jurídico do SINTE-PI.\n\nInformamos que a produção/documentação referente ao processo de habilitação de herdeiros de *${nomeFalecido}* (*${acaoJuridica || 'Ação Jurídica'}*) está pronta para conferência e assinatura.\n\nPor favor, entre em contato ou compareça ao sindicato para darmos prosseguimento ao arquivamento.`;
 
             const urlWhats = `https://api.whatsapp.com/send?phone=${dddNumero}&text=${encodeURIComponent(textoMensagem)}`;
             window.open(urlWhats, '_blank');
@@ -5209,8 +5569,8 @@
 
                 document.getElementById('print-protocol-id').textContent = c.id;
                 document.getElementById('print-data-cadastro').textContent = `Data de Entrada: ${c.data_cadastro || ''}`;
-                document.getElementById('print-local-caixa').textContent = (c.status === 'concluido' && c.caixa_concluido) 
-                    ? `Caixa: ${c.caixa_concluido}` 
+                document.getElementById('print-local-caixa').textContent = (c.status === 'concluido' && c.caixa_concluido)
+                    ? `Caixa: ${c.caixa_concluido}`
                     : `Local Provisório: ${c.localizacao_provisoria || 'Recepção'}`;
 
                 document.getElementById('print-falecido-nome').textContent = fal.nome || '---';
