@@ -533,6 +533,18 @@
             gap: 0.5rem;
             transition: var(--transition);
             font-family: 'Outfit', sans-serif;
+            white-space: nowrap;
+            /* Evita que o texto quebre em várias linhas */
+        }
+
+        /* TRAVA E DIMINUI O TAMANHO DOS ÍCONES DAS ABAS */
+        .search-tab svg {
+            width: 18px !important;
+            height: 18px !important;
+            min-width: 18px;
+            min-height: 18px;
+            flex-shrink: 0;
+            display: block;
         }
 
         .search-tab:hover {
