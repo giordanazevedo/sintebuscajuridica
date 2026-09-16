@@ -667,7 +667,7 @@ def executar_importacao_planilhas_herdeiros():
                         "herdeiros": herd_list,
                         "documentos_checklist": {
                             "certidao_obito": False, "rg_cpf_falecido": False, "rg_cpf_herdeiros": False,
-                            "comprovante_residencia": False, "declaracao_dependentes": False,
+                            "comprovante_residencia": False,
                             "certidao_casamento_nascimento": False, "procuracao": bool(docs_prod), "outros": docs_prod
                         },
                         "localizacao_provisoria": "Recepção / Entrada Jurídico",
