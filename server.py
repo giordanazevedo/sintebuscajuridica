@@ -146,6 +146,40 @@ def gerar_proximo_id_herdeiro(dados):
     novo_num = maior_num + 1
     return f"HERD-{novo_num:04d}"
 
+
+def normalizar_herdeiros(herdeiros_raw):
+    """Normaliza os dados e garante um único herdeiro principal."""
+    herdeiros_processados = []
+    principal_definido = False
+
+    for idx, h in enumerate(herdeiros_raw or []):
+        if not isinstance(h, dict):
+            continue
+        nome_h = str(h.get("nome", "")).strip().upper()
+        if not nome_h:
+            continue
+
+        solicitado_principal = bool(h.get("is_principal", idx == 0))
+        is_principal = solicitado_principal and not principal_definido
+        if is_principal:
+            principal_definido = True
+
+        herdeiros_processados.append({
+            "id": len(herdeiros_processados) + 1,
+            "nome": nome_h,
+            "parentesco": str(h.get("parentesco", "Herdeiro(a)")).strip(),
+            "cpf": normalizar_cpf(h.get("cpf", "")),
+            "telefone": str(h.get("telefone", "")).strip(),
+            "email": str(h.get("email", "")).strip(),
+            "is_principal": is_principal,
+            "observacao": str(h.get("observacao", "")).strip()
+        })
+
+    if herdeiros_processados and not principal_definido:
+        herdeiros_processados[0]["is_principal"] = True
+
+    return herdeiros_processados
+
 # ----------------------------------------------------------------------
 # 2. ESCRITA NA PLANILHA CORRESPONDENTE VIA CREDENTIALS.JSON
 # ----------------------------------------------------------------------
@@ -1028,22 +1062,9 @@ def api_criar_herdeiro():
         acao_juridica = falecido.get("acao_juridica", "Ação Guilherme Melo").strip()
         data_obito = falecido.get("data_obito", "").strip()
         
-        herdeiros_raw = payload.get("herdeiros", [])
-        herdeiros_processados = []
-        for idx, h in enumerate(herdeiros_raw):
-            nome_h = h.get("nome", "").strip().upper()
-            if not nome_h:
-                continue
-            herdeiros_processados.append({
-                "id": idx + 1,
-                "nome": nome_h,
-                "parentesco": h.get("parentesco", "Herdeiro(a)").strip(),
-                "cpf": normalizar_cpf(h.get("cpf", "")),
-                "telefone": h.get("telefone", "").strip(),
-                "email": h.get("email", "").strip(),
-                "is_principal": bool(h.get("is_principal", idx == 0)),
-                "observacao": h.get("observacao", "").strip()
-            })
+        herdeiros_processados = normalizar_herdeiros(payload.get("herdeiros", []))
+        if not herdeiros_processados:
+            return jsonify({"success": False, "error": "Informe ao menos um herdeiro com nome."}), 400
             
         agora_iso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         dados = carregar_herdeiros()
@@ -1143,21 +1164,10 @@ def api_atualizar_herdeiro(id):
             if "data_obito" in fal: caso_encontrado["falecido"]["data_obito"] = str(fal.get("data_obito", "")).strip()
             
         if "herdeiros" in payload:
-            herdeiros_proc = []
-            for idx, h in enumerate(payload["herdeiros"]):
-                nome_h = h.get("nome", "").strip().upper()
-                if not nome_h: continue
-                herdeiros_proc.append({
-                    "id": idx + 1,
-                    "nome": nome_h,
-                    "parentesco": h.get("parentesco", "Herdeiro(a)").strip(),
-                    "cpf": normalizar_cpf(h.get("cpf", "")),
-                    "telefone": h.get("telefone", "").strip(),
-                    "email": h.get("email", "").strip(),
-                    "is_principal": bool(h.get("is_principal", False)),
-                    "observacao": h.get("observacao", "").strip()
-                })
-            caso_encontrado["herdeiros"] = herdeiros_proc
+            herdeiros_atualizados = normalizar_herdeiros(payload["herdeiros"])
+            if not herdeiros_atualizados:
+                return jsonify({"success": False, "error": "Informe ao menos um herdeiro com nome."}), 400
+            caso_encontrado["herdeiros"] = herdeiros_atualizados
             
         if "documentos_checklist" in payload:
             caso_encontrado["documentos_checklist"] = payload["documentos_checklist"]

@@ -553,6 +553,34 @@
             max-height: 85vh;
         }
 
+        #modal-herdeiro-cadastro .modal-card.modal-large {
+            width: min(1100px, calc(100vw - 2rem));
+            max-width: 1100px;
+            max-height: 92vh;
+            padding: 1.25rem;
+        }
+
+        #modal-herdeiro-cadastro .herdeiros-form-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        #modal-herdeiro-cadastro .modal-title {
+            line-height: 1.15;
+            margin-bottom: 0.2rem;
+        }
+
+        #modal-herdeiro-cadastro .modal-subtitle {
+            margin-top: 0;
+            line-height: 1.35;
+        }
+
+        @media (max-width: 900px) {
+            #modal-herdeiro-cadastro .modal-card.modal-large {
+                width: calc(100vw - 1rem);
+                padding: 1rem;
+            }
+        }
+
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -2307,6 +2335,8 @@
             border-radius: 10px;
             padding: 1rem;
             margin-bottom: 1rem;
+            min-width: 0;
+            container-type: inline-size;
         }
 
         .herdeiros-form-grid {
@@ -2314,6 +2344,8 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 1rem;
             align-items: start;
+            min-width: 0;
+            overflow-x: hidden;
         }
 
         .herdeiros-form-grid > .herdeiro-form-section {
@@ -2334,14 +2366,26 @@
 
         .form-row-2 {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 0.85rem;
+            min-width: 0;
         }
 
         .form-row-3 {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 0.85rem;
+            min-width: 0;
+        }
+
+        .herdeiro-form-section .form-group,
+        .herdeiro-form-section .form-control {
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .herdeiro-form-section .form-control {
+            width: 100%;
         }
 
         @media (max-width: 900px) {
@@ -2390,12 +2434,29 @@
 
         .cad-herdeiros-cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
             gap: 0.9rem;
             max-height: 440px;
             overflow-y: auto;
+            overflow-x: hidden;
             padding-right: 0.2rem;
             align-items: start;
+            min-width: 0;
+        }
+
+        @container (max-width: 760px) {
+            .herdeiros-form-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        @container (max-width: 520px) {
+            .form-row-2,
+            .form-row-3,
+            .dynamic-heir-card .form-row-2,
+            .dynamic-heir-card .form-row-3 {
+                grid-template-columns: minmax(0, 1fr);
+            }
         }
 
         .herdeiros-cards-toolbar {
@@ -3203,7 +3264,7 @@
     <!-- MODAL DE CADASTRO / ENTRADA DE HERDEIROS -->
     <div class="modal-overlay" id="modal-herdeiro-cadastro">
         <div class="modal-card modal-large"
-            style="max-width: 820px; max-height: 90vh; display: flex; flex-direction: column;">
+            style="max-height: 90vh; display: flex; flex-direction: column;">
             <div class="modal-header">
                 <div>
                     <h3 class="modal-title" id="cad-modal-title">Registrar Entrada de Herdeiros</h3>
@@ -5272,6 +5333,17 @@
             `;
 
             card.querySelector('.h-principal')?.addEventListener('change', () => {
+                const checkboxPrincipal = card.querySelector('.h-principal');
+                if (checkboxPrincipal?.checked) {
+                    containerHerdeirosCards.querySelectorAll('.h-principal').forEach(outroCheckbox => {
+                        if (outroCheckbox !== checkboxPrincipal) {
+                            outroCheckbox.checked = false;
+                            outroCheckbox.closest('.dynamic-heir-card')?.setAttribute('data-principal', 'false');
+                            const outroBadge = outroCheckbox.closest('.dynamic-heir-card')?.querySelector('.heir-card-badge');
+                            if (outroBadge) outroBadge.textContent = 'Herdeiro';
+                        }
+                    });
+                }
                 card.dataset.principal = (card.querySelector('.h-principal')?.checked || false).toString();
                 const badge = card.querySelector('.heir-card-badge');
                 if (badge) badge.textContent = card.querySelector('.h-principal')?.checked ? 'Principal' : 'Herdeiro';
