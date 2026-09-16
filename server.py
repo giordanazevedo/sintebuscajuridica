@@ -183,10 +183,36 @@ def normalizar_herdeiros(herdeiros_raw):
 # ----------------------------------------------------------------------
 # 2. ESCRITA NA PLANILHA CORRESPONDENTE VIA CREDENTIALS.JSON
 # ----------------------------------------------------------------------
+def validar_credenciais_google():
+    """Valida o arquivo de credenciais da conta de serviço do Google."""
+    caminho = "credentials.json"
+    if not os.path.exists(caminho):
+        raise FileNotFoundError(
+            "Arquivo 'credentials.json' não encontrado na raiz do projeto. "
+            "Baixe o JSON da conta de serviço do Google Cloud e salve com esse nome."
+        )
+
+    try:
+        with open(caminho, "r", encoding="utf-8") as f:
+            dados = json.load(f)
+    except Exception as e:
+        raise ValueError(
+            "Arquivo 'credentials.json' inválido. O arquivo precisa ser o JSON real da conta de serviço do Google Cloud. "
+            f"Erro: {e}"
+        ) from e
+
+    if not isinstance(dados, dict) or not dados.get("type") or not dados.get("client_email"):
+        raise ValueError(
+            "Arquivo 'credentials.json' não é uma credencial válida de conta de serviço do Google. "
+            "Verifique se o JSON foi exportado corretamente e não está vazio ou corrompido."
+        )
+
+    return dados
+
+
 def salvar_no_google_sheets(nome, matricula, cpf, acao, detalhes):
     """Identifica a planilha da ação e insere na primeira linha em branco da primeira aba."""
-    if not os.path.exists("credentials.json"):
-        raise FileNotFoundError("Arquivo 'credentials.json' não encontrado na pasta do projeto.")
+    validar_credenciais_google()
 
     sheet_id = MAPA_IDS_ACOES.get(acao)
     if not sheet_id:
@@ -221,6 +247,13 @@ def carregar_dados():
         novos_dados = []
         hora_inicio = datetime.now()
         print(f"\n🔄 [{hora_inicio.strftime('%d/%m/%Y %H:%M:%S')}] Sincronizando planilhas do Google Drive e Cadastros Manuais...")
+
+        try:
+            credenciais = validar_credenciais_google()
+            client_email = credenciais.get("client_email")
+        except Exception as e:
+            print(f"⚠️ {e}")
+            raise
         
         try:
             # 1. Planilhas do Google Drive (processando todas as abas)
@@ -251,6 +284,12 @@ def carregar_dados():
                             except Exception as e_aba:
                                 print(f"  ⚠️ Erro ao processar aba '{nome_aba}' de {nome_acao}: {e_aba}")
                         print(f"  ✅ {nome_acao} sincronizada!")
+                    elif res.status_code == 403:
+                        print(
+                            f"  ⚠️ HTTP 403 ao baixar {nome_acao}. "
+                            "A planilha precisa estar compartilhada com a conta de serviço do Google Sheets: "
+                            f"{client_email}"
+                        )
                     else:
                         print(f"  ⚠️ HTTP {res.status_code} ao baixar {nome_acao}")
                 except Exception as e:
