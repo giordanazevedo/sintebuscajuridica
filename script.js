@@ -1461,7 +1461,9 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('cad-falecido-cpf').value = fal.cpf || '';
                 document.getElementById('cad-falecido-matricula').value = fal.matricula || '';
                 document.getElementById('cad-falecido-regional').value = fal.regional || '';
-                document.getElementById('cad-falecido-acao').value = fal.acao_juridica || 'Ação Guilherme Melo';
+                const acoes = (fal.acao_juridica || 'Ação Guilherme Melo').split(',').map(s => s.trim());
+                const acaoSelect = document.getElementById('cad-falecido-acao');
+                Array.from(acaoSelect.options).forEach(opt => opt.selected = acoes.includes(opt.value));
                 document.getElementById('cad-falecido-obito').value = fal.data_obito || '';
                 document.getElementById('cad-local-provisorio').value = caso.localizacao_provisoria || '';
                 document.getElementById('cad-caixa-concluido').value = caso.caixa_concluido || '';
@@ -1495,7 +1497,9 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('cad-falecido-cpf').value = '';
                 document.getElementById('cad-falecido-matricula').value = '';
                 document.getElementById('cad-falecido-regional').value = '';
-                document.getElementById('cad-falecido-acao').value = 'Ação Guilherme Melo';
+                const acaoSelectNew = document.getElementById('cad-falecido-acao');
+                Array.from(acaoSelectNew.options).forEach(opt => opt.selected = false);
+                if (acaoSelectNew.options.length > 0) acaoSelectNew.options[0].selected = true;
                 document.getElementById('cad-falecido-obito').value = '';
                 document.getElementById('cad-local-provisorio').value = 'Recepção / Entrada Jurídico';
                 document.getElementById('cad-caixa-concluido').value = '';
@@ -1526,7 +1530,6 @@ const searchInput = document.getElementById('search-input');
             const index = containerHerdeirosCards.children.length + 1;
             const hNome = dados?.nome || '';
             const hParentesco = dados?.parentesco || 'Herdeiro(a)';
-            const hCpf = dados?.cpf || '';
             const hTel = dados?.telefone || '';
             const hEmail = dados?.email || '';
             const hPrincipal = dados?.is_principal ? 'checked' : (index === 1 ? 'checked' : '');
@@ -1555,10 +1558,6 @@ const searchInput = document.getElementById('search-input');
                             <option value="Neto(a)" ${hParentesco.includes('Neto') ? 'selected' : ''}>Neto(a)</option>
                             <option value="Outro Parentesco" ${(!hParentesco.includes('Cônjuge') && !hParentesco.includes('Filho') && !hParentesco.includes('Pai') && !hParentesco.includes('Irmão') && !hParentesco.includes('Neto')) ? 'selected' : ''}>Outro</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label>CPF do Herdeiro</label>
-                        <input type="text" class="form-control h-cpf" placeholder="000.000.000-00" value="${escapeHTML(hCpf)}">
                     </div>
                 </div>
                 <div class="form-row-2">
@@ -1667,14 +1666,14 @@ const searchInput = document.getElementById('search-input');
             const selectAcao = document.getElementById('cad-falecido-acao');
             if (selectAcao) {
                 let achou = false;
+                Array.from(selectAcao.options).forEach(opt => opt.selected = false);
                 for (let i = 0; i < selectAcao.options.length; i++) {
                     if (acao.toUpperCase().includes(selectAcao.options[i].value.toUpperCase())) {
-                        selectAcao.selectedIndex = i;
+                        selectAcao.options[i].selected = true;
                         achou = true;
-                        break;
                     }
                 }
-                if (!achou) selectAcao.value = 'Ação Guilherme Melo';
+                if (!achou && selectAcao.options.length > 0) selectAcao.options[0].selected = true;
             }
 
             if (boxSugestoesTitular) boxSugestoesTitular.style.display = 'none';
@@ -1710,7 +1709,6 @@ const searchInput = document.getElementById('search-input');
                         herdeirosList.push({
                             nome: nome,
                             parentesco: card.querySelector('.h-parentesco')?.value || 'Herdeiro(a)',
-                            cpf: card.querySelector('.h-cpf')?.value.trim() || '',
                             telefone: card.querySelector('.h-tel')?.value.trim() || '',
                             email: card.querySelector('.h-email')?.value.trim() || '',
                             is_principal: card.querySelector('.h-principal')?.checked || false
@@ -1741,7 +1739,7 @@ const searchInput = document.getElementById('search-input');
                         cpf: document.getElementById('cad-falecido-cpf').value.trim(),
                         matricula: document.getElementById('cad-falecido-matricula').value.trim(),
                         regional: document.getElementById('cad-falecido-regional').value.trim(),
-                        acao_juridica: document.getElementById('cad-falecido-acao').value,
+                        acao_juridica: Array.from(document.getElementById('cad-falecido-acao').selectedOptions).map(o => o.value).join(', '),
                         data_obito: document.getElementById('cad-falecido-obito').value
                     },
                     herdeiros: herdeirosList,

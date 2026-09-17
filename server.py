@@ -1328,7 +1328,13 @@ def api_criar_herdeiro():
             
         agora_iso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         dados = carregar_herdeiros()
-        novo_id = gerar_proximo_id_herdeiro(dados)
+        
+        if matricula_falecido:
+            if any(str(d.get("id", "")).upper() == matricula_falecido.upper() for d in dados):
+                return jsonify({"success": False, "error": f"Já existe um processo de herdeiro cadastrado para a matrícula {matricula_falecido}."}), 400
+            novo_id = matricula_falecido.upper()
+        else:
+            novo_id = gerar_proximo_id_herdeiro(dados)
         
         status_inicial = payload.get("status", "fila_espera").strip().lower()
         if status_inicial not in STATUS_HERDEIROS_MAP:

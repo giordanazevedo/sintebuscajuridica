@@ -48,7 +48,7 @@
             <div class="sync-status-container" id="sync-status-container"
                 title="Sincronização automática em segundo plano ativa">
                 <span class="sync-status-dot" id="sync-status-dot"></span>
-                <span class="sync-status-text" id="sync-status-text">Auto-Sync Ativo</span>
+                <span class="sync-status-text" id="sync-status-text"></span>
             </div>
 
             <button id="btn-open-planilhas" class="btn-add">
@@ -184,7 +184,7 @@
             <!-- KPI Cards Dashboard -->
             <div class="kpi-grid">
                 <div class="kpi-card kpi-espera" id="kpi-card-espera" title="Filtrar casos aguardando produção">
-                    <div class="kpi-icon">📥</div>
+                    <div class="kpi-icon"></div>
                     <div class="kpi-info">
                         <span class="kpi-value" id="kpi-count-espera">0</span>
                         <span class="kpi-label">Fila de Espera (Doc Recebida)</span>
@@ -193,7 +193,7 @@
 
                 <div class="kpi-card kpi-producao" id="kpi-card-producao"
                     title="Filtrar casos em produção pelo jurídico">
-                    <div class="kpi-icon">⚖️</div>
+                    <div class="kpi-icon"></div>
                     <div class="kpi-info">
                         <span class="kpi-value" id="kpi-count-producao">0</span>
                         <span class="kpi-label">Em Produção</span>
@@ -202,7 +202,7 @@
 
                 <div class="kpi-card kpi-assinatura" id="kpi-card-assinatura"
                     title="Filtrar casos aguardando retorno dos herdeiros">
-                    <div class="kpi-icon">📲</div>
+                    <div class="kpi-icon"></div>
                     <div class="kpi-info">
                         <span class="kpi-value" id="kpi-count-assinatura">0</span>
                         <span class="kpi-label">Enviado p/ Assinatura</span>
@@ -211,7 +211,7 @@
 
                 <div class="kpi-card kpi-concluido" id="kpi-card-concluido"
                     title="Filtrar processos finalizados e arquivados">
-                    <div class="kpi-icon">🗃️</div>
+                    <div class="kpi-icon"></div>
                     <div class="kpi-info">
                         <span class="kpi-value" id="kpi-count-concluido">0</span>
                         <span class="kpi-label">Concluído & Arquivado</span>
@@ -365,7 +365,7 @@
                 <table class="modern-table">
                     <thead>
                         <tr>
-                            <th>Código</th>
+                            <th width="10%">Matrícula</th>
                             <th>Titular Falecido</th>
                             <th>CPF / Matrícula</th>
                             <th>Ação Jurídica</th>
@@ -631,7 +631,7 @@
                         </div>
                         <div class="form-group">
                             <label for="cad-falecido-acao">Ação Jurídica *</label>
-                            <select id="cad-falecido-acao" class="form-control">
+                            <select id="cad-falecido-acao" class="form-control" multiple style="height: 120px; resize: vertical;">
                                 <option value="Ação Guilherme Melo">Ação Guilherme Melo</option>
                                 <option value="FUNDEF">FUNDEF</option>
                                 <option value="AUTORIZAÇÕES ASSINADAS - MÃO SANTA 99">Mão Santa 99</option>
