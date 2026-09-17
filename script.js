@@ -903,7 +903,6 @@ const searchInput = document.getElementById('search-input');
         const modalAtualizacao = document.getElementById('modal-atualizacao');
         const btnCloseAtualizacao = document.getElementById('btn-close-atualizacao');
         const btnCloseAtualizacaoX = document.getElementById('btn-close-atualizacao-x');
-        const btnNovidades = document.getElementById('btn-novidades');
         const tipDestaqueCpf = document.getElementById('tip-destaque-cpf');
 
         const abrirModalAtualizacao = () => {
@@ -916,7 +915,6 @@ const searchInput = document.getElementById('search-input');
 
         if (btnCloseAtualizacao) btnCloseAtualizacao.addEventListener('click', fecharModalAtualizacao);
         if (btnCloseAtualizacaoX) btnCloseAtualizacaoX.addEventListener('click', fecharModalAtualizacao);
-        if (btnNovidades) btnNovidades.addEventListener('click', abrirModalAtualizacao);
         if (tipDestaqueCpf) tipDestaqueCpf.addEventListener('click', abrirModalAtualizacao);
 
         if (modalAtualizacao) {
@@ -926,11 +924,11 @@ const searchInput = document.getElementById('search-input');
                 }
             });
 
-            // Exibe automaticamente o aviso da atualização do CPF se ainda não visto
-            if (!localStorage.getItem('sinte_atualizacao_cpf_zero_v3')) {
+            // Exibe automaticamente o aviso da atualização se ainda não visto
+            if (!localStorage.getItem('sinte_atualizacao_herdeiros_v4')) {
                 setTimeout(() => {
                     abrirModalAtualizacao();
-                    localStorage.setItem('sinte_atualizacao_cpf_zero_v3', 'true');
+                    localStorage.setItem('sinte_atualizacao_herdeiros_v4', 'true');
                 }, 600);
             }
         }
@@ -1475,9 +1473,7 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('chk-doc-rg-falecido').checked = !!chk.rg_cpf_falecido;
                 document.getElementById('chk-doc-rg-herdeiros').checked = !!chk.rg_cpf_herdeiros;
                 document.getElementById('chk-doc-residencia').checked = !!chk.comprovante_residencia;
-                document.getElementById('chk-doc-dependentes').checked = !!chk.declaracao_dependentes;
                 document.getElementById('chk-doc-casamento').checked = !!chk.certidao_casamento_nascimento;
-                document.getElementById('chk-doc-procuracao').checked = !!chk.procuracao;
                 document.getElementById('cad-doc-outros').value = chk.outros || '';
 
                 // Herdeiros
@@ -1509,9 +1505,7 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('chk-doc-rg-falecido').checked = true;
                 document.getElementById('chk-doc-rg-herdeiros').checked = true;
                 document.getElementById('chk-doc-residencia').checked = true;
-                document.getElementById('chk-doc-dependentes').checked = false;
                 document.getElementById('chk-doc-casamento').checked = false;
-                document.getElementById('chk-doc-procuracao').checked = false;
                 document.getElementById('cad-doc-outros').value = '';
 
                 if (containerHerdeirosCards) containerHerdeirosCards.innerHTML = '';
@@ -1726,9 +1720,7 @@ const searchInput = document.getElementById('search-input');
                     rg_cpf_falecido: document.getElementById('chk-doc-rg-falecido').checked,
                     rg_cpf_herdeiros: document.getElementById('chk-doc-rg-herdeiros').checked,
                     comprovante_residencia: document.getElementById('chk-doc-residencia').checked,
-                    declaracao_dependentes: document.getElementById('chk-doc-dependentes').checked,
                     certidao_casamento_nascimento: document.getElementById('chk-doc-casamento').checked,
-                    procuracao: document.getElementById('chk-doc-procuracao').checked,
                     outros: document.getElementById('cad-doc-outros').value.trim()
                 };
 
@@ -1899,9 +1891,7 @@ const searchInput = document.getElementById('search-input');
                         { label: 'RG e CPF do Titular Falecido', val: chk.rg_cpf_falecido },
                         { label: 'RG e CPF dos Herdeiros', val: chk.rg_cpf_herdeiros },
                         { label: 'Comprovante de Residência', val: chk.comprovante_residencia },
-                        { label: 'Declaração de Inexistência de Dependentes (INSS/RPPS)', val: chk.declaracao_dependentes },
-                        { label: 'Certidão de Casamento / Nascimento', val: chk.certidao_casamento_nascimento },
-                        { label: 'Procuração Jurídica Assinada', val: chk.procuracao }
+                        { label: 'Certidão de Casamento / Nascimento', val: chk.certidao_casamento_nascimento }
                     ];
 
                     let chkHtml = '';
@@ -2082,9 +2072,7 @@ const searchInput = document.getElementById('search-input');
                         { label: 'RG e CPF do Titular Falecido', val: chk.rg_cpf_falecido },
                         { label: 'RG e CPF dos Herdeiros', val: chk.rg_cpf_herdeiros },
                         { label: 'Comprovante de Residência', val: chk.comprovante_residencia },
-                        { label: 'Declaração Inexistência de Dependentes', val: chk.declaracao_dependentes },
-                        { label: 'Certidão Casamento/Nascimento', val: chk.certidao_casamento_nascimento },
-                        { label: 'Procuração Jurídica', val: chk.procuracao }
+                        { label: 'Certidão Casamento/Nascimento', val: chk.certidao_casamento_nascimento }
                     ];
                     lista.forEach(item => {
                         chkHtml += `<span style="margin-right:15px; display:inline-block;">[${item.val ? 'X' : ' '}] ${item.label}</span> `;

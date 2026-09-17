@@ -34,16 +34,6 @@
         </div>
 
         <div class="header-actions">
-            <button id="btn-novidades" class="btn-novidades" title="Ver detalhes da última atualização">
-                <span class="novidade-dot"></span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <polygon
-                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                    </polygon>
-                </svg>
-                <span>Novidades</span>
-            </button>
 
             <div class="sync-status-container" id="sync-status-container"
                 title="Sincronização automática em segundo plano ativa">
@@ -487,12 +477,11 @@
 
                 <div style="text-align: center;">
                     <h3 style="font-size: 1.35rem; color: var(--accent); margin-bottom: 0.35rem;">
-                        Busca por CPF com Zero Inicial Liberada!
+                        Novo Módulo de Gestão de Herdeiros
                     </h3>
                     <p
                         style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; max-width: 480px; margin: 0 auto;">
-                        Agora você pode pesquisar digitando o <strong>zero no início do CPF</strong> ou sem o zero. O
-                        sistema encontra o associado em qualquer formato!
+                        Agora o sistema conta com uma área exclusiva para cadastrar, organizar e acompanhar os processos de herdeiros de forma centralizada!
                     </p>
                 </div>
 
@@ -500,18 +489,12 @@
                     style="display: flex; flex-direction: column; gap: 0.85rem; width: 100%; text-align: left; background: #f8fafc; border: 1px solid var(--surface-border); border-radius: 12px; padding: 1.1rem 1.25rem;">
                     <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
                         <span
-                            style="background: #e0f2fe; color: #0284c7; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">0️⃣</span>
+                            style="background: #e0f2fe; color: #0284c7; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">📝</span>
                         <div>
                             <strong
-                                style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Pesquisa
-                                flexível com ou sem zero</strong>
+                                style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Cadastro Completo e Simplificado</strong>
                             <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
-                                Pesquise com zero inicial (ex: <code
-                                    style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">03567931334</code>
-                                ou formatado <code
-                                    style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">035.679.313-34</code>)
-                                ou sem zero (<code
-                                    style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">3567931334</code>).
+                                Selecione múltiplas ações de uma vez, preencha os herdeiros e cadastre o processo de forma rápida.
                             </p>
                         </div>
                     </div>
@@ -521,26 +504,9 @@
                             style="background: #dcfce7; color: #16a34a; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">✨</span>
                         <div>
                             <strong
-                                style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Exibição
-                                completa de 11 dígitos</strong>
+                                style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Matrícula como ID</strong>
                             <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
-                                Mesmo quando o Excel retirava os zeros da planilha, o sistema agora normaliza e exibe
-                                todos os <strong>11 dígitos</strong> com a máscara oficial (<code
-                                    style="background: #e2e8f0; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--accent);">000.000.000-00</code>).
-                            </p>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
-                        <span
-                            style="background: #fef3c7; color: #d97706; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">📁</span>
-                        <div>
-                            <strong
-                                style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Planilha
-                                Guilherme Melo Atualizada</strong>
-                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
-                                A nova versão da planilha da <em>Ação Guilherme Melo COMPLETO</em> já foi conectada e
-                                sincronizada ao sistema.
+                                O sistema agora usa a matrícula do titular como identificador do processo, impedindo duplicidades.
                             </p>
                         </div>
                     </div>
@@ -700,16 +666,8 @@
                             <span>Comprovante de Residência</span>
                         </label>
                         <label class="checklist-item">
-                            <input type="checkbox" id="chk-doc-dependentes">
-                            <span>Declaração de Inexistência de Dependentes (INSS/RPPS)</span>
-                        </label>
-                        <label class="checklist-item">
                             <input type="checkbox" id="chk-doc-casamento">
                             <span>Certidão de Casamento / Nascimento</span>
-                        </label>
-                        <label class="checklist-item">
-                            <input type="checkbox" id="chk-doc-procuracao">
-                            <span>Procuração Jurídica Assinada</span>
                         </label>
                     </div>
 
