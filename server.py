@@ -60,6 +60,7 @@ ARQUIVO_CADASTROS_MANUAIS = "novos_cadastros_sinte.xlsx"
 # ----------------------------------------------------------------------
 ARQUIVO_HERDEIROS = "dados_herdeiros.json"
 ARQUIVO_HERDEIROS_EXCEL = "herdeiros_cadastros.xlsx"
+ID_PLANILHA_HERDEIROS_CONCLUIDOS = "1eF_NFwNhbR7PeJJmQXLK27z69O3cqhXq"
 DIR_UPLOADS_HERDEIROS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads_herdeiros")
 os.makedirs(DIR_UPLOADS_HERDEIROS, exist_ok=True)
 herdeiros_lock = threading.Lock()
@@ -71,10 +72,95 @@ STATUS_HERDEIROS_MAP = {
     "concluido": "Concluído & Arquivado"
 }
 
+def importar_herdeiros_concluidos_google():
+    """Importa automaticamente os processos arquivados da planilha de herdeiros concluídos."""
+    url = f"https://docs.google.com/spreadsheets/d/{ID_PLANILHA_HERDEIROS_CONCLUIDOS}/export?format=xlsx"
+    try:
+        resposta = requests.get(url, timeout=30)
+        resposta.raise_for_status()
+        with open("temp_herdeiros_concluidos.xlsx", "wb") as f:
+            f.write(resposta.content)
+
+        xls = pd.ExcelFile("temp_herdeiros_concluidos.xlsx")
+        registros = []
+        for nome_aba in xls.sheet_names:
+            df = pd.read_excel(xls, sheet_name=nome_aba)
+            if df.empty:
+                continue
+            df = df.copy()
+            df.columns = [str(c).strip() for c in df.columns]
+            for _, linha in df.iterrows():
+                mapa = {str(col).strip().upper(): linha.get(col) for col in df.columns}
+                nome = (
+                    mapa.get("NOME")
+                    or mapa.get("NOME ")
+                    or mapa.get("NOME DO SERVIDOR")
+                    or mapa.get("FALECIDO")
+                    or mapa.get("TITULAR")
+                    or ""
+                )
+                cpf = mapa.get("CPF") or mapa.get("CPF ") or mapa.get("CPF FALECIDO") or ""
+                matricula = mapa.get("MATRICULA") or mapa.get("MATRÍCULA") or mapa.get("MATRICULA ") or ""
+                caixa = mapa.get("CAIXA") or mapa.get("CAIXA ") or mapa.get("CAIXA CONCLUÍDO") or ""
+                herdeiros_raw = mapa.get("HERDEIROS") or mapa.get("HERDEIROS ") or mapa.get("HERDEIROS PRINCIPAIS") or ""
+                if not any([nome, cpf, matricula, caixa, herdeiros_raw]):
+                    continue
+                registros.append({
+                    "nome": nome,
+                    "cpf": cpf,
+                    "matricula": matricula,
+                    "caixa": caixa,
+                    "acao": nome_aba,
+                    "herdeiros": herdeiros_raw,
+                })
+
+        casos = []
+        for reg in registros:
+            nome = str(reg.get("nome") or "").strip()
+            cpf = str(reg.get("cpf") or "").strip()
+            mat = str(reg.get("matricula") or "").strip()
+            if not nome and not cpf and not mat:
+                continue
+            caso = construir_caso_herdeiro_importado(reg)
+            if caso["falecido"]["nome"] or caso["falecido"]["cpf"] or caso["falecido"]["matricula"]:
+                casos.append(caso)
+
+        if casos:
+            try:
+                if os.path.exists(ARQUIVO_HERDEIROS):
+                    dados_existentes = carregar_herdeiros()
+                else:
+                    dados_existentes = []
+            except Exception:
+                dados_existentes = []
+
+            # Evita duplicar registros já importados
+            ids_existentes = {item.get("id", "") for item in dados_existentes}
+            for caso in casos:
+                if caso["id"] not in ids_existentes:
+                    dados_existentes.append(caso)
+
+            salvar_herdeiros(dados_existentes)
+            return dados_existentes
+        return []
+    except Exception as e:
+        print(f"⚠️ Erro ao importar herdeiros da planilha Google: {e}")
+        return []
+    finally:
+        try:
+            if os.path.exists("temp_herdeiros_concluidos.xlsx"):
+                os.remove("temp_herdeiros_concluidos.xlsx")
+        except Exception:
+            pass
+
+
 def carregar_herdeiros():
     """Lê atomicamente a lista de processos de herdeiros do arquivo JSON persistente."""
     with herdeiros_lock:
         if not os.path.exists(ARQUIVO_HERDEIROS):
+            importado = importar_herdeiros_concluidos_google()
+            if importado:
+                return importado
             return []
         try:
             with open(ARQUIVO_HERDEIROS, "r", encoding="utf-8") as f:
@@ -180,12 +266,129 @@ def normalizar_herdeiros(herdeiros_raw):
 
     return herdeiros_processados
 
+
+def normalizar_herdeiros_importados(valor):
+    """Converte texto de herdeiros vindo da planilha em lista estruturada."""
+    if valor is None or pd.isna(valor):
+        return []
+
+    valor = str(valor).strip()
+    if not valor or valor.upper() in {"NAN", "NONE", "N/A", "-", ""}:
+        return []
+
+    candidatos = []
+    for sep in [";", "/", "|", " e ", ","]:
+        if sep in valor:
+            partes = valor.split(sep)
+            candidatos.extend([p.strip() for p in partes if p.strip()])
+            break
+    if not candidatos:
+        candidatos = [valor]
+
+    herdeiros = []
+    for idx, nome in enumerate(candidatos):
+        nome_limpo = re.sub(r"\s+", " ", nome).strip()
+        nome_limpo = nome_limpo.replace("/", " ").replace("|", " ")
+        if not nome_limpo or re.search(r"\d", nome_limpo):
+            continue
+        nome_limpo = nome_limpo.title()
+        herdeiros.append({
+            "id": idx + 1,
+            "nome": nome_limpo.upper(),
+            "parentesco": "Herdeiro(a)",
+            "cpf": "",
+            "telefone": "",
+            "email": "",
+            "is_principal": idx == 0,
+            "observacao": "Importado da planilha de herdeiros concluídos"
+        })
+
+    if herdeiros:
+        herdeiros[0]["is_principal"] = True
+
+    return herdeiros
+
+
+def construir_caso_herdeiro_importado(registro):
+    """Cria o payload padrão do módulo de herdeiros com dados da planilha."""
+    nome_falecido = str(registro.get("nome") or registro.get("NOME") or "").strip().upper()
+    cpf_falecido = normalizar_cpf(registro.get("cpf") or registro.get("CPF") or "")
+    matricula_falecido = str(registro.get("matricula") or registro.get("MATRICULA") or "").strip()
+    caixa = str(registro.get("caixa") or registro.get("CAIXA") or "").strip().upper()
+    acao_juridica = str(registro.get("acao") or registro.get("ACAO") or "SEGUNDA AÇÃO").strip()
+    herdeiros_texto = registro.get("herdeiros") or registro.get("HERDEIROS") or ""
+    herdeiros = normalizar_herdeiros_importados(herdeiros_texto)
+    if not herdeiros:
+        herdeiros = [{
+            "id": 1,
+            "nome": "HERDEIRO NÃO INFORMADO",
+            "parentesco": "Herdeiro(a)",
+            "cpf": "",
+            "telefone": "",
+            "email": "",
+            "is_principal": True,
+            "observacao": "Importado da planilha de herdeiros concluídos"
+        }]
+
+    agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    caso = {
+        "id": f"HERD-IMPORT-{abs(hash(nome_falecido + cpf_falecido + matricula_falecido + caixa)) % 100000:05d}",
+        "data_cadastro": agora,
+        "ultima_atualizacao": agora,
+        "status": "concluido",
+        "falecido": {
+            "nome": nome_falecido,
+            "cpf": cpf_falecido,
+            "matricula": matricula_falecido,
+            "regional": "",
+            "acao_juridica": acao_juridica,
+            "data_obito": ""
+        },
+        "herdeiros": herdeiros,
+        "documentos_checklist": {
+            "certidao_obito": True,
+            "rg_cpf_falecido": True,
+            "rg_cpf_herdeiros": True,
+            "comprovante_residencia": True,
+            "declaracao_dependentes": True,
+            "certidao_casamento_nascimento": True,
+            "procuracao": True,
+            "outros": "Importado automaticamente da planilha"
+        },
+        "localizacao_provisoria": "Arquivo / Caixa definitiva",
+        "caixa_concluido": caixa,
+        "observacoes": "Processo importado automaticamente da planilha de herdeiros concluídos.",
+        "historico": [{
+            "data": agora,
+            "acao": "Importação automática da planilha",
+            "usuario": "Sistema",
+            "detalhes": f"Registro sincronizado da planilha {acao_juridica}."
+        }],
+        "notificacoes": [],
+        "anexos": []
+    }
+    return caso
+
 # ----------------------------------------------------------------------
 # 2. ESCRITA NA PLANILHA CORRESPONDENTE VIA CREDENTIALS.JSON
 # ----------------------------------------------------------------------
+def encontrar_credenciais_google():
+    """Procura o arquivo de credenciais em possíveis caminhos do projeto."""
+    candidatos = [
+        os.path.join(os.getcwd(), "credentials.json"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "credentials.json"),
+        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "credentials.json"),
+        "credentials.json",
+    ]
+    for caminho in candidatos:
+        if os.path.exists(caminho):
+            return caminho
+    return "credentials.json"
+
+
 def validar_credenciais_google():
     """Valida o arquivo de credenciais da conta de serviço do Google."""
-    caminho = "credentials.json"
+    caminho = encontrar_credenciais_google()
     if not os.path.exists(caminho):
         raise FileNotFoundError(
             "Arquivo 'credentials.json' não encontrado na raiz do projeto. "
@@ -253,7 +456,7 @@ def carregar_dados():
             client_email = credenciais.get("client_email")
         except Exception as e:
             print(f"⚠️ {e}")
-            raise
+            client_email = None
         
         try:
             # 1. Planilhas do Google Drive (processando todas as abas)
@@ -1543,9 +1746,12 @@ def api_exportar_herdeiros():
 # 6. INICIALIZAÇÃO DOS DADOS E BACKGROUND SYNC DAEMON
 # ----------------------------------------------------------------------
 if not os.environ.get("TESTING"):
-    carregar_dados()
-    sync_thread = threading.Thread(target=background_sync_worker, daemon=True)
-    sync_thread.start()
+    try:
+        carregar_dados()
+        sync_thread = threading.Thread(target=background_sync_worker, daemon=True)
+        sync_thread.start()
+    except Exception as e:
+        print(f"⚠️ Inicialização do sincronizador falhou: {e}")
 
 
 if __name__ == "__main__":
