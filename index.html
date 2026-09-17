@@ -481,7 +481,8 @@
                     </h3>
                     <p
                         style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; max-width: 480px; margin: 0 auto;">
-                        Agora o sistema conta com uma área exclusiva para cadastrar, organizar e acompanhar os processos de herdeiros de forma centralizada!
+                        Agora o sistema conta com uma área exclusiva para cadastrar, organizar e acompanhar os processos
+                        de herdeiros de forma centralizada!
                     </p>
                 </div>
 
@@ -492,9 +493,11 @@
                             style="background: #e0f2fe; color: #0284c7; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">📝</span>
                         <div>
                             <strong
-                                style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Cadastro Completo e Simplificado</strong>
+                                style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Cadastro
+                                Completo e Simplificado</strong>
                             <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
-                                Selecione múltiplas ações de uma vez, preencha os herdeiros e cadastre o processo de forma rápida.
+                                Selecione múltiplas ações de uma vez, preencha os herdeiros e cadastre o processo de
+                                forma rápida.
                             </p>
                         </div>
                     </div>
@@ -504,9 +507,11 @@
                             style="background: #dcfce7; color: #16a34a; padding: 0.25rem; border-radius: 6px; font-size: 1.1rem; line-height: 1;">✨</span>
                         <div>
                             <strong
-                                style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Matrícula como ID</strong>
+                                style="color: var(--text-main); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;">Matrícula
+                                como ID</strong>
                             <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
-                                O sistema agora usa a matrícula do titular como identificador do processo, impedindo duplicidades.
+                                O sistema agora usa a matrícula do titular como identificador do processo, impedindo
+                                duplicidades.
                             </p>
                         </div>
                     </div>
@@ -589,30 +594,30 @@
                         </div>
                     </div>
 
-                    <div class="form-row-3">
+                    <div class="form-row-2">
                         <div class="form-group">
                             <label for="cad-falecido-regional">Cidade / Regional</label>
                             <input type="text" id="cad-falecido-regional" class="form-control"
                                 placeholder="Regional...">
                         </div>
                         <div class="form-group">
-                            <label for="cad-falecido-acao">Ação Jurídica *</label>
-                            <select id="cad-falecido-acao" class="form-control" multiple style="height: 120px; resize: vertical;">
-                                <option value="Ação Guilherme Melo">Ação Guilherme Melo</option>
-                                <option value="FUNDEF">FUNDEF</option>
-                                <option value="AUTORIZAÇÕES ASSINADAS - MÃO SANTA 99">Mão Santa 99</option>
-                                <option value="MAO SANTA II">Mão Santa II</option>
-                                <option value="MÃO SANTA III">Mão Santa III</option>
-                                <option value="MÃO SANTA IV A VII">Mão Santa IV a VII</option>
-                                <option value="SEGUNDA AÇÃO">Segunda Ação</option>
-                                <option value="HERDEIROS CONCLUIDOS GUILHERME MELO E MÃO SANTA">Herdeiros Concluídos GM
-                                    e MS</option>
-                                <option value="OUTRA AÇÃO">Outra Ação</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
                             <label for="cad-falecido-obito">Data do Óbito</label>
                             <input type="date" id="cad-falecido-obito" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ação Jurídica *</label>
+                        <div class="checkbox-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; max-height: 140px; overflow-y: auto; background: var(--surface); border: 1px solid var(--surface-border); border-radius: 6px; padding: 0.75rem;">
+                            <label class="checklist-item" style="cursor: pointer;"><input type="checkbox" name="cad-acao" value="Ação Guilherme Melo"> <span style="font-size: 0.85rem; user-select: none;">Ação Guilherme Melo</span></label>
+                            <label class="checklist-item" style="cursor: pointer;"><input type="checkbox" name="cad-acao" value="FUNDEF"> <span style="font-size: 0.85rem; user-select: none;">FUNDEF</span></label>
+                            <label class="checklist-item" style="cursor: pointer;"><input type="checkbox" name="cad-acao" value="MÃO SANTA 99"> <span style="font-size: 0.85rem; user-select: none;">Mão Santa 99</span></label>
+                            <label class="checklist-item" style="cursor: pointer;"><input type="checkbox" name="cad-acao" value="MAO SANTA II"> <span style="font-size: 0.85rem; user-select: none;">Mão Santa II</span></label>
+                            <label class="checklist-item" style="cursor: pointer;"><input type="checkbox" name="cad-acao" value="MÃO SANTA III"> <span style="font-size: 0.85rem; user-select: none;">Mão Santa III</span></label>
+                            <label class="checklist-item" style="cursor: pointer;"><input type="checkbox" name="cad-acao" value="MÃO SANTA IV A VII"> <span style="font-size: 0.85rem; user-select: none;">Mão Santa IV a VII</span></label>
+                            <label class="checklist-item" style="cursor: pointer;"><input type="checkbox" name="cad-acao" value="SEGUNDA AÇÃO"> <span style="font-size: 0.85rem; user-select: none;">Segunda Ação</span></label>
+                            <label class="checklist-item" style="cursor: pointer;"><input type="checkbox" name="cad-acao" value="HERDEIROS CONCLUIDOS GUILHERME MELO E MÃO SANTA"> <span style="font-size: 0.85rem; user-select: none;">Herdeiros Concluídos GM e MS</span></label>
+                            <label class="checklist-item" style="cursor: pointer;"><input type="checkbox" name="cad-acao" value="OUTRA AÇÃO"> <span style="font-size: 0.85rem; user-select: none;">Outra Ação</span></label>
                         </div>
                     </div>
                 </div>
@@ -676,6 +681,11 @@
                         <input type="text" id="cad-doc-outros" class="form-control"
                             placeholder="Ex: Termo de renúncia, declaração de herdeiros...">
                     </div>
+
+                    <div class="form-group" style="margin-top: 0.75rem;">
+                        <label for="cad-data-recebimento-doc">Data de Recebimento da Documentação</label>
+                        <input type="date" id="cad-data-recebimento-doc" class="form-control">
+                    </div>
                 </div>
 
                 <!-- Seção 4: Guarda Física e Observações -->
@@ -726,8 +736,8 @@
                         <span class="status-badge" id="det-caso-status-badge">Fila de Espera</span>
                     </div>
                     <h3 class="modal-title" id="det-caso-nome-falecido"
-                        style="font-size: 1.35rem; color: var(--text-main);">NOME DO TITULAR FALECIDO</h3>
-                    <p class="modal-subtitle" id="det-caso-subtitulo">CPF: 000.000.000-00 • Matrícula: 00000 • Ação:
+                        style="font-size: 1.35rem; color: var(--text-main); margin-bottom: 0.4rem;">NOME DO TITULAR FALECIDO</h3>
+                    <p class="modal-subtitle" id="det-caso-subtitulo" style="line-height: 1.4; margin-top: 0;">CPF: 000.000.000-00 • Matrícula: 00000 • Ação:
                         Ação Guilherme Melo</p>
                 </div>
                 <button class="btn-close-x" id="btn-close-det-herdeiro-x" title="Fechar">

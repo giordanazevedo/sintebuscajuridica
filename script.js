@@ -1460,8 +1460,8 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('cad-falecido-matricula').value = fal.matricula || '';
                 document.getElementById('cad-falecido-regional').value = fal.regional || '';
                 const acoes = (fal.acao_juridica || 'Ação Guilherme Melo').split(',').map(s => s.trim());
-                const acaoSelect = document.getElementById('cad-falecido-acao');
-                Array.from(acaoSelect.options).forEach(opt => opt.selected = acoes.includes(opt.value));
+                const acaoCheckboxes = document.querySelectorAll('input[name="cad-acao"]');
+                acaoCheckboxes.forEach(cb => cb.checked = acoes.includes(cb.value));
                 document.getElementById('cad-falecido-obito').value = fal.data_obito || '';
                 document.getElementById('cad-local-provisorio').value = caso.localizacao_provisoria || '';
                 document.getElementById('cad-caixa-concluido').value = caso.caixa_concluido || '';
@@ -1475,6 +1475,7 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('chk-doc-residencia').checked = !!chk.comprovante_residencia;
                 document.getElementById('chk-doc-casamento').checked = !!chk.certidao_casamento_nascimento;
                 document.getElementById('cad-doc-outros').value = chk.outros || '';
+                document.getElementById('cad-data-recebimento-doc').value = caso.data_recebimento_doc || '';
 
                 // Herdeiros
                 if (containerHerdeirosCards) containerHerdeirosCards.innerHTML = '';
@@ -1493,9 +1494,9 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('cad-falecido-cpf').value = '';
                 document.getElementById('cad-falecido-matricula').value = '';
                 document.getElementById('cad-falecido-regional').value = '';
-                const acaoSelectNew = document.getElementById('cad-falecido-acao');
-                Array.from(acaoSelectNew.options).forEach(opt => opt.selected = false);
-                if (acaoSelectNew.options.length > 0) acaoSelectNew.options[0].selected = true;
+                const acaoCheckboxesNew = document.querySelectorAll('input[name="cad-acao"]');
+                acaoCheckboxesNew.forEach(cb => cb.checked = false);
+                if (acaoCheckboxesNew.length > 0) acaoCheckboxesNew[0].checked = true;
                 document.getElementById('cad-falecido-obito').value = '';
                 document.getElementById('cad-local-provisorio').value = 'Recepção / Entrada Jurídico';
                 document.getElementById('cad-caixa-concluido').value = '';
@@ -1507,6 +1508,7 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('chk-doc-residencia').checked = true;
                 document.getElementById('chk-doc-casamento').checked = false;
                 document.getElementById('cad-doc-outros').value = '';
+                document.getElementById('cad-data-recebimento-doc').value = '';
 
                 if (containerHerdeirosCards) containerHerdeirosCards.innerHTML = '';
                 adicionarLinhaHerdeiro({ parentesco: 'Filho(a)', is_principal: true });
@@ -1657,17 +1659,17 @@ const searchInput = document.getElementById('search-input');
             document.getElementById('cad-falecido-matricula').value = mat;
             document.getElementById('cad-falecido-regional').value = regional;
 
-            const selectAcao = document.getElementById('cad-falecido-acao');
-            if (selectAcao) {
+            const checkboxesAcao = document.querySelectorAll('input[name="cad-acao"]');
+            if (checkboxesAcao.length > 0) {
                 let achou = false;
-                Array.from(selectAcao.options).forEach(opt => opt.selected = false);
-                for (let i = 0; i < selectAcao.options.length; i++) {
-                    if (acao.toUpperCase().includes(selectAcao.options[i].value.toUpperCase())) {
-                        selectAcao.options[i].selected = true;
+                checkboxesAcao.forEach(cb => cb.checked = false);
+                checkboxesAcao.forEach(cb => {
+                    if (acao.toUpperCase().includes(cb.value.toUpperCase())) {
+                        cb.checked = true;
                         achou = true;
                     }
-                }
-                if (!achou && selectAcao.options.length > 0) selectAcao.options[0].selected = true;
+                });
+                if (!achou) checkboxesAcao[0].checked = true;
             }
 
             if (boxSugestoesTitular) boxSugestoesTitular.style.display = 'none';
@@ -1731,11 +1733,12 @@ const searchInput = document.getElementById('search-input');
                         cpf: document.getElementById('cad-falecido-cpf').value.trim(),
                         matricula: document.getElementById('cad-falecido-matricula').value.trim(),
                         regional: document.getElementById('cad-falecido-regional').value.trim(),
-                        acao_juridica: Array.from(document.getElementById('cad-falecido-acao').selectedOptions).map(o => o.value).join(', '),
+                        acao_juridica: Array.from(document.querySelectorAll('input[name="cad-acao"]:checked')).map(cb => cb.value).join(', '),
                         data_obito: document.getElementById('cad-falecido-obito').value
                     },
                     herdeiros: herdeirosList,
                     documentos_checklist: checklist,
+                    data_recebimento_doc: document.getElementById('cad-data-recebimento-doc').value || '',
                     localizacao_provisoria: document.getElementById('cad-local-provisorio').value.trim() || 'Recepção / Entrada Jurídico',
                     caixa_concluido: document.getElementById('cad-caixa-concluido').value.trim(),
                     observacoes: document.getElementById('cad-observacoes').value.trim()
