@@ -31,7 +31,7 @@ SYNC_INTERVAL_MINUTES = int(os.environ.get("SYNC_INTERVAL_MINUTES", "30"))
 banco_dados = []
 ultima_sincronizacao = None
 sincronizando = False
-sync_lock = threading.Lock()
+sync_lock = threading.RLock()
 
 
 # ----------------------------------------------------------------------
@@ -63,7 +63,7 @@ ARQUIVO_HERDEIROS_EXCEL = "herdeiros_cadastros.xlsx"
 ID_PLANILHA_HERDEIROS_CONCLUIDOS = "1eF_NFwNhbR7PeJJmQXLK27z69O3cqhXq"
 DIR_UPLOADS_HERDEIROS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads_herdeiros")
 os.makedirs(DIR_UPLOADS_HERDEIROS, exist_ok=True)
-herdeiros_lock = threading.Lock()
+herdeiros_lock = threading.RLock()
 
 STATUS_HERDEIROS_MAP = {
     "fila_espera": "Fila de Espera",
