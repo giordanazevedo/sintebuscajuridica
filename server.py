@@ -993,11 +993,21 @@ def status():
 
 @app.route("/api/sync")
 def sync():
+    global sincronizando
     try:
-        total = carregar_dados()
+        if sincronizando:
+            return jsonify({
+                "success": True, 
+                "message": "Sincronização já em andamento.",
+                "ultima_sincronizacao": ultima_sincronizacao.strftime("%d/%m/%Y às %H:%M:%S") if ultima_sincronizacao else None
+            })
+            
+        # Inicia a sincronização em uma thread separada para não bloquear a requisição
+        threading.Thread(target=carregar_dados, daemon=True).start()
+        
         return jsonify({
             "success": True, 
-            "total_records": total,
+            "message": "Sincronização iniciada em segundo plano.",
             "ultima_sincronizacao": ultima_sincronizacao.strftime("%d/%m/%Y às %H:%M:%S") if ultima_sincronizacao else None
         })
     except Exception as e:

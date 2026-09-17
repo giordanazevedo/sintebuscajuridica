@@ -4034,12 +4034,28 @@
                     if (data.sincronizando) {
                         if (syncStatusText) syncStatusText.textContent = 'Auto-Sync: Atualizando...';
                         if (syncStatusDot) syncStatusDot.className = 'sync-status-dot syncing';
-                    } else if (data.ultima_sincronizacao) {
-                        const horaMatch = data.ultima_sincronizacao.match(/(\d{2}:\d{2})/);
-                        const horaFormatada = horaMatch ? horaMatch[1] : data.ultima_sincronizacao;
-                        if (syncStatusText) syncStatusText.textContent = `Auto-Sync ativo • ${horaFormatada}`;
-                        if (syncStatusDot) syncStatusDot.className = 'sync-status-dot';
-                        if (syncStatusContainer) syncStatusContainer.title = `Última sincronização: ${data.ultima_sincronizacao} (${data.total_registros.toLocaleString()} registros). Atualiza automaticamente a cada ${data.intervalo_minutos} min.`;
+                        if (!syncBtn.classList.contains('loading')) {
+                            syncBtn.classList.add('loading');
+                            syncBtn.querySelector('span').textContent = 'Sincronizando...';
+                        }
+                    } else {
+                        // Not syncing. Se estava sincronizando, avisa que terminou
+                        if (syncBtn.classList.contains('loading')) {
+                            syncBtn.classList.remove('loading');
+                            syncBtn.querySelector('span').textContent = 'Sincronizar Dados';
+                            showToast('Sincronização concluída com sucesso!', 'success');
+                            if (searchInput.value.trim().length >= 2) {
+                                performSearch(searchInput.value);
+                            }
+                        }
+                        
+                        if (data.ultima_sincronizacao) {
+                            const horaMatch = data.ultima_sincronizacao.match(/(\d{2}:\d{2})/);
+                            const horaFormatada = horaMatch ? horaMatch[1] : data.ultima_sincronizacao;
+                            if (syncStatusText) syncStatusText.textContent = `Auto-Sync ativo • ${horaFormatada}`;
+                            if (syncStatusDot) syncStatusDot.className = 'sync-status-dot';
+                            if (syncStatusContainer) syncStatusContainer.title = `Última sincronização: ${data.ultima_sincronizacao} (${data.total_registros.toLocaleString()} registros). Atualiza automaticamente a cada ${data.intervalo_minutos} min.`;
+                        }
                     }
                 }
             } catch (e) {
@@ -4048,6 +4064,12 @@
         }
 
         atualizarStatusSincronizacao();
+        // Aumenta a frequência do polling para 5 segundos se estiver atualizando
+        setInterval(() => {
+            if (syncBtn.classList.contains('loading')) {
+                atualizarStatusSincronizacao();
+            }
+        }, 5000);
         setInterval(atualizarStatusSincronizacao, 30000);
 
         syncBtn.addEventListener('click', async () => {
@@ -4058,29 +4080,22 @@
             if (syncStatusText) syncStatusText.textContent = 'Sincronizando manual...';
             if (syncStatusDot) syncStatusDot.className = 'sync-status-dot syncing';
 
-            showToast("Varrendo planilhas e recarregando banco de dados...", "success");
+            showToast("Sincronização iniciada em segundo plano...", "success");
 
             try {
                 const response = await fetch('/api/sync');
                 const data = await response.json();
 
-                if (data.success) {
-                    showToast('Sincronização concluída! ' + data.total_records.toLocaleString() + ' registros indexados com sucesso.', "success");
-                    if (data.ultima_sincronizacao) {
-                        const horaMatch = data.ultima_sincronizacao.match(/(\d{2}:\d{2})/);
-                        const horaFormatada = horaMatch ? horaMatch[1] : data.ultima_sincronizacao;
-                        if (syncStatusText) syncStatusText.textContent = `Auto-Sync ativo • ${horaFormatada}`;
-                    }
-                    if (searchInput.value.trim().length >= 2) {
-                        performSearch(searchInput.value);
-                    }
-                } else {
-                    showToast('Erro na sincronização: ' + data.error, "error");
+                if (!data.success) {
+                    showToast('Erro ao iniciar sincronização: ' + data.error, "error");
+                    syncBtn.classList.remove('loading');
+                    syncBtn.querySelector('span').textContent = 'Sincronizar Dados';
+                    atualizarStatusSincronizacao();
                 }
+                // Se sucesso, a verificação de término fica a cargo do atualizarStatusSincronizacao via polling
             } catch (error) {
                 console.error("Erro na sincronização:", error);
                 showToast("Erro ao conectar ao servidor para sincronização.", "error");
-            } finally {
                 syncBtn.classList.remove('loading');
                 syncBtn.querySelector('span').textContent = 'Sincronizar Dados';
                 atualizarStatusSincronizacao();
