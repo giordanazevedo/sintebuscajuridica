@@ -764,6 +764,14 @@ def processar_dataframe(df, arquivo_nome, aba_nome, destino_lista=None):
 def home():
     return send_from_directory(".", "index.html")
 
+@app.route("/style.css")
+def serve_css():
+    return send_from_directory(".", "style.css")
+
+@app.route("/script.js")
+def serve_js():
+    return send_from_directory(".", "script.js")
+
 
 @app.route("/api/planilhas")
 def listar_planilhas():
