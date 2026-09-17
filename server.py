@@ -515,7 +515,7 @@ def carregar_dados():
             # 3. Demais arquivos Excel locais (processando todas as abas)
             arquivos_locais = sorted(list(set(glob.glob("*.xlsx") + glob.glob("*.xls") + glob.glob("*.XLSX") + glob.glob("*.XLS"))))
             for arquivo in arquivos_locais:
-                if os.path.basename(arquivo) == ARQUIVO_CADASTROS_MANUAIS:
+                if os.path.basename(arquivo) in [ARQUIVO_CADASTROS_MANUAIS, ARQUIVO_HERDEIROS_EXCEL]:
                     continue
                 try:
                     xls = pd.ExcelFile(arquivo)
@@ -794,6 +794,8 @@ def listar_planilhas():
         # Local files
         arquivos_locais = glob.glob("*.xlsx") + glob.glob("*.xls")
         for arquivo in arquivos_locais:
+            if arquivo == ARQUIVO_HERDEIROS_EXCEL:
+                continue
             nome_exibir = "Cadastros Manuais (Sistema)" if arquivo == ARQUIVO_CADASTROS_MANUAIS else arquivo
             planilhas.append({
                 "nome": nome_exibir,
