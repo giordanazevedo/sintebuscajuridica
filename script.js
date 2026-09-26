@@ -1560,7 +1560,7 @@ const searchInput = document.getElementById('search-input');
                 </div>
                 <div class="form-row-2">
                     <div class="form-group">
-                        <label>E-mail * (Prioridade para Envio)</label>
+                        <label>E-mail (Prioridade para Envio)</label>
                         <input type="email" class="form-control h-email" placeholder="email@exemplo.com" value="${escapeHTML(hEmail)}">
                     </div>
                     <div class="form-group">
