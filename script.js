@@ -1163,14 +1163,13 @@ const searchInput = document.getElementById('search-input');
                     </button>
                 `;
             } else if (caso.status === 'enviado_assinatura') {
-                const telDigits = (herdeiroPrincipal.telefone || '').replace(/\D/g, '');
-                const btnWhats = telDigits ? `
-                    <button type="button" class="btn-card-action btn-whatsapp" onclick="event.stopPropagation(); dispararWhatsAppHerdeiro('${escapeHTML(caso.id)}', '${telDigits}', '${escapeHTML(herdeiroPrincipal.nome || '')}', '${escapeHTML(fal.nome || '')}', '${escapeHTML(fal.acao_juridica || '')}');" title="Abrir WhatsApp com texto pronto">
-                        <span>💬 WhatsApp</span>
+                const btnEmail = herdeiroPrincipal.email ? `
+                    <button type="button" class="btn-card-action" style="background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe;" onclick="event.stopPropagation(); window.location.href='mailto:${escapeHTML(herdeiroPrincipal.email)}?subject=SINTE-PI%20-%20Processo%20de%20Herdeiros%20${encodeURIComponent(fal.nome)}';" title="Enviar E-mail para o herdeiro">
+                        <span>✉️ E-mail</span>
                     </button>
                 ` : '';
                 botoesRodape = `
-                    ${btnWhats}
+                    ${btnEmail}
                     <button type="button" class="btn-card-action btn-concluir" onclick="event.stopPropagation(); abrirModalArquivar('${escapeHTML(caso.id)}');" title="Herdeiros assinaram: arquivar na caixa definitiva">
                         <span>🗃️ Arquivar</span>
                     </button>
