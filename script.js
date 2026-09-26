@@ -1560,18 +1560,18 @@ const searchInput = document.getElementById('search-input');
                 </div>
                 <div class="form-row-2">
                     <div class="form-group">
-                        <label>WhatsApp / Telefone *</label>
-                        <input type="text" class="form-control h-tel" placeholder="(86) 90000-0000" value="${escapeHTML(hTel)}">
+                        <label>E-mail * (Prioridade para Envio)</label>
+                        <input type="email" class="form-control h-email" placeholder="email@exemplo.com" value="${escapeHTML(hEmail)}">
                     </div>
                     <div class="form-group">
-                        <label>E-mail</label>
-                        <input type="email" class="form-control h-email" placeholder="email@exemplo.com" value="${escapeHTML(hEmail)}">
+                        <label>Telefone Alternativo</label>
+                        <input type="text" class="form-control h-tel" placeholder="(86) 90000-0000" value="${escapeHTML(hTel)}">
                     </div>
                 </div>
                 <div style="margin-top: 0.25rem;">
                     <label style="font-size: 0.78rem; display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; color: var(--text-main); font-weight: 600;">
                         <input type="checkbox" class="h-principal" ${hPrincipal}>
-                        <span>Contato Principal para Avisos / WhatsApp</span>
+                        <span>Contato Principal para E-mails e Avisos</span>
                     </label>
                 </div>
             `;
