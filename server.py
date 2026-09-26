@@ -195,7 +195,8 @@ def salvar_herdeiros(dados):
                 fal = item.get("falecido", {})
                 herds = item.get("herdeiros", [])
                 nomes_herdeiros = ", ".join(h.get("nome", "") for h in herds if h.get("nome"))
-                contatos_herdeiros = ", ".join(f"{h.get('nome')}: {h.get('telefone') or h.get('email') or 'S/C'}" for h in herds if h.get("nome"))
+                contatos_herdeiros = ", ".join(f"{h.get('nome')}: {h.get('telefone') or 'S/C'}" for h in herds if h.get("nome"))
+                emails_herdeiros = ", ".join(f"{h.get('nome')}: {h.get('email') or 'S/C'}" for h in herds if h.get("nome"))
                 linhas_excel.append({
                     "ID": item.get("id"),
                     "STATUS": STATUS_HERDEIROS_MAP.get(item.get("status"), item.get("status")),
@@ -208,6 +209,7 @@ def salvar_herdeiros(dados):
                     "QTD HERDEIROS": len(herds),
                     "NOMES HERDEIROS": nomes_herdeiros,
                     "CONTATOS HERDEIROS": contatos_herdeiros,
+                    "EMAILS HERDEIROS": emails_herdeiros,
                     "LOCAL PROVISÓRIO": item.get("localizacao_provisoria"),
                     "CAIXA CONCLUÍDO": item.get("caixa_concluido"),
                     "DATA CADASTRO": item.get("data_cadastro"),
