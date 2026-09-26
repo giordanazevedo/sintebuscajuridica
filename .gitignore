@@ -1,3 +1,8 @@
 credentials.json
 __pycache__/
 *.pyc
+dados_herdeiros.json
+herdeiros_cadastros.xlsx
+novos_cadastros_sinte.xlsx
+temp_herdeiros_concluidos.xlsx
+uploads_herdeiros/

@@ -1133,7 +1133,10 @@ const searchInput = document.getElementById('search-input');
                             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px;">
                                 ${escapeHTML(herdeiroPrincipal.nome)}${escapeHTML(parentescoTxt)}
                             </span>
-                            <span style="font-size: 0.72rem; color: #64748b;">${escapeHTML(telExibir)}</span>
+                            <span style="font-size: 0.72rem; color: #64748b;">
+                                📞 ${escapeHTML(telExibir)}
+                                ${herdeiroPrincipal.email ? `<br>✉️ ${escapeHTML(herdeiroPrincipal.email)}` : ''}
+                            </span>
                         </div>
                     </div>
                 `;
@@ -1872,6 +1875,7 @@ const searchInput = document.getElementById('search-input');
                                             ${h.is_principal ? '<span style="background:#eff6ff; color:#1d4ed8; font-size:0.68rem; font-weight:700; padding:0.1rem 0.35rem; border-radius:4px; margin-left:0.35rem;">PRINCIPAL</span>' : ''}
                                             <span style="display:block; font-size:0.75rem; color:#64748b;">${escapeHTML(h.parentesco || 'Herdeiro')} • CPF: ${escapeHTML(formatCPF(h.cpf || '---'))}</span>
                                             <span style="display:block; font-size:0.78rem; color:var(--text-main); font-weight:600; margin-top:0.2rem;">📞 ${escapeHTML(h.telefone || 'Sem telefone')}</span>
+                                            ${h.email ? `<span style="display:block; font-size:0.75rem; color:#64748b; margin-top:0.1rem;">✉️ ${escapeHTML(h.email)}</span>` : ''}
                                         </div>
                                         <div style="display:flex; gap:0.35rem;">
                                             ${btnWhats}
