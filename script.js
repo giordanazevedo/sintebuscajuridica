@@ -1129,14 +1129,14 @@ const searchInput = document.getElementById('search-input');
                 contatoHerdeiroHtml = `
                     <div class="card-herdeiro-info">
                         <span class="herdeiro-label">Herdeiro Responsável:</span>
-                        <div class="herdeiro-name-row">
-                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px;">
+                        <div style="display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.35rem;">
+                            <strong style="font-size: 0.85rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHTML(herdeiroPrincipal.nome)}">
                                 ${escapeHTML(herdeiroPrincipal.nome)}${escapeHTML(parentescoTxt)}
-                            </span>
-                            <span style="font-size: 0.72rem; color: #64748b;">
-                                📞 ${escapeHTML(telExibir)}
-                                ${herdeiroPrincipal.email ? `<br>✉️ ${escapeHTML(herdeiroPrincipal.email)}` : ''}
-                            </span>
+                            </strong>
+                            <div style="display: flex; flex-direction: column; gap: 0.15rem; color: #64748b; font-size: 0.75rem;">
+                                ${herdeiroPrincipal.email ? `<div style="display:flex; align-items:center; gap:0.3rem;"><span style="font-size:0.8rem;">✉️</span> <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHTML(herdeiroPrincipal.email)}">${escapeHTML(herdeiroPrincipal.email)}</span></div>` : ''}
+                                <div style="display:flex; align-items:center; gap:0.3rem;"><span style="font-size:0.8rem;">📞</span> <span>${escapeHTML(telExibir)}</span></div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1164,7 +1164,7 @@ const searchInput = document.getElementById('search-input');
                 `;
             } else if (caso.status === 'enviado_assinatura') {
                 const btnEmail = herdeiroPrincipal.email ? `
-                    <button type="button" class="btn-card-action" style="background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe;" onclick="event.stopPropagation(); window.location.href='mailto:${escapeHTML(herdeiroPrincipal.email)}?subject=SINTE-PI%20-%20Processo%20de%20Herdeiros%20${encodeURIComponent(fal.nome)}';" title="Enviar E-mail para o herdeiro">
+                    <button type="button" class="btn-card-action" style="background-color: #3b82f6; color: white; border: none;" onclick="event.stopPropagation(); window.location.href='mailto:${escapeHTML(herdeiroPrincipal.email)}?subject=SINTE-PI%20-%20Processo%20de%20Herdeiros%20${encodeURIComponent(fal.nome)}';" title="Enviar E-mail para o herdeiro">
                         <span>✉️ E-mail</span>
                     </button>
                 ` : '';
