@@ -323,6 +323,13 @@ const searchInput = document.getElementById('search-input');
         const badgeHerdeirosPendentes = document.getElementById('badge-herdeiros-pendentes');
         const searchSection = document.querySelector('.search-section');
         const resultsSection = document.querySelector('.results-section');
+        const btnVoltarHerdeiros = document.getElementById('btn-voltar-herdeiros');
+
+        if (btnVoltarHerdeiros) {
+            btnVoltarHerdeiros.addEventListener('click', () => {
+                tabServidor.click();
+            });
+        }
 
         let modoBusca = 'servidor'; // 'servidor', 'regional' ou 'herdeiros'
         let listaCidades = [];
@@ -336,6 +343,7 @@ const searchInput = document.getElementById('search-input');
             tabRegional.classList.remove('active');
             if (tabHerdeiros) tabHerdeiros.classList.remove('active');
 
+            if (btnVoltarHerdeiros) btnVoltarHerdeiros.style.display = 'none';
             if (herdeirosSection) herdeirosSection.style.display = 'none';
             if (searchSection) searchSection.style.display = '';
             if (resultsSection) resultsSection.style.display = '';
@@ -348,7 +356,9 @@ const searchInput = document.getElementById('search-input');
             resultsHeader.style.display = 'none';
 
             // Restaura estado anterior de busca
-            performSearch(searchInput.value);
+            if (searchInput.value.trim().length >= 2) {
+                performSearch(searchInput.value);
+            }
             searchInput.focus();
         });
 
@@ -360,6 +370,7 @@ const searchInput = document.getElementById('search-input');
             tabServidor.classList.remove('active');
             if (tabHerdeiros) tabHerdeiros.classList.remove('active');
 
+            if (btnVoltarHerdeiros) btnVoltarHerdeiros.style.display = 'none';
             if (herdeirosSection) herdeirosSection.style.display = 'none';
             if (searchSection) searchSection.style.display = '';
             if (resultsSection) resultsSection.style.display = '';
@@ -375,7 +386,9 @@ const searchInput = document.getElementById('search-input');
                 await carregarListaRegionais();
             }
 
-            performSearchRegional(regionalInput.value);
+            if (regionalInput.value.trim().length >= 2) {
+                performSearchRegional(regionalInput.value);
+            }
             regionalInput.focus();
         });
 
@@ -388,6 +401,7 @@ const searchInput = document.getElementById('search-input');
                 tabServidor.classList.remove('active');
                 tabRegional.classList.remove('active');
 
+                if (btnVoltarHerdeiros) btnVoltarHerdeiros.style.display = 'inline-flex';
                 if (searchSection) searchSection.style.display = 'none';
                 if (resultsSection) resultsSection.style.display = 'none';
                 if (herdeirosSection) herdeirosSection.style.display = 'flex';
