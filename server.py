@@ -242,9 +242,30 @@ def salvar_herdeiros(dados):
             for item in dados:
                 fal = item.get("falecido", {})
                 herds = item.get("herdeiros", [])
-                nomes_herdeiros = ", ".join(h.get("nome", "") for h in herds if h.get("nome"))
-                contatos_herdeiros = ", ".join(f"{h.get('nome')}: {h.get('telefone') or 'S/C'}" for h in herds if h.get("nome"))
-                emails_herdeiros = ", ".join(f"{h.get('nome')}: {h.get('email') or 'S/C'}" for h in herds if h.get("nome"))
+                nomes_herdeiros = ", ".join(h.get("nome", "").strip() for h in herds if h.get("nome"))
+                
+                tels_b = []
+                mails_b = []
+                for h in herds:
+                    nh = (h.get("nome") or "").strip()
+                    th = (h.get("telefone") or "").strip()
+                    mh = (h.get("email") or "").strip()
+                    if "@" in th and not mh:
+                        mh = th
+                        th = ""
+                    elif "@" not in mh and re.search(r'\d{8,}', mh) and not th:
+                        th = mh
+                        mh = ""
+                    is_ph = not nh or "HERDEIRO N" in nh.upper()
+                    pfx = "" if (len(herds) == 1 or is_ph) else f"{nh}: "
+                    if th:
+                        tels_b.append(f"{pfx}{th}")
+                    if mh:
+                        mails_b.append(f"{pfx}{mh}")
+                
+                contatos_tel_b = " | ".join(tels_b) if tels_b else ""
+                contatos_mail_b = " | ".join(mails_b) if mails_b else ""
+
                 linhas_excel.append({
                     "ID": item.get("id"),
                     "STATUS": STATUS_HERDEIROS_MAP.get(item.get("status"), item.get("status")),
@@ -256,8 +277,8 @@ def salvar_herdeiros(dados):
                     "DATA ÓBITO": fal.get("data_obito"),
                     "QTD HERDEIROS": len(herds),
                     "NOMES HERDEIROS": nomes_herdeiros,
-                    "CONTATOS HERDEIROS": contatos_herdeiros,
-                    "EMAILS HERDEIROS": emails_herdeiros,
+                    "CONTATO / TELEFONE": contatos_tel_b,
+                    "EMAIL": contatos_mail_b,
                     "LOCAL PROVISÓRIO": item.get("localizacao_provisoria"),
                     "CAIXA CONCLUÍDO": item.get("caixa_concluido"),
                     "DATA CADASTRO": item.get("data_cadastro"),
@@ -1796,8 +1817,33 @@ def api_exportar_herdeiros():
         for item in dados:
             fal = item.get("falecido", {})
             herds = item.get("herdeiros", [])
-            nomes_h = ", ".join(h.get("nome", "") for h in herds if h.get("nome"))
-            contatos_h = ", ".join(f"{h.get('nome')}: {h.get('telefone') or h.get('email') or 'S/C'}" for h in herds if h.get("nome"))
+            nomes_h = ", ".join(h.get("nome", "").strip() for h in herds if h.get("nome"))
+            
+            telefones_list = []
+            emails_list = []
+            for h in herds:
+                nome_h = (h.get("nome") or "").strip()
+                tel = (h.get("telefone") or "").strip()
+                mail = (h.get("email") or "").strip()
+                
+                # Sanitiza caso o usuário tenha inserido email no telefone ou telefone no email
+                if "@" in tel and not mail:
+                    mail = tel
+                    tel = ""
+                elif "@" not in mail and re.search(r'\d{8,}', mail) and not tel:
+                    tel = mail
+                    mail = ""
+                
+                is_placeholder = not nome_h or "HERDEIRO N" in nome_h.upper()
+                prefix = "" if (len(herds) == 1 or is_placeholder) else f"{nome_h}: "
+                
+                if tel:
+                    telefones_list.append(f"{prefix}{tel}")
+                if mail:
+                    emails_list.append(f"{prefix}{mail}")
+            
+            contatos_tel = " | ".join(telefones_list) if telefones_list else ""
+            contatos_email = " | ".join(emails_list) if emails_list else ""
             
             linhas.append({
                 "ID": item.get("id"),
@@ -1810,7 +1856,8 @@ def api_exportar_herdeiros():
                 "DATA ÓBITO": fal.get("data_obito"),
                 "QTD HERDEIROS": len(herds),
                 "HERDEIROS (NOMES)": nomes_h,
-                "HERDEIROS (CONTATOS)": contatos_h,
+                "CONTATO / TELEFONE": contatos_tel,
+                "EMAIL": contatos_email,
                 "LOCAL PROVISÓRIO": item.get("localizacao_provisoria"),
                 "CAIXA CONCLUÍDO": item.get("caixa_concluido"),
                 "DATA CADASTRO": item.get("data_cadastro"),
