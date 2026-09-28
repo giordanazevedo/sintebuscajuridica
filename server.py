@@ -389,12 +389,22 @@ def encontrar_credenciais_google():
 
 
 def validar_credenciais_google():
-    """Valida o arquivo de credenciais da conta de serviço do Google."""
+    """Valida as credenciais da conta de serviço do Google (por variável de ambiente ou credentials.json)."""
+    # 1. Variável de ambiente (ideal para deploy em nuvem como Railway/Heroku)
+    env_creds = os.environ.get("GOOGLE_CREDENTIALS") or os.environ.get("GOOGLE_SERVICE_ACCOUNT") or os.environ.get("CREDENTIALS_JSON")
+    if env_creds:
+        try:
+            dados = json.loads(env_creds)
+            if isinstance(dados, dict) and dados.get("client_email"):
+                return dados
+        except Exception:
+            pass
+
+    # 2. Arquivo físico credentials.json
     caminho = encontrar_credenciais_google()
     if not os.path.exists(caminho):
         raise FileNotFoundError(
-            "Arquivo 'credentials.json' não encontrado na raiz do projeto. "
-            "Baixe o JSON da conta de serviço do Google Cloud e salve com esse nome."
+            "Credenciais do Google Cloud não encontradas. Configure a variável de ambiente GOOGLE_CREDENTIALS ou adicione credentials.json."
         )
 
     try:
@@ -417,7 +427,7 @@ def validar_credenciais_google():
 
 def salvar_no_google_sheets(nome, matricula, cpf, acao, detalhes):
     """Identifica a planilha da ação e insere na primeira linha em branco da primeira aba."""
-    validar_credenciais_google()
+    dados_creds = validar_credenciais_google()
 
     sheet_id = MAPA_IDS_ACOES.get(acao)
     if not sheet_id:
@@ -428,7 +438,7 @@ def salvar_no_google_sheets(nome, matricula, cpf, acao, detalhes):
         "https://www.googleapis.com/auth/drive"
     ]
     
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(dados_creds, scope)
     client = gspread.authorize(creds)
     
     # Abre a planilha pelo ID
@@ -773,6 +783,11 @@ def serve_css():
 @app.route("/script.js")
 def serve_js():
     return send_from_directory(".", "script.js")
+
+
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok", "app": "sintebuscajuridica"})
 
 
 @app.route("/api/planilhas")
@@ -1773,13 +1788,23 @@ def api_exportar_herdeiros():
 # ----------------------------------------------------------------------
 # 6. INICIALIZAÇÃO DOS DADOS E BACKGROUND SYNC DAEMON
 # ----------------------------------------------------------------------
-if not os.environ.get("TESTING"):
+def _inicializar_sistema():
+    """Executa a carga inicial em segundo plano para liberar o Gunicorn/Flask imediatamente."""
     try:
         carregar_dados()
+    except Exception as e:
+        print(f"⚠️ Carga inicial de dados falhou: {e}")
+
+    try:
         sync_thread = threading.Thread(target=background_sync_worker, daemon=True)
         sync_thread.start()
     except Exception as e:
-        print(f"⚠️ Inicialização do sincronizador falhou: {e}")
+        print(f"⚠️ Inicialização do worker de sincronização periódica falhou: {e}")
+
+
+if not os.environ.get("TESTING"):
+    init_thread = threading.Thread(target=_inicializar_sistema, daemon=True)
+    init_thread.start()
 
 
 if __name__ == "__main__":
