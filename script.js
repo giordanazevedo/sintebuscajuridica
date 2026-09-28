@@ -83,22 +83,32 @@ const searchInput = document.getElementById('search-input');
             return mat;
         }
 
+        const btnBuscarServidor = document.getElementById('btn-buscar-servidor');
+
+        // Mostra ou esconde o botão de limpar sem disparar busca automática
         searchInput.addEventListener('input', () => {
             const query = searchInput.value;
-
             if (query.trim().length > 0) {
                 clearBtn.style.display = 'flex';
             } else {
                 clearBtn.style.display = 'none';
             }
-
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(() => {
-                performSearch(query);
-            }, 250);
         });
 
+        // Dispara a busca ao pressionar Enter
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch(searchInput.value);
+            }
+        });
 
+        // Dispara a busca ao clicar no botão Buscar / OK
+        if (btnBuscarServidor) {
+            btnBuscarServidor.addEventListener('click', () => {
+                performSearch(searchInput.value);
+            });
+        }
 
         clearBtn.addEventListener('click', () => {
             searchInput.value = '';
@@ -403,7 +413,9 @@ const searchInput = document.getElementById('search-input');
             }
         }
 
-        // Listener de input para busca por regional
+        const btnBuscarRegional = document.getElementById('btn-buscar-regional');
+
+        // Listener de input para busca por regional (somente toggle do botão limpar)
         regionalInput.addEventListener('input', () => {
             const query = regionalInput.value;
             if (query.trim().length > 0) {
@@ -411,11 +423,28 @@ const searchInput = document.getElementById('search-input');
             } else {
                 clearRegionalBtn.style.display = 'none';
             }
+        });
 
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(() => {
-                performSearchRegional(query);
-            }, 300);
+        // Dispara a busca por regional ao pressionar Enter
+        regionalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearchRegional(regionalInput.value);
+            }
+        });
+
+        // Dispara a busca ao clicar no botão Buscar Regional / OK
+        if (btnBuscarRegional) {
+            btnBuscarRegional.addEventListener('click', () => {
+                performSearchRegional(regionalInput.value);
+            });
+        }
+
+        // Também dispara busca ao selecionar cidade diretamente no datalist
+        regionalInput.addEventListener('change', () => {
+            if (regionalInput.value.trim().length >= 2) {
+                performSearchRegional(regionalInput.value);
+            }
         });
 
         clearRegionalBtn.addEventListener('click', () => {
