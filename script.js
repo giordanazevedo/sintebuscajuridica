@@ -1389,6 +1389,49 @@ const searchInput = document.getElementById('search-input');
             });
         }
 
+        const btnBackupHerdeiros = document.getElementById('btn-backup-herdeiros');
+        if (btnBackupHerdeiros) {
+            btnBackupHerdeiros.addEventListener('click', () => {
+                window.location.href = '/api/herdeiros/backup-json';
+                showToast('Baixando cópia de segurança completa do banco de herdeiros...', 'info');
+            });
+        }
+
+        const inputRestaurarBackup = document.getElementById('input-restaurar-backup');
+        if (inputRestaurarBackup) {
+            inputRestaurarBackup.addEventListener('change', async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                
+                if (!confirm(`Atenção: Deseja realmente restaurar os dados a partir do arquivo '${file.name}'? Uma cópia de segurança do estado atual será criada automaticamente antes de aplicar.`)) {
+                    inputRestaurarBackup.value = '';
+                    return;
+                }
+                
+                const formData = new FormData();
+                formData.append('arquivo', file);
+                
+                try {
+                    showToast('Restaurando backup de dados...', 'info');
+                    const res = await fetch('/api/herdeiros/restaurar-backup', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(data.message || 'Backup restaurado com sucesso!', 'success');
+                        setTimeout(() => carregarHerdeiros(), 500);
+                    } else {
+                        showToast(data.error || 'Erro ao restaurar backup.', 'error');
+                    }
+                } catch (err) {
+                    showToast('Falha na comunicação ao restaurar backup: ' + err.message, 'error');
+                } finally {
+                    inputRestaurarBackup.value = '';
+                }
+            });
+        }
+
         // --- TRANSIÇÃO RÁPIDA DE STATUS ---
         async function transicionarStatus(id, novoStatus, caixa = '', obs = '') {
             try {

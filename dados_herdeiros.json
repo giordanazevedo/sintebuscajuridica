@@ -14840,5 +14840,54 @@
     "historico": [],
     "notificacoes": [],
     "anexos": []
+  },
+  {
+    "anexos": [],
+    "caixa_concluido": "",
+    "data_cadastro": "2026-09-28 18:25:14",
+    "documentos_checklist": {
+      "certidao_casamento_nascimento": true,
+      "certidao_obito": true,
+      "comprovante_residencia": true,
+      "declaracao_dependentes": true,
+      "outros": "Importado automaticamente da planilha",
+      "procuracao": true,
+      "rg_cpf_falecido": true,
+      "rg_cpf_herdeiros": true
+    },
+    "falecido": {
+      "acao_juridica": "HERDEIROS PARA RETIRADA ENVIO P",
+      "cpf": "",
+      "data_obito": "",
+      "matricula": "nan",
+      "nome": "NAN",
+      "regional": ""
+    },
+    "herdeiros": [
+      {
+        "cpf": "",
+        "email": "",
+        "id": 1,
+        "is_principal": true,
+        "nome": "LUIZ VELOSO DA COSTA NETO",
+        "observacao": "Importado da planilha de herdeiros concluídos",
+        "parentesco": "Herdeiro(a)",
+        "telefone": ""
+      }
+    ],
+    "historico": [
+      {
+        "acao": "Importação automática da planilha",
+        "data": "2026-09-28 18:25:14",
+        "detalhes": "Registro sincronizado da planilha HERDEIROS PARA RETIRADA ENVIO P.",
+        "usuario": "Sistema"
+      }
+    ],
+    "id": "HERD-IMPORT-74327",
+    "localizacao_provisoria": "Arquivo / Caixa definitiva",
+    "notificacoes": [],
+    "observacoes": "Processo importado automaticamente da planilha de herdeiros concluídos.",
+    "status": "concluido",
+    "ultima_atualizacao": "2026-09-28 18:25:14"
   }
 ]

@@ -1,4 +1,5 @@
 import os
+import shutil
 import glob
 import io
 import json
@@ -53,17 +54,39 @@ MAPA_IDS_ACOES["FUNDEF"] = "1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c"
 MAPA_IDS_ACOES["GUILHERME MELO"] = "1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c"
 MAPA_IDS_ACOES["FILIAÇÕES"] = "1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c"
 
-ARQUIVO_CADASTROS_MANUAIS = "novos_cadastros_sinte.xlsx"
+# ----------------------------------------------------------------------
+# PERSISTÊNCIA DEFINITIVA (RAILWAY VOLUMES / DOCKER / LOCAL)
+# ----------------------------------------------------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.environ.get("RAILWAY_VOLUME_MOUNT_PATH") or os.environ.get("DATA_DIR")
+if not DATA_DIR:
+    if os.path.exists("/data") and os.path.isdir("/data") and os.access("/data", os.W_OK):
+        DATA_DIR = "/data"
+    elif os.path.exists(os.path.join(BASE_DIR, "data")) and os.path.isdir(os.path.join(BASE_DIR, "data")):
+        DATA_DIR = os.path.join(BASE_DIR, "data")
+    else:
+        DATA_DIR = BASE_DIR
 
-# ----------------------------------------------------------------------
-# CONSTANTES E PERSISTÊNCIA ATÔMICA DO MÓDULO DE HERDEIROS
-# ----------------------------------------------------------------------
-ARQUIVO_HERDEIROS = "dados_herdeiros.json"
-ARQUIVO_HERDEIROS_EXCEL = "herdeiros_cadastros.xlsx"
+os.makedirs(DATA_DIR, exist_ok=True)
+
+ARQUIVO_CADASTROS_MANUAIS = os.path.join(DATA_DIR, "novos_cadastros_sinte.xlsx")
+ARQUIVO_HERDEIROS = os.path.join(DATA_DIR, "dados_herdeiros.json")
+ARQUIVO_HERDEIROS_EXCEL = os.path.join(DATA_DIR, "herdeiros_cadastros.xlsx")
 ID_PLANILHA_HERDEIROS_CONCLUIDOS = "1eF_NFwNhbR7PeJJmQXLK27z69O3cqhXq"
-DIR_UPLOADS_HERDEIROS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads_herdeiros")
+DIR_UPLOADS_HERDEIROS = os.path.join(DATA_DIR, "uploads_herdeiros")
+DIR_BACKUPS_HERDEIROS = os.path.join(DATA_DIR, "backups_herdeiros")
 os.makedirs(DIR_UPLOADS_HERDEIROS, exist_ok=True)
+os.makedirs(DIR_BACKUPS_HERDEIROS, exist_ok=True)
 herdeiros_lock = threading.RLock()
+
+# Se o arquivo de dados não existir no volume persistente, inicializa com o seed do projeto
+ARQUIVO_HERDEIROS_SEED = os.path.join(BASE_DIR, "dados_herdeiros.json")
+if DATA_DIR != BASE_DIR and not os.path.exists(ARQUIVO_HERDEIROS) and os.path.exists(ARQUIVO_HERDEIROS_SEED):
+    try:
+        shutil.copy2(ARQUIVO_HERDEIROS_SEED, ARQUIVO_HERDEIROS)
+        print(f"📦 Inicializado {ARQUIVO_HERDEIROS} a partir do arquivo de seed do projeto.")
+    except Exception as e:
+        print(f"⚠️ Erro ao copiar seed de herdeiros: {e}")
 
 STATUS_HERDEIROS_MAP = {
     "fila_espera": "Fila de Espera",
@@ -71,6 +94,24 @@ STATUS_HERDEIROS_MAP = {
     "enviado_assinatura": "Enviado p/ Assinatura",
     "concluido": "Concluído & Arquivado"
 }
+
+def criar_backup_seguranca():
+    """Cria uma cópia de segurança rotativa com timestamp para prevenir perda de dados."""
+    if not os.path.exists(ARQUIVO_HERDEIROS):
+        return
+    try:
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_file = os.path.join(DIR_BACKUPS_HERDEIROS, f"dados_herdeiros_{ts}.json")
+        shutil.copy2(ARQUIVO_HERDEIROS, backup_file)
+        
+        # Mantém até 30 backups rotativos
+        backups = sorted(glob.glob(os.path.join(DIR_BACKUPS_HERDEIROS, "dados_herdeiros_*.json")))
+        if len(backups) > 30:
+            for b in backups[:-30]:
+                try: os.remove(b)
+                except Exception: pass
+    except Exception as e:
+        print(f"⚠️ Erro ao criar backup automático de herdeiros: {e}")
 
 def importar_herdeiros_concluidos_google():
     """Importa automaticamente os processos arquivados da planilha de herdeiros concluídos."""
@@ -203,9 +244,19 @@ def importar_herdeiros_concluidos_google():
 
 
 def carregar_herdeiros():
-    """Lê atomicamente a lista de processos de herdeiros do arquivo JSON persistente."""
+    """Lê atomicamente a lista de processos de herdeiros com auto-recuperação de backup se necessário."""
     with herdeiros_lock:
         if not os.path.exists(ARQUIVO_HERDEIROS):
+            # Tenta inicializar a partir do seed do projeto
+            if os.path.exists(ARQUIVO_HERDEIROS_SEED):
+                try:
+                    with open(ARQUIVO_HERDEIROS_SEED, "r", encoding="utf-8") as f:
+                        dados_seed = json.load(f)
+                    if isinstance(dados_seed, list) and len(dados_seed) > 0:
+                        salvar_herdeiros(dados_seed)
+                        return dados_seed
+                except Exception:
+                    pass
             importado = importar_herdeiros_concluidos_google()
             if importado:
                 return importado
@@ -213,14 +264,28 @@ def carregar_herdeiros():
         try:
             with open(ARQUIVO_HERDEIROS, "r", encoding="utf-8") as f:
                 dados = json.load(f)
-                return dados if isinstance(dados, list) else []
+                if isinstance(dados, list):
+                    return dados
         except Exception as e:
             print(f"⚠️ Erro ao carregar {ARQUIVO_HERDEIROS}: {e}")
-            return []
+            # Auto-recuperação: busca no histórico de backups
+            backups = sorted(glob.glob(os.path.join(DIR_BACKUPS_HERDEIROS, "dados_herdeiros_*.json")), reverse=True)
+            for b in backups:
+                try:
+                    with open(b, "r", encoding="utf-8") as fb:
+                        dados_rec = json.load(fb)
+                        if isinstance(dados_rec, list) and len(dados_rec) > 0:
+                            print(f"🔄 Auto-recuperados {len(dados_rec)} processos do backup de segurança {b}!")
+                            salvar_herdeiros(dados_rec)
+                            return dados_rec
+                except Exception:
+                    continue
+        return []
 
 def salvar_herdeiros(dados):
-    """Salva com segurança atômica e atualiza planilha Excel de backup."""
+    """Salva com segurança atômica, backup automático e atualiza planilha Excel."""
     with herdeiros_lock:
+        criar_backup_seguranca()
         # Gravação atômica em arquivo temporário
         temp_file = f"{ARQUIVO_HERDEIROS}.tmp"
         try:
@@ -1884,11 +1949,72 @@ def api_exportar_herdeiros():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route("/api/herdeiros/backup-json")
+def api_download_backup_json():
+    """Permite ao usuário baixar uma cópia de segurança completa do banco em JSON."""
+    try:
+        dados = carregar_herdeiros()
+        output = io.BytesIO()
+        output.write(json.dumps(dados, ensure_ascii=False, indent=2).encode("utf-8"))
+        output.seek(0)
+        data_str = datetime.now().strftime("%Y%m%d_%H%M")
+        return send_file(
+            output,
+            mimetype="application/json",
+            as_attachment=True,
+            download_name=f"backup_completo_herdeiros_{data_str}.json"
+        )
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/herdeiros/restaurar-backup", methods=["POST"])
+def api_restaurar_backup():
+    """Restaura com validação e cópia prévia de segurança a partir de um JSON de backup."""
+    try:
+        if "arquivo" not in request.files:
+            return jsonify({"success": False, "error": "Nenhum arquivo enviado."}), 400
+        
+        file = request.files["arquivo"]
+        if not file or not file.filename.endswith(".json"):
+            return jsonify({"success": False, "error": "Envie um arquivo .json válido de backup."}), 400
+        
+        conteudo = file.read().decode("utf-8")
+        dados_restaurados = json.loads(conteudo)
+        
+        if not isinstance(dados_restaurados, list):
+            return jsonify({"success": False, "error": "O arquivo de backup não contém uma lista válida de processos."}), 400
+        
+        validos = 0
+        for item in dados_restaurados:
+            if isinstance(item, dict) and "id" in item:
+                validos += 1
+                
+        if validos == 0:
+            return jsonify({"success": False, "error": "Nenhum processo válido encontrado no arquivo."}), 400
+        
+        criar_backup_seguranca()
+        salvar_herdeiros(dados_restaurados)
+        
+        return jsonify({
+            "success": True, 
+            "message": f"Backup restaurado com sucesso! {len(dados_restaurados)} processos carregados.",
+            "total": len(dados_restaurados)
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Falha ao restaurar backup: {str(e)}"}), 500
+
+
 # ----------------------------------------------------------------------
 # 6. INICIALIZAÇÃO DOS DADOS E BACKGROUND SYNC DAEMON
 # ----------------------------------------------------------------------
 def _inicializar_sistema():
     """Executa a carga inicial em segundo plano para liberar o Gunicorn/Flask imediatamente."""
+    try:
+        criar_backup_seguranca()
+    except Exception as e:
+        print(f"⚠️ Backup inicial de herdeiros: {e}")
+
     try:
         carregar_dados()
     except Exception as e:
