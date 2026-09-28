@@ -101,15 +101,35 @@ def importar_herdeiros_concluidos_google():
                 )
                 cpf = mapa.get("CPF") or mapa.get("CPF ") or mapa.get("CPF FALECIDO") or ""
                 matricula = mapa.get("MATRICULA") or mapa.get("MATRÍCULA") or mapa.get("MATRICULA ") or ""
-                caixa = mapa.get("CAIXA") or mapa.get("CAIXA ") or mapa.get("CAIXA CONCLUÍDO") or ""
+                
+                # Procura a caixa com suporte a variações plurais (ex: 'CAIXAS', 'CAIXA', 'CX', etc.)
+                caixa = (
+                    mapa.get("CAIXAS")
+                    or mapa.get("CAIXA")
+                    or mapa.get("CAIXAS ")
+                    or mapa.get("CAIXA ")
+                    or mapa.get("CAIXA CONCLUÍDO")
+                    or mapa.get("CAIXA CONCLUIDO")
+                    or mapa.get("CX")
+                    or mapa.get("LOCALIZAÇÃO")
+                    or mapa.get("LOCALIZACAO")
+                    or ""
+                )
+                if not caixa:
+                    for k, v in mapa.items():
+                        if "CAIXA" in k or "CX" in k:
+                            if v and not pd.isna(v) and str(v).strip() != "" and str(v).strip().upper() != "NAN":
+                                caixa = str(v).strip()
+                                break
+
                 herdeiros_raw = mapa.get("HERDEIROS") or mapa.get("HERDEIROS ") or mapa.get("HERDEIROS PRINCIPAIS") or ""
                 if not any([nome, cpf, matricula, caixa, herdeiros_raw]):
                     continue
                 registros.append({
-                    "nome": nome,
-                    "cpf": cpf,
-                    "matricula": matricula,
-                    "caixa": caixa,
+                    "nome": str(nome).strip(),
+                    "cpf": str(cpf).strip(),
+                    "matricula": str(matricula).strip(),
+                    "caixa": str(caixa).strip().upper(),
                     "acao": nome_aba,
                     "herdeiros": herdeiros_raw,
                 })
@@ -134,13 +154,41 @@ def importar_herdeiros_concluidos_google():
             except Exception:
                 dados_existentes = []
 
-            # Evita duplicar registros já importados
-            ids_existentes = {item.get("id", "") for item in dados_existentes}
+            # Atualiza caixas de registros já cadastrados e adiciona novos
             for caso in casos:
-                if caso["id"] not in ids_existentes:
+                c_cpf = re.sub(r"\D", "", caso["falecido"]["cpf"])
+                c_mat = re.sub(r"\D", "", caso["falecido"]["matricula"])
+                c_nome = caso["falecido"]["nome"].strip().upper()
+                c_caixa = caso.get("caixa_concluido", "").strip()
+
+                atualizado = False
+                for exist in dados_existentes:
+                    e_fal = exist.get("falecido", {})
+                    e_cpf = re.sub(r"\D", "", str(e_fal.get("cpf", "")))
+                    e_mat = re.sub(r"\D", "", str(e_fal.get("matricula", "")))
+                    e_nome = str(e_fal.get("nome", "")).strip().upper()
+
+                    match = False
+                    if c_cpf and e_cpf and c_cpf == e_cpf:
+                        match = True
+                    elif c_mat and e_mat and c_mat == e_mat and len(c_mat) >= 3:
+                        match = True
+                    elif c_nome and e_nome and c_nome == e_nome and len(c_nome) >= 5:
+                        match = True
+
+                    if match:
+                        if c_caixa:
+                            exist["caixa_concluido"] = c_caixa
+                        if not e_fal.get("acao_juridica") and caso["falecido"].get("acao_juridica"):
+                            e_fal["acao_juridica"] = caso["falecido"]["acao_juridica"]
+                        atualizado = True
+                        break
+
+                if not atualizado:
                     dados_existentes.append(caso)
 
             salvar_herdeiros(dados_existentes)
+            print(f"✅ Sincronizados {len(casos)} processos de herdeiros com respectivas caixas!")
             return dados_existentes
         return []
     except Exception as e:
@@ -558,6 +606,10 @@ def background_sync_worker():
             time.sleep(intervalo_segundos)
             print(f"\n⏰ [Auto-Sync] Iniciando atualização periódica automática dos dados...")
             carregar_dados()
+            try:
+                importar_herdeiros_concluidos_google()
+            except Exception as e_h:
+                print(f"⚠️ [Auto-Sync] Erro ao sincronizar herdeiros concluídos: {e_h}")
         except Exception as e:
             print(f"⚠️ [Auto-Sync] Erro na sincronização automática: {e}")
             time.sleep(60)
@@ -1794,6 +1846,11 @@ def _inicializar_sistema():
         carregar_dados()
     except Exception as e:
         print(f"⚠️ Carga inicial de dados falhou: {e}")
+
+    try:
+        importar_herdeiros_concluidos_google()
+    except Exception as e:
+        print(f"⚠️ Carga inicial de herdeiros concluídos falhou: {e}")
 
     try:
         sync_thread = threading.Thread(target=background_sync_worker, daemon=True)

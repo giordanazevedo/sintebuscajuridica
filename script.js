@@ -1159,7 +1159,12 @@ const searchInput = document.getElementById('search-input');
             // Badge de localização física
             let localBadgeHtml = '';
             if (caso.status === 'concluido' && caso.caixa_concluido) {
-                localBadgeHtml = `<span class="card-location-badge loc-caixa-concluido" title="Arquivado na caixa">📦 ${escapeHTML(caso.caixa_concluido)}</span>`;
+                const labelCaixa = (caso.caixa_concluido.toUpperCase().startsWith('CX') || caso.caixa_concluido.toUpperCase().startsWith('CAIXA'))
+                    ? caso.caixa_concluido
+                    : `Caixa ${caso.caixa_concluido}`;
+                localBadgeHtml = `<span class="card-location-badge loc-caixa-concluido" title="Arquivado na caixa">📦 ${escapeHTML(labelCaixa)}</span>`;
+            } else if (caso.status === 'concluido') {
+                localBadgeHtml = `<span class="card-location-badge loc-provisorio" style="background:#fff7ed; color:#c2410c; border-color:#ffedd5;" title="Aguardando identificação da caixa">📦 Caixa não informada</span>`;
             } else if (caso.localizacao_provisoria) {
                 localBadgeHtml = `<span class="card-location-badge loc-provisorio" title="Guarda provisória">📁 ${escapeHTML(caso.localizacao_provisoria)}</span>`;
             }
