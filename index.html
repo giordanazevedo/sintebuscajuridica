@@ -933,6 +933,70 @@
         </div>
     </div>
 
+    <!-- MODAL DE ENVIO DE E-MAIL (GMAIL WEB COM TEXTO PRÉ-PRONTO) -->
+    <div class="modal-overlay" id="modal-enviar-email" style="display: none;">
+        <div class="modal-card" style="max-width: 540px; border-top: 5px solid #ea4335;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <span style="font-size: 1.4rem;">✉️</span>
+                    <h3 class="modal-title" style="margin: 0;">Enviar E-mail ao Herdeiro</h3>
+                </div>
+                <button class="btn-close-x" id="btn-close-email-x" title="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <p class="modal-subtitle" style="margin-top: 0.35rem;">
+                Deseja abrir a mensagem pré-pronta no <strong>Gmail (Web)</strong> ou no seu aplicativo de e-mail?
+            </p>
+
+            <div style="background: #f8fafc; border: 1px solid var(--surface-border); border-radius: 8px; padding: 0.75rem 1rem; margin-top: 0.75rem; font-size: 0.85rem;">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;">
+                    <strong style="color: var(--text-muted); width: 85px;">Destinatário:</strong>
+                    <span id="email-modal-destinatario" style="font-weight: 600; color: #2563eb; word-break: break-all;"></span>
+                </div>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;">
+                    <strong style="color: var(--text-muted); width: 85px;">Herdeiro:</strong>
+                    <span id="email-modal-herdeiro" style="font-weight: 600; color: var(--text-main);"></span>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <strong style="color: var(--text-muted); width: 85px;">Processo:</strong>
+                    <span id="email-modal-titular" style="color: var(--text-main);"></span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 0.85rem;">
+                <label for="email-modal-assunto">Assunto</label>
+                <input type="text" id="email-modal-assunto" class="form-control" style="font-size: 0.88rem; height: 38px;">
+            </div>
+
+            <div class="form-group" style="margin-top: 0.5rem;">
+                <label for="email-modal-corpo">Texto Pré-Pronto</label>
+                <textarea id="email-modal-corpo" class="form-control" rows="8" style="font-size: 0.85rem; line-height: 1.45; resize: vertical; font-family: inherit;"></textarea>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
+                <button type="button" id="btn-abrir-no-gmail" class="btn-save" style="background: #ea4335; border-color: #ea4335; display: flex; align-items: center; justify-content: center; gap: 0.6rem; font-size: 0.95rem; font-weight: 600; padding: 0.75rem 1rem; cursor: pointer;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <span>Abrir no Gmail (Web) com Texto Pronto</span>
+                </button>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="button" id="btn-abrir-no-mailto" class="btn-cancel" style="flex: 1; border: 1px solid var(--surface-border); background: #ffffff; color: var(--text-main); font-weight: 500; padding: 0.5rem; cursor: pointer;">
+                        Abrir no Aplicativo Padrão (Outlook/Mail)
+                    </button>
+                    <button type="button" id="btn-cancel-email" class="btn-cancel" style="width: 100px; padding: 0.5rem; cursor: pointer;">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE GESTÃO DE CAIXAS FÍSICAS -->
     <div class="modal-overlay" id="modal-caixas-gerenciador">
         <div class="modal-card modal-large"

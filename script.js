@@ -1182,7 +1182,7 @@ const searchInput = document.getElementById('search-input');
                                 ${escapeHTML(herdeiroPrincipal.nome)}${escapeHTML(parentescoTxt)}
                             </strong>
                             <div style="display: flex; flex-direction: column; gap: 0.15rem; color: #64748b; font-size: 0.75rem;">
-                                ${herdeiroPrincipal.email ? `<div style="display:flex; align-items:center; gap:0.3rem;"><span style="font-size:0.8rem;">✉️</span> <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHTML(herdeiroPrincipal.email)}">${escapeHTML(herdeiroPrincipal.email)}</span></div>` : ''}
+                                ${herdeiroPrincipal.email ? `<div style="display:flex; align-items:center; gap:0.3rem; cursor:pointer;" onclick="event.stopPropagation(); dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(herdeiroPrincipal.email)}', '${escapeHTML(herdeiroPrincipal.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}');" title="Enviar e-mail com texto pronto"><span style="font-size:0.8rem;">✉️</span> <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-decoration:underline;">${escapeHTML(herdeiroPrincipal.email)}</span></div>` : ''}
                                 <div style="display:flex; align-items:center; gap:0.3rem;"><span style="font-size:0.8rem;">📞</span> <span>${escapeHTML(telExibir)}</span></div>
                             </div>
                         </div>
@@ -1212,7 +1212,7 @@ const searchInput = document.getElementById('search-input');
                 `;
             } else if (caso.status === 'enviado_assinatura') {
                 const btnEmail = herdeiroPrincipal.email ? `
-                    <button type="button" class="btn-card-action" style="background-color: #3b82f6; color: white; border: none;" onclick="event.stopPropagation(); window.location.href='mailto:${escapeHTML(herdeiroPrincipal.email)}?subject=SINTE-PI%20-%20Processo%20de%20Herdeiros%20${encodeURIComponent(fal.nome)}';" title="Enviar E-mail para o herdeiro">
+                    <button type="button" class="btn-card-action" style="background-color: #ea4335; color: white; border: none;" onclick="event.stopPropagation(); dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(herdeiroPrincipal.email)}', '${escapeHTML(herdeiroPrincipal.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}');" title="Enviar E-mail via Gmail com texto pronto">
                         <span>✉️ E-mail</span>
                     </button>
                 ` : '';
@@ -1447,6 +1447,133 @@ const searchInput = document.getElementById('search-input');
                 console.error('Erro ao registrar notificação:', e);
             }
         }
+
+        // --- DISPARO DE E-MAIL (GMAIL WEB OU MAILTO COM TEXTO PRÉ-PRONTO) ---
+        let emailContextoAtual = null;
+        const modalEnviarEmail = document.getElementById('modal-enviar-email');
+        const emailModalDestinatario = document.getElementById('email-modal-destinatario');
+        const emailModalHerdeiro = document.getElementById('email-modal-herdeiro');
+        const emailModalTitular = document.getElementById('email-modal-titular');
+        const emailModalAssunto = document.getElementById('email-modal-assunto');
+        const emailModalCorpo = document.getElementById('email-modal-corpo');
+        const btnAbrirNoGmail = document.getElementById('btn-abrir-no-gmail');
+        const btnAbrirNoMailto = document.getElementById('btn-abrir-no-mailto');
+        const btnCancelEmail = document.getElementById('btn-cancel-email');
+        const btnCloseEmailX = document.getElementById('btn-close-email-x');
+
+        function fecharModalEmail() {
+            if (modalEnviarEmail) modalEnviarEmail.style.display = 'none';
+            emailContextoAtual = null;
+        }
+
+        function dispararEmailHerdeiro(casoId, email, nomeHerdeiro, nomeFalecido, acaoJuridica) {
+            const emailLimpo = (email || '').trim();
+            if (!emailLimpo || !emailLimpo.includes('@')) {
+                showToast('Herdeiro sem e-mail válido cadastrado.', 'error');
+                return;
+            }
+
+            const hNome = nomeHerdeiro || 'Herdeiro(a)';
+            const fNome = nomeFalecido || 'Servidor(a) Titular';
+            const acao = acaoJuridica || 'Ação Jurídica';
+
+            const assuntoPadrao = `SINTE-PI — Processo de Habilitação de Herdeiros: ${fNome}`;
+            const corpoPadrao = `Prezado(a) ${hNome},\n\n` +
+                `Entramos em contato referente ao processo de habilitação de herdeiros do(a) servidor(a) falecido(a) ${fNome} (${acao}), em andamento no Departamento Jurídico do SINTE-PI.\n\n` +
+                `Informamos que a documentação necessária para o processo está pronta para conferência e assinatura dos herdeiros.\n\n` +
+                `Solicitamos que confirme o recebimento deste e-mail e nos retorne ou compareça ao SINTE-PI para darmos o devido andamento ao processo e encaminhamento para arquivamento definitivo.\n\n` +
+                `Ficamos à disposição para quaisquer esclarecimentos.\n\n` +
+                `Atenciosamente,\n` +
+                `Departamento Jurídico — SINTE-PI\n` +
+                `Sindicato dos Trabalhadores em Educação Básica Pública do Piauí\n` +
+                `Telefone/WhatsApp: (86) 3222-3278`;
+
+            emailContextoAtual = {
+                casoId,
+                email: emailLimpo,
+                nomeHerdeiro: hNome,
+                nomeFalecido: fNome,
+                acaoJuridica: acao
+            };
+
+            if (emailModalDestinatario) emailModalDestinatario.textContent = emailLimpo;
+            if (emailModalHerdeiro) emailModalHerdeiro.textContent = hNome;
+            if (emailModalTitular) emailModalTitular.textContent = `${fNome} (${acao})`;
+            if (emailModalAssunto) emailModalAssunto.value = assuntoPadrao;
+            if (emailModalCorpo) emailModalCorpo.value = corpoPadrao;
+
+            if (modalEnviarEmail) {
+                modalEnviarEmail.style.display = 'flex';
+            }
+        }
+
+        async function registrarNotificacaoEmail(casoId, destinatario, texto) {
+            try {
+                await fetch(`/api/herdeiros/${encodeURIComponent(casoId)}/notificar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        canal: 'email',
+                        destinatario: destinatario,
+                        texto: texto
+                    })
+                });
+            } catch (e) {
+                console.error('Erro ao registrar notificação de e-mail:', e);
+            }
+        }
+
+        async function enviarViaGmail() {
+            if (!emailContextoAtual) return;
+            const destinatario = emailModalDestinatario?.textContent || emailContextoAtual.email;
+            const assunto = emailModalAssunto?.value || `SINTE-PI — Herdeiros: ${emailContextoAtual.nomeFalecido}`;
+            const corpo = emailModalCorpo?.value || '';
+
+            // Monta URL direta do Gmail Web Compose
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(destinatario)}&su=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
+            window.open(gmailUrl, '_blank');
+
+            await registrarNotificacaoEmail(
+                emailContextoAtual.casoId,
+                `${emailContextoAtual.nomeHerdeiro} (${destinatario})`,
+                `[Gmail Web] ${assunto}\n\n${corpo}`
+            );
+
+            showToast('Gmail aberto em nova aba e notificação registrada!', 'success');
+            fecharModalEmail();
+        }
+
+        async function enviarViaMailto() {
+            if (!emailContextoAtual) return;
+            const destinatario = emailModalDestinatario?.textContent || emailContextoAtual.email;
+            const assunto = emailModalAssunto?.value || `SINTE-PI — Herdeiros: ${emailContextoAtual.nomeFalecido}`;
+            const corpo = emailModalCorpo?.value || '';
+
+            const mailtoUrl = `mailto:${encodeURIComponent(destinatario)}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
+            window.location.href = mailtoUrl;
+
+            await registrarNotificacaoEmail(
+                emailContextoAtual.casoId,
+                `${emailContextoAtual.nomeHerdeiro} (${destinatario})`,
+                `[App Padrão] ${assunto}\n\n${corpo}`
+            );
+
+            showToast('Aplicativo de e-mail aberto e notificação registrada!', 'success');
+            fecharModalEmail();
+        }
+
+        if (btnAbrirNoGmail) btnAbrirNoGmail.addEventListener('click', enviarViaGmail);
+        if (btnAbrirNoMailto) btnAbrirNoMailto.addEventListener('click', enviarViaMailto);
+        if (btnCancelEmail) btnCancelEmail.addEventListener('click', fecharModalEmail);
+        if (btnCloseEmailX) btnCloseEmailX.addEventListener('click', fecharModalEmail);
+        if (modalEnviarEmail) {
+            modalEnviarEmail.addEventListener('click', (e) => {
+                if (e.target === modalEnviarEmail) fecharModalEmail();
+            });
+        }
+
+        window.dispararEmailHerdeiro = dispararEmailHerdeiro;
+        window.fecharModalEmail = fecharModalEmail;
 
         // --- MODAL DE CADASTRO / EDIÇÃO DE HERDEIROS ---
         const modalCadHerdeiro = document.getElementById('modal-herdeiro-cadastro');
@@ -1909,9 +2036,9 @@ const searchInput = document.getElementById('search-input');
                             ` : '';
 
                             const btnMail = h.email ? `
-                                <a href="mailto:${escapeHTML(h.email)}?subject=SINTE-PI%20-%20Processo%20de%20Herdeiros%20${encodeURIComponent(fal.nome)}" class="btn-outline-action" style="padding:0.3rem 0.6rem; font-size:0.75rem; text-decoration:none;">
+                                <button type="button" class="btn-outline-action" style="padding:0.3rem 0.6rem; font-size:0.75rem; cursor:pointer;" onclick="dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(h.email)}', '${escapeHTML(h.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}')">
                                     ✉️ E-mail
-                                </a>
+                                </button>
                             ` : '';
 
                             herdsHtml += `
@@ -1922,7 +2049,7 @@ const searchInput = document.getElementById('search-input');
                                             ${h.is_principal ? '<span style="background:#eff6ff; color:#1d4ed8; font-size:0.68rem; font-weight:700; padding:0.1rem 0.35rem; border-radius:4px; margin-left:0.35rem;">PRINCIPAL</span>' : ''}
                                             <span style="display:block; font-size:0.75rem; color:#64748b;">${escapeHTML(h.parentesco || 'Herdeiro')} • CPF: ${escapeHTML(formatCPF(h.cpf || '---'))}</span>
                                             <span style="display:block; font-size:0.78rem; color:var(--text-main); font-weight:600; margin-top:0.2rem;">📞 ${escapeHTML(h.telefone || 'Sem telefone')}</span>
-                                            ${h.email ? `<span style="display:block; font-size:0.75rem; color:#64748b; margin-top:0.1rem;">✉️ ${escapeHTML(h.email)}</span>` : ''}
+                                            ${h.email ? `<span style="display:block; font-size:0.75rem; color:#2563eb; margin-top:0.1rem; cursor:pointer; text-decoration:underline;" onclick="dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(h.email)}', '${escapeHTML(h.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}')" title="Enviar e-mail com texto pronto">✉️ ${escapeHTML(h.email)}</span>` : ''}
                                         </div>
                                         <div style="display:flex; gap:0.35rem;">
                                             ${btnWhats}
