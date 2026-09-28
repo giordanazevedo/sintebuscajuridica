@@ -1073,23 +1073,108 @@ def search():
             if nome_reg and nome_reg not in ['NAN', 'NONE', 'SEM NOME'] and len(nome_reg) >= 5:
                 nomes_validos.add(nome_reg)
 
-    if not encontrados_diretos:
+    # 1.1: Localiza correspondências DIRETAS nos registros de Gestão de Herdeiros
+    # Garante que titulares falecidos cadastrados diretamente em herdeiros também apareçam na busca
+    herdeiros_encontrados = []
+    herdeiros_lista = []
+    try:
+        herdeiros_lista = carregar_herdeiros()
+        for h in herdeiros_lista:
+            fal = h.get("falecido", {})
+            f_nome = str(fal.get("nome", "")).strip().upper()
+            f_cpf = str(fal.get("cpf", "")).replace(".", "").replace("-", "").replace("/", "").strip()
+            f_mat = str(fal.get("matricula", "")).replace(".", "").replace("-", "").replace("/", "").strip().upper()
+
+            herds = h.get("herdeiros", [])
+            nomes_h_list = [str(heir.get("nome", "")).strip().upper() for heir in herds if heir.get("nome")]
+            cpfs_h_list = [str(heir.get("cpf", "")).replace(".", "").replace("-", "").replace("/", "").strip() for heir in herds if heir.get("cpf")]
+
+            match_h = False
+            for tp in termos_processados:
+                t_num = tp["limpa"]
+                if tp["eh_numerico"]:
+                    if f_mat:
+                        if f_mat == t_num or f_mat.startswith(t_num) or (t_num.lstrip("0") and f_mat.lstrip("0") == t_num.lstrip("0")):
+                            match_h = True
+                    if f_cpf:
+                        if f_cpf == t_num or f_cpf.startswith(t_num) or (len(t_num) <= 11 and f_cpf.zfill(11) == t_num.zfill(11)) or (t_num.lstrip("0") and f_cpf.lstrip("0") == t_num.lstrip("0")):
+                            match_h = True
+                    if not match_h:
+                        for c_h in cpfs_h_list:
+                            if c_h and (c_h == t_num or (len(t_num) <= 11 and c_h.zfill(11) == t_num.zfill(11))):
+                                match_h = True
+                                break
+                else:
+                    if tp["original"] in f_nome and len(f_nome) > 0:
+                        match_h = True
+                    if not match_h:
+                        for n_h in nomes_h_list:
+                            if tp["original"] in n_h and len(n_h) > 0:
+                                match_h = True
+                                break
+                if match_h:
+                    break
+
+            if match_h:
+                status_lbl = STATUS_HERDEIROS_MAP.get(h.get("status"), h.get("status"))
+                nomes_h_str = ", ".join(nomes_h_list)
+                caixa_txt = f" • Caixa: {h.get('caixa_concluido')}" if h.get("caixa_concluido") else ""
+                herds_txt = f" • Herdeiro(s): {nomes_h_str}" if nomes_h_str else ""
+
+                info_h = {
+                    "id": h.get("id"),
+                    "status": h.get("status"),
+                    "status_label": status_lbl,
+                    "caixa": h.get("caixa_concluido", ""),
+                    "data_cadastro": h.get("data_cadastro", "")
+                }
+
+                herdeiros_encontrados.append({
+                    "arquivo": "Gestão de Herdeiros",
+                    "aba": fal.get("acao_juridica") or "Habilitação de Herdeiros",
+                    "matricula": fal.get("matricula") or "",
+                    "cpf": fal.get("cpf") or "",
+                    "nome": fal.get("nome") or "FALECIDO NÃO INFORMADO",
+                    "regional": fal.get("regional") or "",
+                    "detalhes": f"Processo {h.get('id')} ({status_lbl}){caixa_txt}{herds_txt}",
+                    "is_gestao_herdeiros": True,
+                    "herdeiro_info": info_h
+                })
+
+                if f_mat and f_mat not in ['NAN', 'NONE', 'N/I', '0', '-'] and len(f_mat) >= 3:
+                    matriculas_validas.add(f_mat)
+                    mat_sz = f_mat.lstrip("0")
+                    if mat_sz:
+                        matriculas_validas.add(mat_sz)
+
+                if f_cpf and len(f_cpf) >= 8:
+                    cpfs_validos.add(f_cpf.zfill(11))
+                    cpf_sz = f_cpf.lstrip("0")
+                    if cpf_sz:
+                        cpfs_validos.add(cpf_sz)
+
+                if f_nome and f_nome not in ['NAN', 'NONE', 'SEM NOME'] and len(f_nome) >= 5:
+                    nomes_validos.add(f_nome)
+    except Exception as e_h_search:
+        print(f"⚠️ Erro ao buscar em herdeiros: {e_h_search}")
+
+    if not encontrados_diretos and not herdeiros_encontrados:
         return jsonify({"results": []})
 
     # 2º Passo: Consolidação — Busca apenas os outros processos dos servidores que realmente bateram com a pesquisa
     resultados_finais = list(encontrados_diretos)
     chaves_ja_incluidas = set((r["arquivo"], r["aba"], r["nome"], r["matricula"]) for r in resultados_finais)
-    
+
     if matriculas_validas or nomes_validos or cpfs_validos:
         for reg in banco_dados:
             chave_reg = (reg["arquivo"], reg["aba"], reg["nome"], reg["matricula"])
             if chave_reg in chaves_ja_incluidas:
                 continue
-                
+
             mat_reg_limpa = reg["matricula"].replace(".", "").replace("-", "").replace("/", "").upper()
             cpf_reg_limpo = reg["cpf"].replace(".", "").replace("-", "").replace("/", "")
             nome_reg = reg["nome"].upper()
-            
+
             mat_match = (mat_reg_limpa and (mat_reg_limpa in matriculas_validas or mat_reg_limpa.lstrip("0") in matriculas_validas))
             cpf_match = (cpf_reg_limpo and (cpf_reg_limpo in cpfs_validos or cpf_reg_limpo.zfill(11) in cpfs_validos or cpf_reg_limpo.lstrip("0") in cpfs_validos))
             nome_match = (nome_reg and nome_reg in nomes_validos)
@@ -1097,10 +1182,18 @@ def search():
             if mat_match or cpf_match or nome_match:
                 resultados_finais.append(reg)
                 chaves_ja_incluidas.add(chave_reg)
-            
+
+    # Inclui os processos de herdeiros encontrados ou consolidados
+    for reg_h in herdeiros_encontrados:
+        chave_h = (reg_h["arquivo"], reg_h["aba"], reg_h["nome"], reg_h["matricula"])
+        if chave_h not in chaves_ja_incluidas:
+            resultados_finais.append(reg_h)
+            chaves_ja_incluidas.add(chave_h)
+
     # Anexa informação de herdeiros se houver caso cadastrado para o servidor
     try:
-        herdeiros_lista = carregar_herdeiros()
+        if not herdeiros_lista:
+            herdeiros_lista = carregar_herdeiros()
         if herdeiros_lista:
             mapa_falecidos = {}
             for h in herdeiros_lista:
@@ -1125,6 +1218,8 @@ def search():
                     mapa_falecidos[f"NOME_{h_nome}"] = info
 
             for r in resultados_finais:
+                if r.get("herdeiro_info"):
+                    continue
                 r_cpf = str(r.get("cpf", "")).replace(".", "").replace("-", "").replace("/", "").strip()
                 r_mat = str(r.get("matricula", "")).replace(".", "").replace("-", "").replace("/", "").strip().upper()
                 r_nome = str(r.get("nome", "")).strip().upper()

@@ -650,6 +650,10 @@ const searchInput = document.getElementById('search-input');
                 e.stopPropagation();
                 const nomeAcao = acaoBtn.getAttribute('data-acao');
                 if (nomeAcao) {
+                    if (nomeAcao.toUpperCase().includes('HERDEIRO')) {
+                        if (tabHerdeiros) tabHerdeiros.click();
+                        return;
+                    }
                     tratarCliqueAcao(nomeAcao);
                 }
             }
