@@ -2774,6 +2774,552 @@ footer strong {
     color: var(--text-main);
 }
 
+/* ====================================================================
+   RESPONSIVIDADE MOBILE COMPLETA
+   ==================================================================== */
+
+/* ---- Telas até 768px (tablets e celulares grandes) ---- */
+@media (max-width: 768px) {
+
+    /* Search tabs: scroll horizontal em vez de quebrar */
+    .search-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        justify-content: flex-start;
+        gap: 0;
+        padding-bottom: 0;
+        scrollbar-width: none;
+    }
+
+    .search-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .search-tab {
+        padding: 0.6rem 0.85rem;
+        font-size: 0.82rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .search-tab svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* Toolbar de herdeiros: empilhar verticalmente */
+    .herdeiros-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0.85rem;
+    }
+
+    .toolbar-left {
+        min-width: 0;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toolbar-search {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .toolbar-right {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toolbar-right .btn-view-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .toolbar-right .btn-outline-action,
+    .toolbar-right .btn-cta-primary {
+        width: 100%;
+        justify-content: center;
+        padding: 0.7rem 1rem;
+    }
+
+    .toolbar-select {
+        width: 100%;
+    }
+
+    /* Tabela: scroll horizontal para não estourar */
+    .herdeiros-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .modern-table {
+        min-width: 700px;
+    }
+
+    /* KPI labels: permitir quebra de linha */
+    .kpi-label {
+        white-space: normal;
+        font-size: 0.8rem;
+        line-height: 1.25;
+    }
+
+    .kpi-card {
+        padding: 0.6rem 0.7rem;
+    }
+
+    /* Modais: mais compactos */
+    .modal-card {
+        padding: 1.25rem;
+        border-radius: 12px;
+    }
+
+    .modal-card.modal-large {
+        width: calc(100vw - 1rem);
+        max-height: 90vh;
+    }
+
+    .modal-title {
+        font-size: 1.2rem;
+    }
+
+    /* Voltar herdeiros btn */
+    .btn-voltar-herdeiros {
+        margin-right: 0;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.75rem;
+    }
+
+    /* Server cards: ajustar padding */
+    .server-card {
+        padding: 1rem;
+    }
+
+    .link-item {
+        grid-template-columns: 1fr;
+        padding: 0.75rem;
+        gap: 0.65rem;
+    }
+
+    /* Regional dashboard */
+    .regional-stats-card {
+        padding: 1rem;
+    }
+
+    .stats-number {
+        font-size: 1.75rem;
+    }
+
+    .stats-icon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .stats-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Empty state */
+    .empty-state {
+        padding: 2.5rem 1.25rem;
+    }
+
+    .empty-state svg {
+        width: 48px;
+        height: 48px;
+    }
+
+    .empty-state h3 {
+        font-size: 1.1rem;
+    }
+
+    .empty-state p {
+        font-size: 0.85rem;
+    }
+
+    /* Footer */
+    footer {
+        padding: 1.25rem;
+        font-size: 0.78rem;
+    }
+
+    /* Herdeiros cards toolbar */
+    .herdeiros-cards-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .herdeiros-filter-group {
+        justify-content: center;
+    }
+
+    /* Caixas grid */
+    .caixas-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Checklist grid */
+    .checklist-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---- Telas até 480px (celulares pequenos) ---- */
+@media (max-width: 480px) {
+
+    /* Header: ainda mais compacto */
+    header {
+        padding: 0.75rem;
+        gap: 0.65rem;
+    }
+
+    .logo-img {
+        height: 40px;
+    }
+
+    .logo-container {
+        gap: 0.75rem;
+    }
+
+    .logo-title {
+        padding-left: 0.65rem;
+    }
+
+    .logo-title h1 {
+        font-size: 1rem;
+    }
+
+    .header-actions {
+        gap: 0.5rem;
+    }
+
+    .btn-sync span,
+    .btn-add span {
+        font-size: 0.78rem;
+    }
+
+    /* Main spacing */
+    main {
+        padding: 1rem 0.65rem;
+        gap: 1.25rem;
+    }
+
+    /* Título da busca */
+    .search-section h2 {
+        font-size: 1.35rem;
+    }
+
+    /* Search container */
+    .search-container {
+        border-radius: 12px;
+        padding: 0.35rem;
+    }
+
+    .search-input {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.35rem;
+    }
+
+    .search-icon {
+        width: 34px;
+    }
+
+    .search-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* Search tabs: fonte menor */
+    .search-tab {
+        padding: 0.5rem 0.65rem;
+        font-size: 0.75rem;
+    }
+
+    .search-tab span {
+        font-size: 0.72rem;
+    }
+
+    /* Search tips */
+    .search-tips {
+        font-size: 0.78rem;
+        gap: 0.5rem;
+    }
+
+    /* Server cards */
+    .server-name {
+        font-size: 1rem;
+    }
+
+    .server-card {
+        padding: 0.85rem;
+        border-left-width: 4px;
+    }
+
+    .occurrence-badge {
+        font-size: 0.68rem;
+        padding: 0.25rem 0.55rem;
+    }
+
+    .meta-label {
+        font-size: 0.65rem;
+    }
+
+    .meta-value {
+        font-size: 0.85rem;
+    }
+
+    .meta-value.highlight {
+        font-size: 0.95rem;
+    }
+
+    .source-tag {
+        font-size: 0.72rem;
+        padding: 0.2rem 0.5rem;
+    }
+
+    /* KPI cards */
+    .kpi-card {
+        border-radius: 10px;
+        padding: 0.55rem 0.65rem;
+        min-height: 48px;
+    }
+
+    .kpi-label {
+        font-size: 0.75rem;
+    }
+
+    .kpi-value {
+        min-width: 22px;
+        height: 22px;
+        font-size: 0.65rem;
+    }
+
+    /* Kanban: ajustes de card */
+    .kanban-column {
+        min-height: 200px;
+    }
+
+    .kanban-card {
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .card-falecido-nome {
+        font-size: 0.88rem;
+    }
+
+    .card-id-badge {
+        font-size: 0.65rem;
+    }
+
+    .card-time-badge {
+        font-size: 0.65rem;
+    }
+
+    .btn-card-action {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.7rem;
+    }
+
+    /* Toolbar buttons: icon-only para caber */
+    .btn-outline-action span,
+    .btn-cta-primary span {
+        font-size: 0.78rem;
+    }
+
+    /* Modais */
+    .modal-card {
+        padding: 1rem;
+        margin: 0.25rem;
+    }
+
+    .modal-title {
+        font-size: 1.1rem;
+    }
+
+    .modal-subtitle {
+        font-size: 0.8rem;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .modal-buttons .btn-cancel,
+    .modal-buttons .btn-save {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    /* Form controls mais touch-friendly */
+    .form-control {
+        padding: 0.85rem 0.75rem;
+        font-size: 1rem;
+        /* Evita zoom no iOS */
+    }
+
+    .form-group label {
+        font-size: 0.72rem;
+    }
+
+    /* Toast */
+    .toast {
+        padding: 0.75rem 1rem;
+    }
+
+    .toast-message {
+        font-size: 0.82rem;
+    }
+
+    /* Regional */
+    .regional-stats-card {
+        padding: 0.85rem;
+        gap: 0.85rem;
+    }
+
+    .stats-number {
+        font-size: 1.5rem;
+    }
+
+    .stats-label {
+        font-size: 0.68rem;
+    }
+
+    .breakdown-item {
+        padding: 0.5rem 0.65rem;
+        font-size: 0.82rem;
+    }
+
+    .breakdown-name {
+        font-size: 0.82rem;
+        max-width: 70%;
+    }
+
+    /* Dynamic heir cards */
+    .dynamic-heir-card {
+        padding: 0.75rem;
+        min-height: 180px;
+    }
+
+    .heir-card-title {
+        font-size: 0.72rem;
+    }
+
+    /* Herdeiro card badge na busca */
+    .herdeiro-card-badge {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.55rem 0.7rem;
+    }
+
+    /* GM/FUNDEF panel */
+    .gm-fundef-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .gm-stat-card .sc-num {
+        font-size: 1.5rem;
+    }
+
+    .gm-stat-card {
+        padding: 0.85rem 0.75rem;
+    }
+
+    .gm-pessoa-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    /* Planilhas modal */
+    .planilha-card {
+        padding: 0.85rem;
+    }
+
+    .planilha-name {
+        font-size: 0.88rem;
+    }
+
+    .planilha-link-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .planilha-link-icon svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* Timeline */
+    .timeline-event {
+        padding: 0.55rem 0.7rem;
+        font-size: 0.78rem;
+    }
+
+    .timeline-date {
+        font-size: 0.68rem;
+    }
+}
+
+/* ---- Telas ultra-pequenas (< 360px) ---- */
+@media (max-width: 360px) {
+
+    header {
+        padding: 0.5rem;
+    }
+
+    .logo-img {
+        height: 32px;
+    }
+
+    .logo-title h1 {
+        font-size: 0.9rem;
+    }
+
+    .logo-container {
+        gap: 0.5rem;
+    }
+
+    .search-section h2 {
+        font-size: 1.15rem;
+    }
+
+    main {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .search-tab {
+        padding: 0.45rem 0.5rem;
+        font-size: 0.7rem;
+    }
+
+    .search-tab svg {
+        display: none;
+    }
+
+    .btn-sync svg,
+    .btn-add svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .btn-sync span,
+    .btn-add span {
+        font-size: 0.72rem;
+    }
+
+    .server-card {
+        border-radius: 8px;
+    }
+
+    .kpi-label {
+        font-size: 0.7rem;
+    }
+}
+
 /* Área de Impressão */
 @media print {
     body * {

@@ -14,6 +14,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from flask import Flask, jsonify, request, send_from_directory, send_file
 from werkzeug.utils import secure_filename
+import database as db
 
 if hasattr(sys.stdout, 'reconfigure'):
     try:
@@ -167,10 +168,10 @@ def importar_herdeiros_concluidos_google():
                 if not any([nome, cpf, matricula, caixa, herdeiros_raw]):
                     continue
                 registros.append({
-                    "nome": str(nome).strip(),
-                    "cpf": str(cpf).strip(),
-                    "matricula": str(matricula).strip(),
-                    "caixa": str(caixa).strip().upper(),
+                    "nome": limpar_nan(nome),
+                    "cpf": limpar_nan(cpf),
+                    "matricula": limpar_nan(matricula),
+                    "caixa": limpar_nan(caixa).upper(),
                     "acao": nome_aba,
                     "herdeiros": herdeiros_raw,
                 })
@@ -245,6 +246,13 @@ def importar_herdeiros_concluidos_google():
 
 def carregar_herdeiros():
     """Lê atomicamente a lista de processos de herdeiros com auto-recuperação de backup se necessário."""
+    if db.usar_postgres():
+        try:
+            dados = db.carregar_todos()
+            if isinstance(dados, list):
+                return dados
+        except Exception as e:
+            print(f"⚠️ PostgreSQL indisponível ({e}), usando fallback JSON local.")
     with herdeiros_lock:
         if not os.path.exists(ARQUIVO_HERDEIROS):
             # Tenta inicializar a partir do seed do projeto
@@ -284,6 +292,12 @@ def carregar_herdeiros():
 
 def salvar_herdeiros(dados):
     """Salva com segurança atômica, backup automático e atualiza planilha Excel."""
+    if db.usar_postgres():
+        try:
+            db.salvar_todos(dados)
+            return
+        except Exception as e:
+            print(f"⚠️ Erro PostgreSQL ({e}), salvando em JSON local como fallback.")
     with herdeiros_lock:
         criar_backup_seguranca()
         # Gravação atômica em arquivo temporário
@@ -447,11 +461,11 @@ def normalizar_herdeiros_importados(valor):
 
 def construir_caso_herdeiro_importado(registro):
     """Cria o payload padrão do módulo de herdeiros com dados da planilha."""
-    nome_falecido = str(registro.get("nome") or registro.get("NOME") or "").strip().upper()
-    cpf_falecido = normalizar_cpf(registro.get("cpf") or registro.get("CPF") or "")
-    matricula_falecido = str(registro.get("matricula") or registro.get("MATRICULA") or "").strip()
-    caixa = str(registro.get("caixa") or registro.get("CAIXA") or "").strip().upper()
-    acao_juridica = str(registro.get("acao") or registro.get("ACAO") or "SEGUNDA AÇÃO").strip()
+    nome_falecido = limpar_nan(registro.get("nome") or registro.get("NOME") or "").upper()
+    cpf_falecido = normalizar_cpf(limpar_nan(registro.get("cpf") or registro.get("CPF") or ""))
+    matricula_falecido = limpar_nan(registro.get("matricula") or registro.get("MATRICULA") or "")
+    caixa = limpar_nan(registro.get("caixa") or registro.get("CAIXA") or "").upper()
+    acao_juridica = limpar_nan(registro.get("acao") or registro.get("ACAO") or "") or "SEGUNDA AÇÃO"
     herdeiros_texto = registro.get("herdeiros") or registro.get("HERDEIROS") or ""
     herdeiros = normalizar_herdeiros_importados(herdeiros_texto)
     if not herdeiros:
@@ -724,6 +738,29 @@ def normalizar_cpf(val):
     if len(apenas_digitos) <= 11:
         return apenas_digitos.zfill(11)
         
+    return s
+
+
+def limpar_nan(val):
+    """
+    Remove valores NaN do pandas que foram convertidos em string.
+    Quando o pandas lê uma célula vazia do Excel, retorna float('nan').
+    str(float('nan')) vira 'nan', que aparecia como 'NAN' nos cards.
+    """
+    if val is None:
+        return ""
+    # Trata NaN do pandas (float)
+    try:
+        if isinstance(val, float) and pd.isna(val):
+            return ""
+    except (TypeError, ValueError):
+        pass
+    s = str(val).strip()
+    # Remove .0 de floats convertidos (ex: "12345.0" → "12345")
+    if s.endswith(".0") and s[:-2].isdigit():
+        s = s[:-2]
+    if s.upper() in ("NAN", "NONE", "NAT", "NULL", "UNDEFINED"):
+        return ""
     return s
 
 
@@ -2105,6 +2142,29 @@ def api_restaurar_backup():
 # ----------------------------------------------------------------------
 def _inicializar_sistema():
     """Executa a carga inicial em segundo plano para liberar o Gunicorn/Flask imediatamente."""
+    # Inicializa PostgreSQL se DATABASE_URL estiver configurada
+    if db.usar_postgres():
+        try:
+            db.init_db()
+            # Migra dados do JSON para PostgreSQL se o banco estiver vazio
+            if db.contar_registros() == 0:
+                json_path = ARQUIVO_HERDEIROS
+                if not os.path.exists(json_path):
+                    json_path = ARQUIVO_HERDEIROS_SEED
+                if os.path.exists(json_path):
+                    try:
+                        with open(json_path, "r", encoding="utf-8") as f:
+                            dados_json = json.load(f)
+                        if isinstance(dados_json, list) and len(dados_json) > 0:
+                            db.migrar_de_json(dados_json)
+                            print(f"📦 Migração automática: {len(dados_json)} registros do JSON importados para PostgreSQL.")
+                    except Exception as e_mig:
+                        print(f"⚠️ Erro na migração automática JSON → PostgreSQL: {e_mig}")
+            else:
+                print(f"📊 PostgreSQL ativo com {db.contar_registros()} registros de herdeiros.")
+        except Exception as e:
+            print(f"⚠️ Inicialização PostgreSQL falhou: {e}. Sistema usará JSON como fallback.")
+
     try:
         criar_backup_seguranca()
     except Exception as e:
