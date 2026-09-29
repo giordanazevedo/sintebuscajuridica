@@ -23,7 +23,7 @@ def restaurar():
     print("Iniciando restauração direta no banco de dados...")
     
     if not db.usar_postgres():
-        print("❌ ERRO: DATABASE_URL não configurada no ambiente.")
+        print("❌ ERRO: DATABASE_URL não configurada no ambiente. Crie um arquivo .env ou defina a variável DATABASE_URL.")
         return
 
     db.init_db()
