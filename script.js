@@ -494,12 +494,12 @@ const searchInput = document.getElementById('search-input');
                 const response = await fetch('/api/regional/stats?q=' + encodeURIComponent(queryBackend));
                 const data = await response.json();
 
-                if (data.success && data.total > 0) {
-                    renderRegionalResults(data, regInfo);
+                if (data.success) {
+                    renderRegionalResults(data, regInfo, trimmed);
                 } else {
                     resultsHeader.style.display = 'flex';
                     resultsCount.innerHTML = 'Nenhum registro correspondente a "<span>' + escapeHTML(trimmed) + '</span>"';
-                    resultsContent.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="15.01" y2="9"></line><line x1="9" y1="9" x2="9.01" y2="9"></line><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path></svg><h3>Nenhum servidor nesta regional</h3><p>Verifique o nome digitado ou selecione outra regional da lista.</p></div>';
+                    resultsContent.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="15.01" y2="9"></line><line x1="9" y1="9" x2="9.01" y2="9"></line><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path></svg><h3>Nenhuma regional encontrada</h3><p>Verifique o nome digitado ou selecione outra regional da lista.</p></div>';
                 }
             } catch (error) {
                 console.error("Erro na busca por regional:", error);
@@ -542,50 +542,62 @@ const searchInput = document.getElementById('search-input');
                 `;
             }
 
-            html += `
-                <div class="regional-dashboard">
-                    <div class="regional-stats-card">
-                        <div class="stats-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            if (data.total > 0) {
+                html += `
+                    <div class="regional-dashboard">
+                        <div class="regional-stats-card">
+                            <div class="stats-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="stats-info">
+                                <span class="stats-label">Total de Servidores</span>
+                                <span class="stats-number">${data.total}</span>
+                            </div>
                         </div>
-                        <div class="stats-info">
-                            <span class="stats-label">Total de Servidores</span>
-                            <span class="stats-number">${data.total}</span>
+                        
+                        <div class="regional-breakdown-card">
+                            <h4 class="breakdown-title">Distribuição por Ação / Origem Jurídica</h4>
+                            <div class="breakdown-list">
+                                ${breakdownHtml}
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="regional-breakdown-card">
-                        <h4 class="breakdown-title">Distribuição por Ação / Origem Jurídica</h4>
-                        <div class="breakdown-list">
-                            ${breakdownHtml}
-                        </div>
-                    </div>
-                </div>
-            `;
+                `;
 
-            // Agora, renderiza a lista de servidores dessa regional usando o mesmo formato visual
-            html += `
-                <div id="gm-fundef-regional-block" style="margin-bottom:1.5rem;">
-                    <div class="gm-loading" style="padding:1.5rem 0;">
-                        <svg viewBox="0 0 24 24" fill="none"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-                        <span>Calculando GM + FUNDEF para ${escapeHTML(data.regional)}...</span>
+                // Agora, renderiza a lista de servidores dessa regional usando o mesmo formato visual
+                html += `
+                    <div id="gm-fundef-regional-block" style="margin-bottom:1.5rem;">
+                        <div class="gm-loading" style="padding:1.5rem 0;">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                            <span>Calculando GM + FUNDEF para ${escapeHTML(data.regional)}...</span>
+                        </div>
                     </div>
-                </div>
-            `;
-            html += '<h3 style="font-family:\'Outfit\',sans-serif; color:var(--accent); margin-bottom: 1rem; text-align:left;">Lista de Servidores</h3>';
+                `;
+                html += '<h3 style="font-family:\'Outfit\',sans-serif; color:var(--accent); margin-bottom: 1rem; text-align:left;">Lista de Servidores</h3>';
+            } else {
+                html += `
+                    <div class="empty-state" style="margin-top: 2rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="15.01" y2="9"></line><line x1="9" y1="9" x2="9.01" y2="9"></line><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path></svg>
+                        <h3>Nenhum servidor cadastrado nesta regional ainda</h3>
+                        <p>No momento, não há nenhum servidor na base de dados vinculado a esta regional.</p>
+                    </div>
+                `;
+            }
 
             // Agrupa os servidores da regional por nome
             const grouped = {};
-            data.pessoas.forEach(item => {
-                const nameKey = (item.nome || 'SEM NOME').toUpperCase().trim();
-                if (!grouped[nameKey]) {
-                    grouped[nameKey] = {
-                        nome: item.nome || 'SEM NOME',
-                        links: []
-                    };
-                }
-                grouped[nameKey].links.push(item);
-            });
+            if (data.pessoas) {
+                data.pessoas.forEach(item => {
+                    const nameKey = (item.nome || 'SEM NOME').toUpperCase().trim();
+                    if (!grouped[nameKey]) {
+                        grouped[nameKey] = {
+                            nome: item.nome || 'SEM NOME',
+                            links: []
+                        };
+                    }
+                    grouped[nameKey].links.push(item);
+                });
+            }
 
             html += '<div class="cards-list">';
             for (const key in grouped) {
