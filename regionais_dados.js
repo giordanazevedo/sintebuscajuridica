@@ -2,7 +2,7 @@ const DADOS_REGIONAIS_INFO = [
     {
         nome: "ÁGUA BRANCA",
         presidente: "Maria do Socorro Nunes Motta",
-        cidades: ["Água Branca", "Agricolândia", "Barro Durro", "Curralinhos", "Hugo Napoleão", "Lagoinha", "Olho D'Água", "Passagem Franca do Piauí", "São Pedro do Piauí", "Miguel Leão"],
+        cidades: ["Água Branca", "Agricolândia", "Barro Duro", "Curralinhos", "Hugo Napoleão", "Lagoinha", "Olho D'Água", "Passagem Franca do Piauí", "São Pedro do Piauí", "Miguel Leão"],
         endereco: "Rua Vereador Abreu Pereira, 470, Centro, Água Branca-PI CEP: 64.460-000",
         fone: "(86) 3283-1917 / 9 9959-0411",
         email: "sinteab@bol.com.br"
@@ -37,7 +37,7 @@ const DADOS_REGIONAIS_INFO = [
         cidades: ["Bom Jesus", "Alvorada do Gurguéia", "Cristino Castro", "Currais", "Palmeira do Piauí", "Redenção do Gurguêia", "Santa Luz"],
         endereco: "Av. Getúlio Vargas, 86, Bairro Miramar, Bom Jesus-PI CEP: 64.900-000",
         fone: "(89) 3562-2595",
-        email: "sintebomjesus @hotmail.com"
+        email: "sintebomjesus@hotmail.com"
     },
     {
         nome: "CAMPO MAIOR",
@@ -220,11 +220,9 @@ const DADOS_REGIONAIS_INFO = [
 function procurarRegionalPorCidade(query) {
     const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     for (const reg of DADOS_REGIONAIS_INFO) {
-        // Verifica nome da regional
         const regNome = reg.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
         if (regNome === q || regNome.includes(q)) return reg;
         
-        // Verifica as cidades
         for (const cid of reg.cidades) {
             const cidNome = cid.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
             if (cidNome === q || cidNome.includes(q)) return reg;

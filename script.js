@@ -476,9 +476,6 @@ const searchInput = document.getElementById('search-input');
             let queryBackend = trimmed;
             if (typeof procurarRegionalPorCidade === 'function') {
                 regInfo = procurarRegionalPorCidade(trimmed);
-                if (regInfo) {
-                    queryBackend = regInfo.nome.toUpperCase();
-                }
             }
 
             if (trimmed.length < 2) {
