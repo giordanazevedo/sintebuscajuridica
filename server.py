@@ -1378,20 +1378,35 @@ def listar_regionais():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
+import unicodedata
+
+def normalize_regional_name(name):
+    if not name:
+        return ""
+    # Remove acentos
+    nfkd = unicodedata.normalize('NFKD', str(name))
+    clean = u"".join([c for c in nfkd if not unicodedata.combining(c)])
+    # Remove "-PI", " - PI", etc e espaços em branco
+    clean = clean.upper().replace("-PI", "").replace("- PI", "").strip()
+    return clean
 
 @app.route("/api/regional/stats")
 def regional_stats():
     try:
-        regional_query = request.args.get("q", "").strip().upper()
+        regional_query = request.args.get("q", "").strip()
         if not regional_query:
             return jsonify({"success": False, "error": "Informe a regional."}), 400
             
+        regional_query_norm = normalize_regional_name(regional_query)
+        
         pessoas_na_regional = []
         total_por_acao = {}
         
         for reg in banco_dados:
-            reg_val = reg.get("regional", "").strip().upper()
-            if reg_val == regional_query:
+            reg_val = normalize_regional_name(reg.get("regional", ""))
+            
+            # Se a string normalizada do banco for igual a query, ou se a query for uma parte
+            if reg_val == regional_query_norm or (regional_query_norm and regional_query_norm in reg_val):
                 pessoas_na_regional.append(reg)
                 acao = reg["arquivo"]
                 total_por_acao[acao] = total_por_acao.get(acao, 0) + 1
@@ -1399,7 +1414,7 @@ def regional_stats():
         # Formata a resposta com as estatísticas e as pessoas
         return jsonify({
             "success": True,
-            "regional": regional_query,
+            "regional": regional_query.upper(),
             "total": len(pessoas_na_regional),
             "por_acao": total_por_acao,
             "pessoas": pessoas_na_regional
