@@ -1526,14 +1526,14 @@ const searchInput = document.getElementById('search-input');
 
             const assuntoPadrao = `SINTE-PI — Processo de Habilitação de Herdeiros: ${fNome}`;
             const corpoPadrao = `Prezado(a) ${hNome},\n\n` +
-                `Entramos em contato referente ao processo de habilitação de herdeiros do(a) servidor(a) falecido(a) ${fNome} (${acao}), em andamento no Departamento Jurídico do SINTE-PI.\n\n` +
-                `Informamos que a documentação necessária para o processo está pronta para conferência e assinatura dos herdeiros.\n\n` +
-                `Solicitamos que confirme o recebimento deste e-mail e nos retorne ou compareça ao SINTE-PI para darmos o devido andamento ao processo e encaminhamento para arquivamento definitivo.\n\n` +
+                `Entramos em contato referente ao processo de habilitação de herdeiros do(a) servidor(a) falecido(a) ${fNome}, em andamento no SINTE-PI\n\n` +
+                `Informamos que a documentação necessária para o processo está pronta para conferência e assinatura dos herdeiros.\n` +
+                `Solicitamos que confirme o recebimento deste e-mail , verifique a documentação e nos retorne  com documentos devidamente assinados  ou compareça ao SINTE-PI.\n\n` +
                 `Ficamos à disposição para quaisquer esclarecimentos.\n\n` +
-                `Atenciosamente,\n` +
-                `Departamento Jurídico — SINTE-PI\n` +
-                `Sindicato dos Trabalhadores em Educação Básica Pública do Piauí\n` +
-                `Telefone/WhatsApp: (86) 3222-3278`;
+                `Atenciosamente,\n\n` +
+                `Nome do Funcionário\n` +
+                `Assistente Administrativo\n` +
+                `Setor Jurídico - SINTE-PI`;
 
             emailContextoAtual = {
                 casoId,

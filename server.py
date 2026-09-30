@@ -2015,15 +2015,12 @@ def api_exportar_herdeiros():
             fal = item.get("falecido", {})
             herds = item.get("herdeiros", [])
             nomes_h = ", ".join(h.get("nome", "").strip() for h in herds if h.get("nome"))
-            
-            telefones_list = []
-            emails_list = []
+            # Formatador de contatos
+            contatos_list = []
             for h in herds:
-                nome_h = (h.get("nome") or "").strip()
                 tel = (h.get("telefone") or "").strip()
                 mail = (h.get("email") or "").strip()
                 
-                # Sanitiza caso o usuário tenha inserido email no telefone ou telefone no email
                 if "@" in tel and not mail:
                     mail = tel
                     tel = ""
@@ -2031,35 +2028,37 @@ def api_exportar_herdeiros():
                     tel = mail
                     mail = ""
                 
-                is_placeholder = not nome_h or "HERDEIRO N" in nome_h.upper()
-                prefix = "" if (len(herds) == 1 or is_placeholder) else f"{nome_h}: "
-                
-                if tel:
-                    telefones_list.append(f"{prefix}{tel}")
+                parts = []
                 if mail:
-                    emails_list.append(f"{prefix}{mail}")
+                    parts.append(f"E-mail: {mail}")
+                if tel:
+                    parts.append(f"Tel: {tel}")
+                
+                if parts:
+                    contatos_list.append(" / ".join(parts))
             
-            contatos_tel = " | ".join(telefones_list) if telefones_list else ""
-            contatos_email = " | ".join(emails_list) if emails_list else ""
+            contato_final = " | ".join(contatos_list)
             
+            # Formatador de data (YYYY-MM-DD HH:MM:SS -> DD/MM/YYYY)
+            def format_date(d_str):
+                if not d_str: return ""
+                parts = str(d_str).split(" ")[0].split("-")
+                if len(parts) == 3:
+                    return f"{parts[2]}/{parts[1]}/{parts[0]}"
+                return d_str
+            
+            data_ingresso = format_date(item.get("data_cadastro"))
+            data_entrega = format_date(item.get("ultima_atualizacao"))
+
             linhas.append({
-                "ID": item.get("id"),
-                "STATUS": STATUS_HERDEIROS_MAP.get(item.get("status"), item.get("status")),
-                "FALECIDO": fal.get("nome"),
-                "CPF FALECIDO": fal.get("cpf"),
-                "MATRÍCULA": fal.get("matricula"),
-                "REGIONAL": fal.get("regional"),
-                "AÇÃO JURÍDICA": fal.get("acao_juridica"),
-                "DATA ÓBITO": fal.get("data_obito"),
-                "QTD HERDEIROS": len(herds),
-                "HERDEIROS (NOMES)": nomes_h,
-                "CONTATO / TELEFONE": contatos_tel,
-                "EMAIL": contatos_email,
-                "LOCAL PROVISÓRIO": item.get("localizacao_provisoria"),
-                "CAIXA CONCLUÍDO": item.get("caixa_concluido"),
-                "DATA CADASTRO": item.get("data_cadastro"),
-                "ÚLTIMA ATUALIZAÇÃO": item.get("ultima_atualizacao"),
-                "OBSERVAÇÕES": item.get("observacoes")
+                "Matrícula": fal.get("matricula"),
+                "Nome": fal.get("nome"),
+                "CPF": fal.get("cpf"),
+                "Herdeiros": nomes_h,
+                "Contato": contato_final,
+                "Data de ingresso": data_ingresso,
+                "Docs produzidos": fal.get("acao_juridica"),
+                "Data entrega": data_entrega
             })
             
         df = pd.DataFrame(linhas)
