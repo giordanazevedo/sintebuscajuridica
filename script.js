@@ -471,6 +471,16 @@ const searchInput = document.getElementById('search-input');
         async function performSearchRegional(query) {
             const trimmed = query.trim().toUpperCase();
 
+            // Resolve cidade -> regional usando o novo mapa
+            let regInfo = null;
+            let queryBackend = trimmed;
+            if (typeof procurarRegionalPorCidade === 'function') {
+                regInfo = procurarRegionalPorCidade(trimmed);
+                if (regInfo) {
+                    queryBackend = regInfo.nome.toUpperCase();
+                }
+            }
+
             if (trimmed.length < 2) {
                 resultsHeader.style.display = 'none';
                 resultsContent.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg><h3>Busca por Regional</h3><p>Selecione ou digite o nome de uma cidade/regional acima para consultar estatísticas e visualizar os servidores cadastrados.</p></div>';
@@ -481,11 +491,11 @@ const searchInput = document.getElementById('search-input');
             resultsContent.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="animation: spin 1.5s linear infinite;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg><h3 style="color:var(--accent);">Carregando Estatísticas...</h3><p>Consultando dados da regional...</p></div>';
 
             try {
-                const response = await fetch('/api/regional/stats?q=' + encodeURIComponent(trimmed));
+                const response = await fetch('/api/regional/stats?q=' + encodeURIComponent(queryBackend));
                 const data = await response.json();
 
                 if (data.success && data.total > 0) {
-                    renderRegionalResults(data);
+                    renderRegionalResults(data, regInfo);
                 } else {
                     resultsHeader.style.display = 'flex';
                     resultsCount.innerHTML = 'Nenhum registro correspondente a "<span>' + escapeHTML(trimmed) + '</span>"';
@@ -498,7 +508,7 @@ const searchInput = document.getElementById('search-input');
             }
         }
 
-        function renderRegionalResults(data) {
+        function renderRegionalResults(data, regInfo) {
             resultsHeader.style.display = 'flex';
             resultsCount.innerHTML = 'Regional <span>' + escapeHTML(data.regional) + '</span> possui <span>' + data.total + '</span> servidores cadastrados';
 
@@ -513,7 +523,26 @@ const searchInput = document.getElementById('search-input');
                 `;
             }
 
-            let html = `
+            let html = '';
+            if (regInfo) {
+                html += `
+                    <div class="regional-info-card" style="background:#fff; border:1px solid var(--surface-border); border-radius:8px; padding:1.2rem; margin-bottom:1.5rem; display:flex; flex-direction:column; gap:0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        <h3 style="margin:0; color:var(--text-main); font-size:1.2rem; display:flex; align-items:center; gap:0.5rem;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" style="color:var(--accent)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            Núcleo Regional: ${escapeHTML(regInfo.nome)}
+                        </h3>
+                        <div style="font-size:0.9rem; color:var(--text-muted); line-height:1.5;">
+                            <p style="margin:0.3rem 0;"><strong>Presidente:</strong> ${escapeHTML(regInfo.presidente)}</p>
+                            <p style="margin:0.3rem 0;"><strong>Cidades Abrangidas:</strong> ${escapeHTML(regInfo.cidades.join(", "))}</p>
+                            <p style="margin:0.3rem 0;"><strong>Endereço:</strong> ${escapeHTML(regInfo.endereco)}</p>
+                            ${regInfo.fone ? `<p style="margin:0.3rem 0;"><strong>Fone:</strong> ${escapeHTML(regInfo.fone)}</p>` : ''}
+                            ${regInfo.email ? `<p style="margin:0.3rem 0;"><strong>E-mail:</strong> ${escapeHTML(regInfo.email)}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `
                 <div class="regional-dashboard">
                     <div class="regional-stats-card">
                         <div class="stats-icon">
