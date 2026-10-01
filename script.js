@@ -537,6 +537,8 @@ const searchInput = document.getElementById('search-input');
                         </div>
                     </div>
                 `;
+            } else {
+                html += `<div style="background:#fff3cd; color:#856404; padding:1rem; border-radius:8px; margin-bottom:1rem;">Nenhuma regional vinculada a "${escapeHTML(data.regional)}" foi encontrada no mapeamento.</div>`;
             }
 
             if (data.total > 0) {
@@ -561,7 +563,6 @@ const searchInput = document.getElementById('search-input');
                     </div>
                 `;
 
-                // Agora, renderiza a lista de servidores dessa regional usando o mesmo formato visual
                 html += `
                     <div id="gm-fundef-regional-block" style="margin-bottom:1.5rem;">
                         <div class="gm-loading" style="padding:1.5rem 0;">
