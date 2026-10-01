@@ -2004,18 +2004,80 @@ const searchInput = document.getElementById('search-input');
         if (btnCloseCadHerdeiroX) btnCloseCadHerdeiroX.addEventListener('click', fecharModalCadastroHerdeiro);
         if (btnCancelCadHerdeiro) btnCancelCadHerdeiro.addEventListener('click', fecharModalCadastroHerdeiro);
 
-        function abrirModalCadastroHerdeiro(caso = null) {
+        function abrirModalCadastroHerdeiro(caso = null, abrirNovaAcao = false) {
             if (!modalCadHerdeiro) return;
             const editIdInput = document.getElementById('cad-herd-id-editando');
+            const origemIdInput = document.getElementById('cad-processo-origem-id');
+            const origemCaixaInput = document.getElementById('cad-caixa-origem');
+            const avisoNovaAcaoEl = document.getElementById('cad-nova-acao-aviso');
             const titleEl = document.getElementById('cad-modal-title');
 
-            if (caso) {
-                if (titleEl) titleEl.textContent = `Editar Processo de Herdeiros (${caso.id})`;
-                if (editIdInput) editIdInput.value = caso.id;
+            if (abrirNovaAcao && caso) {
+                // Abertura de Nova Ação para Titular já existente/arquivado
+                if (titleEl) titleEl.textContent = `Nova Ação Judicial: ${caso.falecido?.nome || 'Titular'}`;
+                if (editIdInput) editIdInput.value = '';
+                if (origemIdInput) origemIdInput.value = caso.id || '';
+                const cxOrig = caso.caixa_concluido || (caso.status === 'concluido' ? 'Caixa Concluído' : '');
+                if (origemCaixaInput) origemCaixaInput.value = cxOrig;
+
+                if (avisoNovaAcaoEl) {
+                    avisoNovaAcaoEl.style.display = 'block';
+                    avisoNovaAcaoEl.innerHTML = `
+                        <div style="display:flex; align-items:flex-start; gap:0.6rem;">
+                            <span style="font-size:1.3rem;">⭐</span>
+                            <div>
+                                <strong>Abertura de Nova Ação para Titular com Processo Arquivado:</strong>
+                                <p style="margin:0.2rem 0 0 0; font-size:0.83rem; line-height:1.45;">
+                                    O processo anterior <strong>${escapeHTML(caso.id)}</strong> (${escapeHTML(caso.falecido?.acao_juridica || 'Ação')}) continuará seguro e arquivado na <strong>${escapeHTML(cxOrig || 'Caixa de Concluídos')}</strong>.
+                                    Os dados do titular e herdeiros foram importados automaticamente. Selecione a <strong>NOVA AÇÃO</strong> abaixo:
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                }
 
                 const fal = caso.falecido || {};
                 document.getElementById('cad-falecido-nome').value = fal.nome || '';
-                document.getElementById('cad-falecido-cpf').value = fal.cpf || '';
+                document.getElementById('cad-falecido-cpf').value = formatCPF(fal.cpf || '');
+                document.getElementById('cad-falecido-matricula').value = fal.matricula || '';
+                document.getElementById('cad-falecido-regional').value = fal.regional || '';
+                document.getElementById('cad-falecido-obito').value = fal.data_obito || '';
+
+                // Desmarca todas as ações para o operador selecionar a nova ação
+                const acaoCheckboxes = document.querySelectorAll('input[name="cad-acao"]');
+                acaoCheckboxes.forEach(cb => cb.checked = false);
+
+                document.getElementById('cad-local-provisorio').value = 'Recepção / Entrada Jurídico';
+                document.getElementById('cad-caixa-concluido').value = '';
+                document.getElementById('cad-observacoes').value = `Documentos entregues para nova ação. Processo anterior: ${caso.id} (${cxOrig || 'Arquivo'}).`;
+
+                const chk = caso.documentos_checklist || {};
+                document.getElementById('chk-doc-obito').checked = chk.certidao_obito !== false;
+                document.getElementById('chk-doc-rg-falecido').checked = chk.rg_cpf_falecido !== false;
+                document.getElementById('chk-doc-rg-herdeiros').checked = chk.rg_cpf_herdeiros !== false;
+                document.getElementById('chk-doc-residencia').checked = chk.comprovante_residencia !== false;
+                document.getElementById('chk-doc-casamento').checked = !!chk.certidao_casamento_nascimento;
+                document.getElementById('cad-doc-outros').value = chk.outros || '';
+                document.getElementById('cad-data-recebimento-doc').value = new Date().toISOString().split('T')[0];
+
+                if (containerHerdeirosCards) containerHerdeirosCards.innerHTML = '';
+                const herds = caso.herdeiros || [];
+                if (herds.length > 0) {
+                    herds.forEach(h => adicionarLinhaHerdeiro(h));
+                } else {
+                    adicionarLinhaHerdeiro();
+                }
+            } else if (caso) {
+                // Edição Normal
+                if (titleEl) titleEl.textContent = `Editar Processo de Herdeiros (${caso.id})`;
+                if (editIdInput) editIdInput.value = caso.id;
+                if (origemIdInput) origemIdInput.value = caso.processo_origem_id || '';
+                if (origemCaixaInput) origemCaixaInput.value = caso.caixa_origem || '';
+                if (avisoNovaAcaoEl) avisoNovaAcaoEl.style.display = 'none';
+
+                const fal = caso.falecido || {};
+                document.getElementById('cad-falecido-nome').value = fal.nome || '';
+                document.getElementById('cad-falecido-cpf').value = formatCPF(fal.cpf || '');
                 document.getElementById('cad-falecido-matricula').value = fal.matricula || '';
                 document.getElementById('cad-falecido-regional').value = fal.regional || '';
                 const acoes = (fal.acao_juridica || 'Ação Guilherme Melo').split(',').map(s => s.trim());
@@ -2045,8 +2107,12 @@ const searchInput = document.getElementById('search-input');
                     adicionarLinhaHerdeiro();
                 }
             } else {
+                // Novo Cadastro Normal
                 if (titleEl) titleEl.textContent = 'Registrar Entrada de Herdeiros';
                 if (editIdInput) editIdInput.value = '';
+                if (origemIdInput) origemIdInput.value = '';
+                if (origemCaixaInput) origemCaixaInput.value = '';
+                if (avisoNovaAcaoEl) avisoNovaAcaoEl.style.display = 'none';
 
                 // Reseta formulário
                 document.getElementById('cad-falecido-nome').value = '';
@@ -2067,7 +2133,7 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('chk-doc-residencia').checked = true;
                 document.getElementById('chk-doc-casamento').checked = false;
                 document.getElementById('cad-doc-outros').value = '';
-                document.getElementById('cad-data-recebimento-doc').value = '';
+                document.getElementById('cad-data-recebimento-doc').value = new Date().toISOString().split('T')[0];
 
                 if (containerHerdeirosCards) containerHerdeirosCards.innerHTML = '';
                 adicionarLinhaHerdeiro({ parentesco: 'Filho(a)', is_principal: true });
@@ -2075,6 +2141,13 @@ const searchInput = document.getElementById('search-input');
 
             modalCadHerdeiro.style.display = 'flex';
         }
+
+        function iniciarNovaAcaoParaTitular(caso) {
+            if (!caso) return;
+            if (modalDetHerdeiro) modalDetHerdeiro.style.display = 'none';
+            abrirModalCadastroHerdeiro(caso, true);
+        }
+        window.iniciarNovaAcaoParaTitular = iniciarNovaAcaoParaTitular;
 
         function fecharModalCadastroHerdeiro() {
             if (modalCadHerdeiro) modalCadHerdeiro.style.display = 'none';
@@ -2085,6 +2158,11 @@ const searchInput = document.getElementById('search-input');
             const index = containerHerdeirosCards.children.length + 1;
             const hNome = dados?.nome || '';
             const hParentesco = dados?.parentesco || 'Herdeiro(a)';
+            const hCpf = dados?.cpf || '';
+            const hRg = dados?.rg || '';
+            const hEstadoCivil = dados?.estado_civil || 'Solteiro(a)';
+            const hProfissao = dados?.profissao || '';
+            const hEndereco = dados?.endereco || '';
             const hTel = dados?.telefone || '';
             const hEmail = dados?.email || '';
             const hPrincipal = dados?.is_principal ? 'checked' : (index === 1 ? 'checked' : '');
@@ -2106,23 +2184,53 @@ const searchInput = document.getElementById('search-input');
                     <div class="form-group">
                         <label>Parentesco</label>
                         <select class="form-control h-parentesco">
-                            <option value="Cônjuge / Viúvo(a)" ${hParentesco.includes('Cônjuge') ? 'selected' : ''}>Cônjuge / Viúvo(a)</option>
-                            <option value="Filho(a)" ${hParentesco.includes('Filho') ? 'selected' : ''}>Filho(a)</option>
-                            <option value="Pai / Mãe" ${hParentesco.includes('Pai') ? 'selected' : ''}>Pai / Mãe</option>
-                            <option value="Irmão(ã)" ${hParentesco.includes('Irmão') ? 'selected' : ''}>Irmão(ã)</option>
-                            <option value="Neto(a)" ${hParentesco.includes('Neto') ? 'selected' : ''}>Neto(a)</option>
-                            <option value="Outro Parentesco" ${(!hParentesco.includes('Cônjuge') && !hParentesco.includes('Filho') && !hParentesco.includes('Pai') && !hParentesco.includes('Irmão') && !hParentesco.includes('Neto')) ? 'selected' : ''}>Outro</option>
+                            <option value="Cônjuge / Viúvo(a)" ${hParentesco.includes('Cônjuge') || hParentesco.includes('Viúv') ? 'selected' : ''}>Cônjuge / Viúvo(a)</option>
+                            <option value="Filho(a)" ${hParentesco.includes('Filh') ? 'selected' : ''}>Filho(a)</option>
+                            <option value="Pai / Mãe" ${hParentesco.includes('Pai') || hParentesco.includes('Mãe') ? 'selected' : ''}>Pai / Mãe</option>
+                            <option value="Irmão(ã)" ${hParentesco.includes('Irm') ? 'selected' : ''}>Irmão(ã)</option>
+                            <option value="Neto(a)" ${hParentesco.includes('Net') ? 'selected' : ''}>Neto(a)</option>
+                            <option value="Outro Parentesco" ${(!hParentesco.includes('Cônjuge') && !hParentesco.includes('Viúv') && !hParentesco.includes('Filh') && !hParentesco.includes('Pai') && !hParentesco.includes('Mãe') && !hParentesco.includes('Irm') && !hParentesco.includes('Net')) ? 'selected' : ''}>Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado Civil</label>
+                        <select class="form-control h-estado-civil">
+                            <option value="Solteiro(a)" ${hEstadoCivil.includes('Solteir') ? 'selected' : ''}>Solteiro(a)</option>
+                            <option value="Casado(a)" ${hEstadoCivil.includes('Casad') ? 'selected' : ''}>Casado(a)</option>
+                            <option value="Viúvo(a)" ${hEstadoCivil.includes('Viúv') ? 'selected' : ''}>Viúvo(a)</option>
+                            <option value="Divorciado(a)" ${hEstadoCivil.includes('Divorc') ? 'selected' : ''}>Divorciado(a)</option>
+                            <option value="União Estável" ${hEstadoCivil.includes('União') || hEstadoCivil.includes('Uniao') ? 'selected' : ''}>União Estável</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row-2">
                     <div class="form-group">
-                        <label>E-mail (Prioridade para Envio)</label>
-                        <input type="email" class="form-control h-email" placeholder="email@exemplo.com" value="${escapeHTML(hEmail)}">
+                        <label>CPF do Herdeiro</label>
+                        <input type="text" class="form-control h-cpf" placeholder="000.000.000-00" value="${escapeHTML(formatCPF(hCpf))}">
                     </div>
                     <div class="form-group">
-                        <label>Telefone Alternativo</label>
+                        <label>RG / Órgão Expedidor</label>
+                        <input type="text" class="form-control h-rg" placeholder="Ex: 1234567 SSP-PI" value="${escapeHTML(hRg)}">
+                    </div>
+                </div>
+                <div class="form-row-3">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Endereço Residencial Completo</label>
+                        <input type="text" class="form-control h-endereco" placeholder="Rua, número, bairro, cidade-UF..." value="${escapeHTML(hEndereco)}">
+                    </div>
+                    <div class="form-group">
+                        <label>Profissão</label>
+                        <input type="text" class="form-control h-profissao" placeholder="Ex: Professor(a), Aposentado(a)..." value="${escapeHTML(hProfissao)}">
+                    </div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Telefone / WhatsApp</label>
                         <input type="text" class="form-control h-tel" placeholder="(86) 90000-0000" value="${escapeHTML(hTel)}">
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" class="form-control h-email" placeholder="email@exemplo.com" value="${escapeHTML(hEmail)}">
                     </div>
                 </div>
                 <div style="margin-top: 0.25rem;">
@@ -2176,11 +2284,29 @@ const searchInput = document.getElementById('search-input');
             }
 
             try {
+                // 1. Busca primeiro nos herdeiros já cadastrados no sistema (inclusive concluídos em caixas)
+                const qNorm = query.toUpperCase();
+                const qNum = query.replace(/\D/g, '');
+                
+                const herdeirosEncontrados = listaHerdeirosCache.filter(h => {
+                    const fal = h.falecido || {};
+                    const nome = (fal.nome || '').toUpperCase();
+                    const cpf = (fal.cpf || '').replace(/\D/g, '');
+                    const mat = (fal.matricula || '').toUpperCase();
+                    const id = (h.id || '').toUpperCase();
+                    
+                    if (nome.includes(qNorm)) return true;
+                    if (qNum && cpf && (cpf.includes(qNum) || qNum.includes(cpf))) return true;
+                    if (mat && mat.includes(qNorm)) return true;
+                    if (id.includes(qNorm)) return true;
+                    return false;
+                });
+
                 const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
                 const data = await res.json();
                 const resultados = data.results || [];
 
-                if (resultados.length === 0) {
+                if (herdeirosEncontrados.length === 0 && resultados.length === 0) {
                     if (boxSugestoesTitular) {
                         boxSugestoesTitular.style.display = 'block';
                         boxSugestoesTitular.innerHTML = `<div style="padding:0.65rem; color:#64748b; font-size:0.82rem;">Nenhum registro encontrado no banco SINTE para "${escapeHTML(query)}". Preencha manualmente os campos abaixo.</div>`;
@@ -2191,19 +2317,48 @@ const searchInput = document.getElementById('search-input');
                 if (boxSugestoesTitular) {
                     boxSugestoesTitular.style.display = 'block';
                     let listHtml = '';
-                    resultados.slice(0, 8).forEach((r, idx) => {
-                        const nome = r.nome || 'SEM NOME';
-                        const cpf = r.cpf || 'Sem CPF';
-                        const mat = r.matricula || 'Sem Matrícula';
-                        const arq = r.arquivo || '';
-                        const reg = r.regional || '';
-                        listHtml += `
-                            <div class="sugestao-item" style="padding:0.6rem 0.8rem; border-bottom:1px solid #f1f5f9; cursor:pointer; font-size:0.85rem;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''" onclick="selecionarTitularSugestao('${escapeHTML(nome)}', '${escapeHTML(cpf)}', '${escapeHTML(mat)}', '${escapeHTML(reg)}', '${escapeHTML(arq)}')">
-                                <strong style="color:var(--text-main);">${escapeHTML(nome)}</strong>
-                                <span style="display:block; font-size:0.75rem; color:#64748b;">CPF: ${escapeHTML(cpf)} • Mat: ${escapeHTML(mat)} • Regional: ${escapeHTML(reg || 'N/I')} • ${escapeHTML(arq)}</span>
-                            </div>
-                        `;
-                    });
+                    
+                    // Se já existe no módulo de Herdeiros (especialmente concluídos em caixas), exibe destaque para ABERTURA DE NOVA AÇÃO
+                    if (herdeirosEncontrados.length > 0) {
+                        listHtml += `<div style="background:#eff6ff; padding:0.4rem 0.75rem; font-size:0.75rem; font-weight:700; color:#1e40af; border-bottom:1px solid #bfdbfe;">📌 JÁ CADASTRADO EM HERDEIROS (Clique para abrir Nova Ação mantendo dados):</div>`;
+                        herdeirosEncontrados.slice(0, 4).forEach(h => {
+                            const fal = h.falecido || {};
+                            const cxTxt = h.caixa_concluido ? ` • 📦 Caixa: ${escapeHTML(h.caixa_concluido)}` : '';
+                            const stTxt = STATUS_MAP_TEXT[h.status] || h.status;
+                            const totalH = (h.herdeiros || []).length;
+                            listHtml += `
+                                <div class="sugestao-item" style="padding:0.65rem 0.85rem; border-bottom:1px solid #e0f2fe; cursor:pointer; background:#f0f9ff;" onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='#f0f9ff'" onclick="iniciarNovaAcaoParaTitularPorId('${escapeHTML(h.id)}')">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <strong style="color:#0369a1;">⚖️ ${escapeHTML(fal.nome || 'TITULAR')}</strong>
+                                        <span class="status-badge status-${h.status || 'concluido'}" style="font-size:0.7rem; padding:0.15rem 0.45rem;">${escapeHTML(stTxt)}</span>
+                                    </div>
+                                    <span style="display:block; font-size:0.75rem; color:#0c4a6e; margin-top:0.2rem;">
+                                        Código: ${escapeHTML(h.id)}${cxTxt} • Ação: ${escapeHTML(fal.acao_juridica || 'Geral')} • ${totalH} herdeiro(s) cadastrado(s)
+                                    </span>
+                                    <span style="display:block; font-size:0.72rem; color:#0284c7; font-weight:700; margin-top:0.15rem;">
+                                        👉 Clique aqui para aproveitar este titular e registrar NOVA AÇÃO
+                                    </span>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    if (resultados.length > 0) {
+                        listHtml += `<div style="background:#f8fafc; padding:0.4rem 0.75rem; font-size:0.75rem; font-weight:700; color:#475569; border-bottom:1px solid #e2e8f0;">🔍 REGISTROS NAS PLANILHAS GERAIS DO SINTE:</div>`;
+                        resultados.slice(0, 6).forEach((r) => {
+                            const nome = r.nome || 'SEM NOME';
+                            const cpf = r.cpf || 'Sem CPF';
+                            const mat = r.matricula || 'Sem Matrícula';
+                            const arq = r.arquivo || '';
+                            const reg = r.regional || '';
+                            listHtml += `
+                                <div class="sugestao-item" style="padding:0.6rem 0.8rem; border-bottom:1px solid #f1f5f9; cursor:pointer; font-size:0.85rem;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''" onclick="selecionarTitularSugestao('${escapeHTML(nome)}', '${escapeHTML(cpf)}', '${escapeHTML(mat)}', '${escapeHTML(reg)}', '${escapeHTML(arq)}')">
+                                    <strong style="color:var(--text-main);">${escapeHTML(nome)}</strong>
+                                    <span style="display:block; font-size:0.75rem; color:#64748b;">CPF: ${escapeHTML(cpf)} • Mat: ${escapeHTML(mat)} • Regional: ${escapeHTML(reg || 'N/I')} • ${escapeHTML(arq)}</span>
+                                </div>
+                            `;
+                        });
+                    }
                     boxSugestoesTitular.innerHTML = listHtml;
                 }
             } catch (err) {
@@ -2212,9 +2367,18 @@ const searchInput = document.getElementById('search-input');
             }
         }
 
+        function iniciarNovaAcaoParaTitularPorId(id) {
+            const caso = listaHerdeirosCache.find(h => h.id === id);
+            if (boxSugestoesTitular) boxSugestoesTitular.style.display = 'none';
+            if (caso) {
+                iniciarNovaAcaoParaTitular(caso);
+            }
+        }
+        window.iniciarNovaAcaoParaTitularPorId = iniciarNovaAcaoParaTitularPorId;
+
         function selecionarTitularSugestao(nome, cpf, mat, regional, acao) {
             document.getElementById('cad-falecido-nome').value = nome;
-            document.getElementById('cad-falecido-cpf').value = cpf;
+            document.getElementById('cad-falecido-cpf').value = formatCPF(cpf);
             document.getElementById('cad-falecido-matricula').value = mat;
             document.getElementById('cad-falecido-regional').value = regional;
 
@@ -2255,7 +2419,7 @@ const searchInput = document.getElementById('search-input');
                     return;
                 }
 
-                // Coleta herdeiros
+                // Coleta herdeiros com dados completos
                 const herdeirosList = [];
                 const heirCards = containerHerdeirosCards.querySelectorAll('.dynamic-heir-card');
                 heirCards.forEach(card => {
@@ -2264,6 +2428,11 @@ const searchInput = document.getElementById('search-input');
                         herdeirosList.push({
                             nome: nome,
                             parentesco: card.querySelector('.h-parentesco')?.value || 'Herdeiro(a)',
+                            cpf: card.querySelector('.h-cpf')?.value.trim() || '',
+                            rg: card.querySelector('.h-rg')?.value.trim() || '',
+                            estado_civil: card.querySelector('.h-estado-civil')?.value || 'Solteiro(a)',
+                            profissao: card.querySelector('.h-profissao')?.value.trim() || '',
+                            endereco: card.querySelector('.h-endereco')?.value.trim() || '',
                             telefone: card.querySelector('.h-tel')?.value.trim() || '',
                             email: card.querySelector('.h-email')?.value.trim() || '',
                             is_principal: card.querySelector('.h-principal')?.checked || false
@@ -2287,6 +2456,8 @@ const searchInput = document.getElementById('search-input');
 
                 const editId = document.getElementById('cad-herd-id-editando').value.trim();
                 const payload = {
+                    processo_origem_id: document.getElementById('cad-processo-origem-id')?.value.trim() || '',
+                    caixa_origem: document.getElementById('cad-caixa-origem')?.value.trim() || '',
                     falecido: {
                         nome: nomeFalecido,
                         cpf: document.getElementById('cad-falecido-cpf').value.trim(),
@@ -2324,11 +2495,16 @@ const searchInput = document.getElementById('search-input');
 
                     const data = await res.json();
                     if (data.success) {
-                        showToast(editId ? `Processo ${editId} atualizado!` : `Entrada ${data.id} registrada com sucesso!`, 'success');
+                        showToast(editId ? `Processo ${editId} atualizado!` : `Processo ${data.id} registrado com sucesso!`, 'success');
                         fecharModalCadastroHerdeiro();
                         await carregarHerdeiros();
                         if (editId) {
                             await abrirModalDetalhesHerdeiro(editId);
+                        } else if (data.caso) {
+                            // Abre automaticamente o gerador de documentos para os herdeiros assinarem
+                            setTimeout(() => {
+                                abrirModalGerarDocumentos(data.caso);
+                            }, 300);
                         }
                     } else {
                         showToast(data.error || 'Erro ao salvar processo.', 'error');
@@ -2349,11 +2525,15 @@ const searchInput = document.getElementById('search-input');
         const btnCloseDetHerdeiro = document.getElementById('btn-close-det-herdeiro');
         const btnDetEditar = document.getElementById('btn-det-editar');
         const btnDetExcluir = document.getElementById('btn-det-excluir');
+        const btnDetNovaAcao = document.getElementById('btn-det-nova-acao');
+        const btnDetGerarDocs = document.getElementById('btn-det-gerar-docs');
         const btnImprimirFicha = document.getElementById('btn-imprimir-ficha');
         const btnEnviarAnexo = document.getElementById('btn-enviar-anexo');
 
         if (btnCloseDetHerdeiroX) btnCloseDetHerdeiroX.addEventListener('click', () => { if (modalDetHerdeiro) modalDetHerdeiro.style.display = 'none'; });
         if (btnCloseDetHerdeiro) btnCloseDetHerdeiro.addEventListener('click', () => { if (modalDetHerdeiro) modalDetHerdeiro.style.display = 'none'; });
+        if (btnDetNovaAcao) btnDetNovaAcao.addEventListener('click', () => { if (casoHerdeiroAtual) iniciarNovaAcaoParaTitular(casoHerdeiroAtual); });
+        if (btnDetGerarDocs) btnDetGerarDocs.addEventListener('click', () => { if (casoHerdeiroAtual) abrirModalGerarDocumentos(casoHerdeiroAtual); });
 
         async function abrirModalDetalhesHerdeiro(id) {
             try {
@@ -2377,6 +2557,35 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('det-caso-nome-falecido').textContent = fal.nome || 'SEM NOME';
                 document.getElementById('det-caso-subtitulo').textContent = `CPF: ${formatCPF(fal.cpf || 'S/N')} • Matrícula: ${formatMatricula(fal.matricula || 'S/N')} • Ação: ${fal.acao_juridica || 'Geral'} • Regional: ${fal.regional || 'N/I'}`;
 
+                // Outras Ações do Titular (se houver múltiplos processos)
+                const bannerOutros = document.getElementById('det-outros-processos-banner');
+                const outros = data.outros_processos || [];
+                if (bannerOutros) {
+                    if (outros.length > 0) {
+                        let chipsHtml = '';
+                        outros.forEach(op => {
+                            const isConc = op.status === 'concluido';
+                            const cxLabel = op.caixa_concluido ? `📦 ${escapeHTML(op.caixa_concluido)}` : `${escapeHTML(op.status_label)}`;
+                            chipsHtml += `
+                                <div class="outra-acao-chip ${isConc ? 'outra-acao-chip-concluido' : ''}" onclick="abrirModalDetalhesHerdeiro('${escapeHTML(op.id)}')">
+                                    <span>${isConc ? '🗃️' : '⚖️'} <strong>${escapeHTML(op.acao_juridica)}</strong> (${escapeHTML(op.id)} • ${cxLabel}) &raquo;</span>
+                                </div>
+                            `;
+                        });
+                        bannerOutros.innerHTML = `
+                            <div style="font-size:0.83rem; font-weight:700; color:#1e40af; margin-bottom:0.35rem; display:flex; align-items:center; gap:0.4rem;">
+                                <span>📂</span> <span>Outras Ações Cadastradas deste Titular (${outros.length}):</span>
+                            </div>
+                            <div class="outras-acoes-container">
+                                ${chipsHtml}
+                            </div>
+                        `;
+                        bannerOutros.style.display = 'block';
+                    } else {
+                        bannerOutros.style.display = 'none';
+                    }
+                }
+
                 // Botões de transição
                 const boxTransicoes = document.getElementById('det-botoes-transicao');
                 let btnsTransHtml = '';
@@ -2387,7 +2596,13 @@ const searchInput = document.getElementById('search-input');
                 } else if (caso.status === 'enviado_assinatura') {
                     btnsTransHtml = `<button type="button" class="btn-card-action btn-concluir" style="padding:0.4rem 0.8rem;" onclick="abrirModalArquivar('${escapeHTML(caso.id)}')">🗃️ Assinado / Concluir na Caixa Específica</button>`;
                 } else {
-                    btnsTransHtml = `<span style="font-size:0.85rem; color:#047857; font-weight:700;">✅ Processo Arquivado em Definitivo</span>`;
+                    btnsTransHtml = `
+                        <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+                            <span style="font-size:0.85rem; color:#047857; font-weight:700;">✅ Processo Arquivado em Definitivo</span>
+                            <button type="button" class="btn-card-action" style="background:#059669; color:#fff; border:none; padding:0.4rem 0.85rem; font-weight:600; cursor:pointer;" onclick="iniciarNovaAcaoParaTitular(casoHerdeiroAtual)" title="Herdeiro trouxe documentos para outra ação">➕ Abrir Nova Ação</button>
+                            <button type="button" class="btn-card-action" style="background:var(--accent); color:#fff; border:none; padding:0.4rem 0.85rem; font-weight:600; cursor:pointer;" onclick="abrirModalGerarDocumentos(casoHerdeiroAtual)" title="Gerar documentos de habilitação para assinatura">📄 Gerar Documentos</button>
+                        </div>
+                    `;
                 }
                 if (boxTransicoes) boxTransicoes.innerHTML = btnsTransHtml;
 
@@ -2804,7 +3019,468 @@ const searchInput = document.getElementById('search-input');
             }
         }
 
+        // =========================================================================
+        // MÓDULO DE GERAÇÃO DE DOCUMENTOS PARA ASSINATURA DOS HERDEIROS
+        // =========================================================================
+        const modalGerarDocs = document.getElementById('modal-gerar-documentos');
+        const btnCloseDocsX = document.getElementById('btn-close-docs-x');
+        const btnCloseDocs = document.getElementById('btn-close-docs');
+        const docTabsContainer = document.getElementById('doc-tabs-container');
+        const docPreviewWrapper = document.getElementById('doc-preview-wrapper');
+        const btnImprimirDoc = document.getElementById('btn-imprimir-doc');
+        const btnCopiarDocTexto = document.getElementById('btn-copiar-doc-texto');
+        const btnBaixarDocWord = document.getElementById('btn-baixar-doc-word');
+        const docParamCidade = document.getElementById('doc-param-cidade');
+        const docParamData = document.getElementById('doc-param-data');
+        const docParamAcao = document.getElementById('doc-param-acao');
+        const printableDocumentos = document.getElementById('printable-documentos');
+
+        let casoDocumentosAtual = null;
+        let tipoDocumentoAtivo = 'pacote';
+
+        async function abrirModalGerarDocumentos(casoOuId) {
+            if (!casoOuId) return;
+            let caso = casoOuId;
+            if (typeof casoOuId === 'string') {
+                const enc = listaHerdeirosCache.find(c => c.id === casoOuId);
+                if (enc) {
+                    caso = enc;
+                } else {
+                    try {
+                        const res = await fetch(`/api/herdeiros/${encodeURIComponent(casoOuId)}`);
+                        const data = await res.json();
+                        if (data.success && data.caso) {
+                            caso = data.caso;
+                        }
+                    } catch (e) {
+                        console.error('Erro ao buscar caso para documentos:', e);
+                    }
+                }
+            }
+
+            casoDocumentosAtual = caso;
+            if (!modalGerarDocs) return;
+
+            // Configurar parâmetros nos campos
+            if (docParamCidade && !docParamCidade.value) {
+                docParamCidade.value = 'Teresina - PI';
+            }
+
+            if (docParamData) {
+                const hoje = new Date().toISOString().split('T')[0];
+                docParamData.value = hoje;
+            }
+
+            if (docParamAcao) {
+                docParamAcao.value = (caso.falecido && caso.falecido.acao_juridica) || 'Ação Jurídica Geral';
+            }
+
+            tipoDocumentoAtivo = 'pacote';
+            if (docTabsContainer) {
+                const tabs = docTabsContainer.querySelectorAll('.btn-doc-tab');
+                tabs.forEach(t => {
+                    if (t.dataset.doc === 'pacote') t.classList.add('active');
+                    else t.classList.remove('active');
+                });
+            }
+
+            renderizarDocumentosAssinatura();
+            modalGerarDocs.style.display = 'flex';
+        }
+
+        function fecharModalGerarDocumentos() {
+            if (modalGerarDocs) modalGerarDocs.style.display = 'none';
+        }
+
+        if (btnCloseDocsX) btnCloseDocsX.addEventListener('click', fecharModalGerarDocumentos);
+        if (btnCloseDocs) btnCloseDocs.addEventListener('click', fecharModalGerarDocumentos);
+        if (modalGerarDocs) {
+            modalGerarDocs.addEventListener('click', (e) => {
+                if (e.target === modalGerarDocs) fecharModalGerarDocumentos();
+            });
+        }
+
+        if (docTabsContainer) {
+            docTabsContainer.addEventListener('click', (e) => {
+                const tab = e.target.closest('.btn-doc-tab');
+                if (!tab) return;
+                docTabsContainer.querySelectorAll('.btn-doc-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                tipoDocumentoAtivo = tab.dataset.doc || 'pacote';
+                renderizarDocumentosAssinatura();
+            });
+        }
+
+        [docParamCidade, docParamData, docParamAcao].forEach(inp => {
+            if (inp) {
+                inp.addEventListener('input', () => renderizarDocumentosAssinatura());
+                inp.addEventListener('change', () => renderizarDocumentosAssinatura());
+            }
+        });
+
+        function formatarDataPorExtenso(dataStr, cidadeStr = 'Teresina - PI') {
+            if (!dataStr) {
+                const hoje = new Date();
+                dataStr = hoje.toISOString().split('T')[0];
+            }
+            const partes = dataStr.split('-');
+            if (partes.length !== 3) return `${cidadeStr}, data não especificada`;
+            const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+            const ano = partes[0];
+            const mes = meses[parseInt(partes[1], 10) - 1] || 'mês';
+            const dia = parseInt(partes[2], 10);
+            return `${cidadeStr}, ${dia} de ${mes} de ${ano}`;
+        }
+
+        function getTimbreHeaderHtml() {
+            return `
+                <div class="doc-header-timbre">
+                    <img src="logo.png" alt="SINTE-PI" class="doc-header-logo" onerror="this.style.display='none'">
+                    <div class="doc-header-entidade">SINDICATO DOS TRABALHADORES EM EDUCAÇÃO BÁSICA PÚBLICA DO PIAUÍ - SINTE-PI</div>
+                    <div class="doc-header-dep">SECRETARIA DE ASSUNTOS JURÍDICOS</div>
+                    <div style="font-size: 8pt; color: #475569; font-style: italic;">Filiado à CNTE e à CUT • Fundado em 24 de julho de 1965 • Utilidade Pública Estadual</div>
+                </div>
+            `;
+        }
+
+        function formatarQualificacaoHerdeiros(caso) {
+            const fal = (caso && caso.falecido) || {};
+            const herdeiros = (caso && caso.herdeiros) || [];
+            if (herdeiros.length === 0) {
+                return `<strong>HERDEIRO(A) A QUALIFICAR</strong>, na qualidade de sucessor(a) legal do servidor titular falecido <strong>${escapeHTML(fal.nome || 'TITULAR')}</strong>.`;
+            }
+
+            return herdeiros.map((h, idx) => {
+                const nome = (h.nome || 'Herdeiro').toUpperCase();
+                const nac = 'brasileiro(a)';
+                const estCivil = h.estado_civil || 'solteiro(a)';
+                const prof = h.profissao ? escapeHTML(h.profissao) : 'do lar / autônomo(a)';
+                const rg = h.rg ? `portador(a) do RG nº ${escapeHTML(h.rg)}` : 'RG a informar';
+                const cpf = h.cpf ? `inscrito(a) no CPF sob o nº ${escapeHTML(formatCPF(h.cpf))}` : 'CPF a informar';
+                const end = h.endereco ? `residente e domiciliado(a) na ${escapeHTML(h.endereco)}` : 'residente e domiciliado(a) no Estado do Piauí';
+                const parent = h.parentesco ? `(${escapeHTML(h.parentesco)})` : '';
+                
+                return `<strong>${idx + 1}. ${escapeHTML(nome)}</strong> ${parent}, ${nac}, ${estCivil}, ${prof}, ${rg}, ${cpf}, ${end}`;
+            }).join(';<br><br>');
+        }
+
+        function formatarLinhasAssinaturas(caso) {
+            const herdeiros = (caso && caso.herdeiros) || [];
+            if (herdeiros.length === 0) {
+                return `
+                    <div class="doc-assinaturas-grid">
+                        <div class="doc-assinatura-linha">
+                            <span class="doc-assinatura-nome">HERDEIRO(A) / REPRESENTANTE</span>
+                            <span class="doc-assinatura-cpf">CPF: ___________________________</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const linhas = herdeiros.map(h => {
+                const nome = (h.nome || 'Herdeiro(a)').toUpperCase();
+                const cpf = h.cpf ? formatCPF(h.cpf) : '___________________________';
+                const par = h.parentesco ? ` (${h.parentesco})` : '';
+                return `
+                    <div class="doc-assinatura-linha">
+                        <span class="doc-assinatura-nome">${escapeHTML(nome)}${escapeHTML(par)}</span>
+                        <span class="doc-assinatura-cpf">CPF: ${escapeHTML(cpf)}</span>
+                    </div>
+                `;
+            }).join('');
+
+            return `<div class="doc-assinaturas-grid">${linhas}</div>`;
+        }
+
+        // 1. Procuração Ad-Judicia et Extra
+        function gerarHtmlProcuracao(caso, cidade, data, acao) {
+            const fal = (caso && caso.falecido) || {};
+            const timbre = getTimbreHeaderHtml();
+            const qualificacaoOutorgantes = formatarQualificacaoHerdeiros(caso);
+            const dataExtenso = formatarDataPorExtenso(data, cidade);
+            const assinaturas = formatarLinhasAssinaturas(caso);
+
+            return `
+                <div class="a4-document-page">
+                    ${timbre}
+                    <div class="doc-title">PROCURAÇÃO AD JUDICIA ET EXTRA</div>
+
+                    <div class="doc-body-text">
+                        <strong>OUTORGANTES:</strong><br>
+                        ${qualificacaoOutorgantes}, todos na qualidade de sucessores e herdeiros legais do servidor público falecido <strong>${escapeHTML(fal.nome || 'TITULAR')}</strong>, inscrito no CPF sob o nº <strong>${escapeHTML(formatCPF(fal.cpf || ''))}</strong> e matrícula nº <strong>${escapeHTML(formatMatricula(fal.matricula || ''))}</strong>, vinculado à <strong>SEDUC/PI (${escapeHTML(fal.regional || 'Geral')})</strong>.
+                    </div>
+
+                    <div class="doc-body-text">
+                        <strong>OUTORGADOS:</strong><br>
+                        Os advogados que integram a <strong>SECRETARIA DE ASSUNTOS JURÍDICOS DO SINTE-PI</strong> (Sindicato dos Trabalhadores em Educação Básica Pública do Piauí), com sede e foro profissional na Rua Desembargador Pires de Castro, nº 148, Centro/Norte, Teresina - PI, CEP 64000-390, outorgando-lhes poderes conjuntos e separadamente.
+                    </div>
+
+                    <div class="doc-body-text">
+                        <strong>PODERES E FINALIDADE:</strong><br>
+                        Por este instrumento particular de procuração, os OUTORGANTES nomeiam e constituem os OUTORGADOS seus bastantes procuradores, conferindo-lhes amplos poderes da cláusula <em>"ad judicia et extra"</em>, para o foro em geral, em qualquer Juízo, Instância ou Tribunal, perante a Justiça Estadual Comum (TJ-PI), Varas dos Feitos da Fazenda Pública, Juizados Especiais e perante a Administração Pública Direta e Indireta do Estado do Piauí (SEDUC-PI, SEADPREV e PIAUIPREV), especificamente para promover a <strong>HABILITAÇÃO DE HERDEIROS</strong>, cobrança, execução e levantamento de valores e direitos decorrentes da:
+                    </div>
+
+                    <div class="doc-highlight-box">
+                        <strong>AÇÃO JURÍDICA:</strong> ${escapeHTML(acao)}<br>
+                        <strong>BENEFICIÁRIO ORIGINAL (FALECIDO):</strong> ${escapeHTML(fal.nome || 'TITULAR')} &bull; CPF: ${escapeHTML(formatCPF(fal.cpf || ''))} &bull; Matrícula: ${escapeHTML(formatMatricula(fal.matricula || ''))}
+                    </div>
+
+                    <div class="doc-body-text">
+                        Podendo, para tanto, propor ações, habilitar-se nos autos do processo, requerer, acordar, transigir, firmar compromissos, desistir, receber citações e intimações, prestar depoimentos, requerer expedição e levantamento de RPV (Requisição de Pequeno Valor) ou Precatório Judicial, dar e receber quitação, prestar declarações perante órgãos públicos, substabelecer com ou sem reserva de iguais poderes, praticando todos os atos necessários ao fiel e integral cumprimento deste mandato.
+                    </div>
+
+                    <div class="doc-data-local">${escapeHTML(dataExtenso)}</div>
+
+                    ${assinaturas}
+                </div>
+            `;
+        }
+
+        // 2. Declaração de Únicos Herdeiros
+        function gerarHtmlDeclaracaoHerdeiros(caso, cidade, data, acao) {
+            const fal = (caso && caso.falecido) || {};
+            const timbre = getTimbreHeaderHtml();
+            const dataExtenso = formatarDataPorExtenso(data, cidade);
+            const assinaturas = formatarLinhasAssinaturas(caso);
+
+            return `
+                <div class="a4-document-page">
+                    ${timbre}
+                    <div class="doc-title">DECLARAÇÃO DE ÚNICOS HERDEIROS E SUCESSORES</div>
+
+                    <div class="doc-body-text">
+                        Os signatários abaixo qualificados, sob a fé de seu grau e <strong>SOB AS PENAS DA LEI</strong>, especialmente as sanções cominadas no <strong>Artigo 299 do Código Penal Brasileiro (Crime de Falsidade Ideológica)</strong>, vêm perante o Poder Judiciário do Estado do Piauí e a Secretaria de Assuntos Jurídicos do SINTE-PI, declarar solenemente que:
+                    </div>
+
+                    <div class="doc-body-text">
+                        São os <strong>ÚNICOS E LEGÍTIMOS HERDEIROS E SUCESSORES</strong> do servidor público falecido abaixo identificado:
+                    </div>
+
+                    <div class="doc-highlight-box">
+                        <strong>NOME DO FALECIDO:</strong> ${escapeHTML(fal.nome || '---')}<br>
+                        <strong>CPF:</strong> ${escapeHTML(formatCPF(fal.cpf || '---'))} &nbsp;&bull;&nbsp; <strong>MATRÍCULA:</strong> ${escapeHTML(formatMatricula(fal.matricula || '---'))}<br>
+                        <strong>VÍNCULO/REGIONAL:</strong> SEDUC/PI - Regional ${escapeHTML(fal.regional || 'Geral')}<br>
+                        <strong>AÇÃO JURÍDICA:</strong> ${escapeHTML(acao)}
+                    </div>
+
+                    <div class="doc-body-text">
+                        Declaram expressamente, sob inteira responsabilidade civil e criminal:
+                    </div>
+
+                    <div class="doc-body-text" style="text-indent: 1cm;">
+                        <strong>1.</strong> Que não têm conhecimento da existência de testamento válido ou de outros herdeiros necessários (filhos, cônjuge, companheiro(a) ou ascendentes) além dos ora declarantes;<br><br>
+                        <strong>2.</strong> Que inexiste inventário ou arrolamento judicial em curso contemplando o referido crédito, ou, existindo, estes créditos decorrentes de ações judiciais coletivas promovidas pelo SINTE-PI não foram objeto de sobrepartilha;<br><br>
+                        <strong>3.</strong> Que assumem formalmente o compromisso de resguardar a cota-parte de qualquer outro interessado ou meeiro(a) preterido(a) que porventura venha a se habilitar no futuro, isentando a entidade sindical e seus patronos de qualquer responsabilidade patrimonial decorrente de eventual omissão.
+                    </div>
+
+                    <div class="doc-body-text">
+                        Por ser a expressão exata da verdade, firmam a presente para que surta seus jurídicos e legais efeitos.
+                    </div>
+
+                    <div class="doc-data-local">${escapeHTML(dataExtenso)}</div>
+
+                    ${assinaturas}
+                </div>
+            `;
+        }
+
+        // 3. Declaração de Hipossuficiência (Justiça Gratuita)
+        function gerarHtmlHipossuficiencia(caso, cidade, data, acao) {
+            const fal = (caso && caso.falecido) || {};
+            const timbre = getTimbreHeaderHtml();
+            const dataExtenso = formatarDataPorExtenso(data, cidade);
+            const assinaturas = formatarLinhasAssinaturas(caso);
+
+            return `
+                <div class="a4-document-page">
+                    ${timbre}
+                    <div class="doc-title">DECLARAÇÃO DE HIPOSSUFICIÊNCIA ECONÔMICA<br><span style="font-size: 10pt; font-weight: normal;">(BENEFÍCIOS DA JUSTIÇA GRATUITA - ART. 98 DO CPC)</span></div>
+
+                    <div class="doc-body-text">
+                        Os requerentes e sucessores legítimos do servidor público estadual falecido <strong>${escapeHTML(fal.nome || 'TITULAR')}</strong> (CPF: <strong>${escapeHTML(formatCPF(fal.cpf || ''))}</strong>, Matrícula: <strong>${escapeHTML(formatMatricula(fal.matricula || ''))}</strong>), devidamente qualificados na Procuração anexa, vêm, por meio deste instrumento, declarar perante o Poder Judiciário:
+                    </div>
+
+                    <div class="doc-body-text">
+                        Nos termos do <strong>Artigo 98 e seguintes da Lei nº 13.105/2015 (Código de Processo Civil)</strong> e das disposições da <strong>Lei Federal nº 1.060/1950</strong>, que:
+                    </div>
+
+                    <div class="doc-highlight-box">
+                        <strong>NÃO POSSUEM CONDIÇÕES FINANCEIRAS</strong> de arcar com o pagamento de custas processuais, taxas judiciárias, despesas cartorárias, emolumentos e honorários periciais sem prejuízo do sustento próprio e de suas respectivas famílias, fazendo jus à concessão integral da <strong>GRATUIDADE DA JUSTIÇA</strong>.
+                    </div>
+
+                    <div class="doc-body-text">
+                        A referida declaração se destina especificamente à habilitação, prosseguimento e execução nos autos da:
+                    </div>
+
+                    <div class="doc-highlight-box">
+                        <strong>AÇÃO JURÍDICA:</strong> ${escapeHTML(acao)}<br>
+                        <strong>AUTOR ORIGINAL:</strong> ${escapeHTML(fal.nome || '---')} &bull; SEDUC/PI (${escapeHTML(fal.regional || 'Geral')})
+                    </div>
+
+                    <div class="doc-body-text">
+                        Cientes das penalidades civis e criminais aplicáveis em caso de falsidade, firmam a presente declaração para todos os fins de direito.
+                    </div>
+
+                    <div class="doc-data-local">${escapeHTML(dataExtenso)}</div>
+
+                    ${assinaturas}
+                </div>
+            `;
+        }
+
+        // 4. Termo de Entrega e Conferência de Documentos (Recibo)
+        function gerarHtmlTermoEntrega(caso, cidade, data, acao) {
+            const fal = (caso && caso.falecido) || {};
+            const timbre = getTimbreHeaderHtml();
+            const dataExtenso = formatarDataPorExtenso(data, cidade);
+            const herdeiroPrinc = (caso && caso.herdeiros && caso.herdeiros.find(h => h.is_principal)) || (caso && caso.herdeiros && caso.herdeiros[0]) || { nome: 'REPRESENTANTE DOS HERDEIROS' };
+
+            return `
+                <div class="a4-document-page">
+                    ${timbre}
+                    <div class="doc-title">TERMO DE ENTREGA E CONFERÊNCIA DE DOCUMENTOS<br><span style="font-size: 10pt; font-weight: normal;">(HABILITAÇÃO DE HERDEIROS - PROTOCOLO JURÍDICO SINTE-PI)</span></div>
+
+                    <div class="doc-highlight-box" style="margin-top: 10px;">
+                        <strong>NÚMERO DO PROTOCOLO SINTE:</strong> ${escapeHTML(caso.id || '---')}<br>
+                        <strong>TITULAR FALECIDO:</strong> ${escapeHTML(fal.nome || '---')}<br>
+                        <strong>CPF:</strong> ${escapeHTML(formatCPF(fal.cpf || '---'))} &nbsp;&bull;&nbsp; <strong>MATRÍCULA:</strong> ${escapeHTML(formatMatricula(fal.matricula || '---'))}<br>
+                        <strong>AÇÃO VINCULADA:</strong> ${escapeHTML(acao)}<br>
+                        <strong>REGIONAL SINTE:</strong> ${escapeHTML(fal.regional || 'Geral')}
+                    </div>
+
+                    <div class="doc-body-text" style="text-indent: 0; margin-top: 20px;">
+                        Atestamos para os devidos fins que o(a) representante dos herdeiros entregou perante a Secretaria de Assuntos Jurídicos do SINTE-PI a seguinte documentação para instauração / habilitação processual:
+                    </div>
+
+                    <div style="font-size: 10.5pt; line-height: 1.8; margin: 15px 0 25px 20px;">
+                        <div>☑ <strong>Certidão de Óbito</strong> do titular falecido (Cópia Autenticada ou Original com visto);</div>
+                        <div>☑ <strong>Documento Oficial de Identidade (RG/CNH) e CPF</strong> do titular falecido;</div>
+                        <div>☑ <strong>Último Contracheque ou Ficha Financeira</strong> funcional expedida pelo Estado;</div>
+                        <div>☑ <strong>Certidão de Inexistência/Existência de Dependentes Habilitados</strong> à Pensão por Morte (PIAUIPREV / INSS);</div>
+                        <div>☑ <strong>Documentos Pessoais dos Herdeiros</strong> (Cópia de RG, CPF e Comprovante de Residência);</div>
+                        <div>☑ <strong>Procuração Ad Judicia</strong> com poderes específicos devidamente assinada;</div>
+                        <div>☑ <strong>Declaração de Únicos Herdeiros e Sucessores</strong> preenchida e assinada;</div>
+                        <div>☑ <strong>Declaração de Hipossuficiência Econômica</strong> (Gratuidade de Justiça) assinada.</div>
+                    </div>
+
+                    <div class="doc-body-text" style="text-indent: 0; background: #fffbeb; border: 1px solid #fde68a; padding: 10px; border-radius: 4px; font-size: 9.5pt;">
+                        <strong>OBSERVAÇÃO AO HERDEIRO:</strong> O recebimento dos documentos comprova a entrega na sede/regional do SINTE-PI. A efetiva habilitação nos autos depende de homologação judicial e decisão da Vara ou Tribunal competente. Acompanhe o andamento pelo canal de atendimento do SINTE-PI informando o código <strong>${escapeHTML(caso.id || '')}</strong>.
+                    </div>
+
+                    <div class="doc-data-local">${escapeHTML(dataExtenso)}</div>
+
+                    <div class="doc-assinaturas-grid" style="margin-top: 35px;">
+                        <div class="doc-assinatura-linha" style="width: 80%;">
+                            <span class="doc-assinatura-nome">${escapeHTML((herdeiroPrinc.nome || '').toUpperCase())}</span>
+                            <span class="doc-assinatura-cpf">Representante dos Herdeiros &bull; CPF: ${escapeHTML(formatCPF(herdeiroPrinc.cpf || ''))}</span>
+                        </div>
+                        <div class="doc-assinatura-linha" style="width: 80%; margin-top: 25px;">
+                            <span class="doc-assinatura-nome">SECRETARIA DE ASSUNTOS JURÍDICOS - SINTE-PI</span>
+                            <span class="doc-assinatura-cpf">Responsável pelo Recebimento e Triagem Documental</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 5. Renderizador Geral
+        function renderizarDocumentosAssinatura() {
+            if (!casoDocumentosAtual || !docPreviewWrapper) return;
+
+            const cidade = (docParamCidade && docParamCidade.value.trim()) || 'Teresina - PI';
+            const data = (docParamData && docParamData.value.trim()) || new Date().toISOString().split('T')[0];
+            const acao = (docParamAcao && docParamAcao.value.trim()) || (casoDocumentosAtual.falecido && casoDocumentosAtual.falecido.acao_juridica) || 'Ação Jurídica Geral';
+
+            let finalHtml = '';
+            if (tipoDocumentoAtivo === 'pacote') {
+                finalHtml = [
+                    gerarHtmlProcuracao(casoDocumentosAtual, cidade, data, acao),
+                    gerarHtmlDeclaracaoHerdeiros(casoDocumentosAtual, cidade, data, acao),
+                    gerarHtmlHipossuficiencia(casoDocumentosAtual, cidade, data, acao),
+                    gerarHtmlTermoEntrega(casoDocumentosAtual, cidade, data, acao)
+                ].join('\n');
+            } else if (tipoDocumentoAtivo === 'procuracao') {
+                finalHtml = gerarHtmlProcuracao(casoDocumentosAtual, cidade, data, acao);
+            } else if (tipoDocumentoAtivo === 'declaracao_herdeiros') {
+                finalHtml = gerarHtmlDeclaracaoHerdeiros(casoDocumentosAtual, cidade, data, acao);
+            } else if (tipoDocumentoAtivo === 'hipossuficiencia') {
+                finalHtml = gerarHtmlHipossuficiencia(casoDocumentosAtual, cidade, data, acao);
+            } else if (tipoDocumentoAtivo === 'termo_entrega') {
+                finalHtml = gerarHtmlTermoEntrega(casoDocumentosAtual, cidade, data, acao);
+            }
+
+            docPreviewWrapper.innerHTML = finalHtml;
+        }
+
+        // Funções de Ação: Imprimir, Copiar e Baixar Word
+        function imprimirDocumentosAssinatura() {
+            if (!docPreviewWrapper || !printableDocumentos) return;
+            printableDocumentos.innerHTML = docPreviewWrapper.innerHTML;
+            window.print();
+        }
+
+        function copiarTextoDocumento() {
+            if (!docPreviewWrapper) return;
+            const texto = docPreviewWrapper.innerText;
+            navigator.clipboard.writeText(texto).then(() => {
+                showToast('Texto do documento copiado para a área de transferência!', 'success');
+            }).catch(() => {
+                showToast('Não foi possível copiar o texto automaticamente.', 'error');
+            });
+        }
+
+        function baixarDocumentoWord() {
+            if (!docPreviewWrapper || !casoDocumentosAtual) return;
+            const nomeTitular = (casoDocumentosAtual.falecido && casoDocumentosAtual.falecido.nome) || 'TITULAR';
+            const nomeArquivo = `Documentos_Herdeiros_${nomeTitular.replace(/\s+/g, '_')}_${tipoDocumentoAtivo}.doc`;
+
+            const conteudoHtml = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>Documento SINTE-PI</title>
+                    <style>
+                        body { font-family: 'Times New Roman', serif; font-size: 11pt; line-height: 1.5; }
+                        .a4-document-page { page-break-after: always; padding: 2cm; }
+                        .doc-header-timbre { text-align: center; border-bottom: 2px solid #004b9b; margin-bottom: 20px; padding-bottom: 10px; }
+                        .doc-header-entidade { font-weight: bold; font-size: 12pt; color: #004b9b; }
+                        .doc-header-dep { font-weight: bold; font-size: 10pt; color: #d31124; }
+                        .doc-title { text-align: center; font-weight: bold; font-size: 13pt; margin: 20px 0; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 5px 0; }
+                        .doc-body-text { text-align: justify; margin-bottom: 15px; }
+                        .doc-highlight-box { background: #f8fafc; border-left: 4px solid #004b9b; padding: 10px; margin: 15px 0; }
+                        .doc-data-local { text-align: right; margin: 30px 0; }
+                        .doc-assinaturas-grid { margin-top: 30px; }
+                        .doc-assinatura-linha { text-align: center; width: 70%; margin: 20px auto; border-top: 1px solid #000; padding-top: 5px; }
+                    </style>
+                </head>
+                <body>
+                    ${docPreviewWrapper.innerHTML}
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff', conteudoHtml], {
+                type: 'application/msword;charset=utf-8'
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nomeArquivo;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Documento Word gerado e baixado com sucesso!', 'success');
+        }
+
+        if (btnImprimirDoc) btnImprimirDoc.addEventListener('click', imprimirDocumentosAssinatura);
+        if (btnCopiarDocTexto) btnCopiarDocTexto.addEventListener('click', copiarTextoDocumento);
+        if (btnBaixarDocWord) btnBaixarDocWord.addEventListener('click', baixarDocumentoWord);
+
+        window.abrirModalGerarDocumentos = abrirModalGerarDocumentos;
+        window.fecharModalGerarDocumentos = fecharModalGerarDocumentos;
+
         // Carrega contadores do badge logo na inicialização
         setTimeout(() => {
             atualizarStatsHerdeiros();
-        }, 800);
+        }, 800);
