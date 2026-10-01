@@ -1,19 +1,291 @@
-
-const DADOS_REGIONAIS_INFO = [];
+const DADOS_REGIONAIS_INFO = [
+  {
+    "regional": "Água Branca",
+    "cidade_polo": "Água Branca",
+    "presidente": "Maria do Socorro Nunes Motta",
+    "cidades": ["Água Branca", "Agricolândia", "Barro Duro", "Curralinhos", "Hugo Napoleão", "Lagoinha do Piauí", "Miguel Leão", "Olho D'Água do Piauí", "Passagem Franca do Piauí", "São Pedro do Piauí"],
+    "endereco": "Rua Vereador Abreu Pereira, 470, Centro, Água Branca-PI",
+    "cep": "64.460-000",
+    "telefones": ["(86) 3283-1917", "(86) 99959-0411"],
+    "email": "sinteab@bol.com.br"
+  },
+  {
+    "regional": "Altos",
+    "cidade_polo": "Altos",
+    "presidente": "Edivaldo de Sousa Martins",
+    "cidades": ["Altos", "Alto Longá", "Beneditinos", "Coivaras", "Novo Santo Antônio", "Pau D'Arco do Piauí"],
+    "endereco": "Conjunto Ludgero Raulino, Q 5, C 04, Altos-PI",
+    "cep": "64.290-000",
+    "telefones": ["(86) 3262-3055"],
+    "email": "sintealtospi@gmail.com"
+  },
+  {
+    "regional": "Amarante",
+    "cidade_polo": "Amarante",
+    "presidente": "André Vieira da Silva",
+    "cidades": ["Amarante", "Palmeirais"],
+    "endereco": "Rua José de Fontes, 647, Escalvado, Amarante-PI",
+    "cep": "64.400-000",
+    "telefones": ["(86) 99422-5962"],
+    "email": "avsilh@yahoo.com.br"
+  },
+  {
+    "regional": "Barras",
+    "cidade_polo": "Barras",
+    "presidente": "Roosevelt Veira de Carvalho",
+    "cidades": ["Barras", "Boa Hora", "Cabeceiras do Piauí", "Nossa Senhora dos Remédios", "Porto"],
+    "endereco": "Rua do Conjunto B, Bairro Matadouro, Barras-PI",
+    "cep": "64.100-000",
+    "telefones": [],
+    "email": ""
+  },
+  {
+    "regional": "Bom Jesus",
+    "cidade_polo": "Bom Jesus",
+    "presidente": "Ana Maria Soares de Sousa",
+    "cidades": ["Bom Jesus", "Alvorada do Gurguéia", "Cristino Castro", "Currais", "Palmeira do Piauí", "Redenção do Gurguéia", "Santa Luz"],
+    "endereco": "Av. Getúlio Vargas, 86, Bairro Miramar, Bom Jesus-PI",
+    "cep": "64.900-000",
+    "telefones": ["(89) 3562-2595"],
+    "email": "sintebomjesus@hotmail.com"
+  },
+  {
+    "regional": "Campo Maior",
+    "cidade_polo": "Campo Maior",
+    "presidente": "Marcilene Lima",
+    "cidades": ["Campo Maior", "Assunção do Piauí", "Boqueirão do Piauí", "Buriti dos Montes", "Castelo do Piauí", "Cocal de Telha", "Jatobá do Piauí", "Juazeiro do Piauí", "Nossa Senhora de Nazaré", "São João da Serra", "São Miguel do Tapuio", "Sigefredo Pacheco"],
+    "endereco": "Av. Santo Antônio, 940, Bairro de Lourdes, Campo Maior-PI",
+    "cep": "64.280-000",
+    "telefones": [],
+    "email": ""
+  },
+  {
+    "regional": "Canto do Buriti",
+    "cidade_polo": "Canto do Buriti",
+    "presidente": "Júnior Timóteo de Amorim",
+    "cidades": ["Canto do Buriti", "Colônia do Gurguéia", "Eliseu Martins", "Manoel Emídio", "Pajeú do Piauí", "Ribeira do Piauí", "Tamboril do Piauí"],
+    "endereco": "Rua Coelho Neto, 829, Centro, Canto do Buriti-PI",
+    "cep": "64.890-000",
+    "telefones": [],
+    "email": "sintecdoburiti@hotmail.com"
+  },
+  {
+    "regional": "Corrente",
+    "cidade_polo": "Corrente",
+    "presidente": "Sandra Marília Pereira",
+    "cidades": ["Corrente", "Avelino Lopes", "Barreiras do Piauí", "Cristalândia do Piauí", "Curimatá", "Gilbués", "Júlio Borges", "Monte Alegre do Piauí", "Morro Cabeça no Tempo", "Parnaguá", "Riacho Frio", "Santa Filomena", "São Gonçalo do Gurguéia", "Sebastião Barros"],
+    "endereco": "Rua 8, Bairro Nova Corrente, S/N, Corrente-PI",
+    "cep": "64.980-000",
+    "telefones": ["(89) 99471-8667"],
+    "email": "sandramarilia2011@hotmail.com"
+  },
+  {
+    "regional": "Demerval Lobão",
+    "cidade_polo": "Demerval Lobão",
+    "presidente": "Josimar da Silva",
+    "cidades": ["Demerval Lobão", "Lagoa do Piauí", "Monsenhor Gil"],
+    "endereco": "Rua São Vicente, 531, Centro, Demerval Lobão-PI",
+    "cep": "64.390-000",
+    "telefones": [],
+    "email": ""
+  },
+  {
+    "regional": "Esperantina",
+    "cidade_polo": "Esperantina",
+    "presidente": "Francisca Correia da Rocha",
+    "cidades": ["Esperantina", "Batalha", "Campo Largo do Piauí", "Joaquim Pires", "Matias Olímpio", "Morro do Chapéu do Piauí", "São João do Arraial"],
+    "endereco": "Rua Francisco Frederico Carvalho, 777, Bairro Rural, Esperantina-PI",
+    "cep": "64.180-000",
+    "telefones": ["(86) 3383-1525", "(86) 99986-5215"],
+    "email": "regionalsindical@yahoo.com.br"
+  },
+  {
+    "regional": "Floriano",
+    "cidade_polo": "Floriano",
+    "presidente": "Oberdan Siqueira Correia",
+    "cidades": ["Floriano", "Antônio Almeida", "Arraial", "Bertolínia", "Canavieira", "Flores do Piauí", "Francisco Aires", "Guadalupe", "Itaueira", "Jerumenha", "Landri Sales", "Marcos Parente", "Nazaré do Piauí", "Pavussu", "Porto Alegre do Piauí", "Rio Grande do Piauí", "São Francisco do Piauí"],
+    "endereco": "Rua Antônio Neto, 1204, Floriano-PI",
+    "cep": "64.800-000",
+    "telefones": ["(89) 3521-1355", "(86) 99917-0046"],
+    "email": "sinteflo@hotmail.com"
+  },
+  {
+    "regional": "Jaicós",
+    "cidade_polo": "Jaicós",
+    "presidente": "Maria Fatanilde Alves de Carvalho Silva",
+    "cidades": ["Jaicós", "Acauã", "Betânia do Piauí", "Caridade do Piauí", "Curral Novo do Piauí", "Francisco Macedo", "Jacobina do Piauí", "Marcolândia", "Massapê do Piauí", "Padre Marcos", "Patos do Piauí", "Paulistana", "Simões"],
+    "endereco": "Rua Juvenal Antão, 568, Serranópolis, Jaicós-PI",
+    "cep": "64.575-000",
+    "telefones": ["(89) 3457-1173", "(89) 99939-0067"],
+    "email": "mariafatanilde@hotmail.com"
+  },
+  {
+    "regional": "José de Freitas",
+    "cidade_polo": "José de Freitas",
+    "presidente": "Maria Gorete de Carvalho Campos",
+    "cidades": ["José de Freitas", "Lagoa Alegre"],
+    "endereco": "Rua Edgar Gayoso, 515, Centro, José de Freitas-PI",
+    "cep": "64.110-000",
+    "telefones": ["(86) 3264-1054", "(86) 99917-0090"],
+    "email": "sintenrjf@gmail.com"
+  },
+  {
+    "regional": "Luzilândia",
+    "cidade_polo": "Luzilândia",
+    "presidente": "Solange Maria Vasconcelos Barbosa",
+    "cidades": ["Luzilândia", "Joca Marques", "Madeiro", "Murici dos Portelas"],
+    "endereco": "Conjunto José Martins Filho, Q-B, C-03, Luzilândia-PI",
+    "cep": "64.160-000",
+    "telefones": ["(96) 3393-1771", "(86) 99858-7567"],
+    "email": "svbarbosa123@hotmail.com"
+  },
+  {
+    "regional": "Oeiras",
+    "cidade_polo": "Oeiras",
+    "presidente": "Josevaldo de Jesus Lemos",
+    "cidades": ["Oeiras", "Cajazeiras do Piauí", "Campinas do Piauí", "Colônia do Piauí", "Floresta do Piauí", "Santa Rosa do Piauí", "Santo Inácio do Piauí", "São João da Varjota", "São José do Peixe", "São Miguel do Fidalgo", "Tanque do Piauí"],
+    "endereco": "Rua Pe. Damasceno, 29, Centro, Oeiras-PI",
+    "cep": "64.500-000",
+    "telefones": ["(89) 99939-0069"],
+    "email": "sinteoeiraspi@gmail.com"
+  },
+  {
+    "regional": "Parnaíba",
+    "cidade_polo": "Parnaíba",
+    "presidente": "Nadja Maria da Silva Araújo",
+    "cidades": ["Parnaíba", "Bom Princípio do Piauí", "Buriti dos Lopes", "Cajueiro da Praia", "Caraúbas do Piauí", "Caxingó", "Cocal", "Cocal dos Alves", "Ilha Grande", "Luís Correia", "Murici dos Portelas"],
+    "endereco": "Rua Desembargador Freitas, 1247, Parnaíba-PI",
+    "cep": "64.218-490",
+    "telefones": ["(86) 3322-1327", "(86) 99917-0019"],
+    "email": "sinte-piphb@hotmail.com"
+  },
+  {
+    "regional": "Pedro II",
+    "cidade_polo": "Pedro II",
+    "presidente": "Rafael Lopes Viana",
+    "cidades": ["Pedro II", "Domingos Mourão", "Lagoa de São Francisco"],
+    "endereco": "Rua Jacob Uchôa, 537, Centro, Pedro II-PI",
+    "cep": "64.255-000",
+    "telefones": ["(86) 3271-2519", "(86) 99917-0184"],
+    "email": "sintepedro2@hotmail.com"
+  },
+  {
+    "regional": "Picos",
+    "cidade_polo": "Picos",
+    "presidente": "João Antônio de Sousa",
+    "cidades": ["Picos", "Alegrete do Piauí", "Bocaina", "Campo Grande do Piauí", "Dom Expedito Lopes", "Francisco Santos", "Geminiano", "Ipiranga do Piauí", "Isaías Coelho", "Itainópolis", "Monsenhor Hipólito", "Paquetá", "Pedro Laurentino", "Santa Cruz do Piauí", "Santana do Piauí", "Santo Antônio de Lisboa", "São João da Canabrava", "São José do Piauí", "Sussuapara", "Vera Mendes", "Vila Nova do Piauí", "Wall Ferraz"],
+    "endereco": "Rua São Francisco, S/N, Centro, Picos-PI",
+    "cep": "64.600-000",
+    "telefones": ["(89) 3422-3392"],
+    "email": "sintepicos@gmail.com"
+  },
+  {
+    "regional": "Pio IX",
+    "cidade_polo": "Pio IX",
+    "presidente": "Antônia Josemaria Pinheiro",
+    "cidades": ["Pio IX", "Alagoinha do Piauí", "Caldeirão Grande do Piauí", "Fronteiras", "São Julião"],
+    "endereco": "Rua Deputado Sousa Santos, S/N, Centro, Pio IX-PI",
+    "cep": "64.660-000",
+    "telefones": ["(89) 3454-1766"],
+    "email": "sintepioix@hotmail.com"
+  },
+  {
+    "regional": "Piracuruca",
+    "cidade_polo": "Piracuruca",
+    "presidente": "Maria do Rosário Pereira Gomes",
+    "cidades": ["Piracuruca", "São João da Fronteira", "São José do Divino"],
+    "endereco": "Rua Leonardo das Dores, S/N, Piracuruca-PI",
+    "cep": "64.240-000",
+    "telefones": ["(86) 3343-1770", "(86) 99917-0196"],
+    "email": "sinte-pi-piracuruca@r7.com"
+  },
+  {
+    "regional": "Piripiri",
+    "cidade_polo": "Piripiri",
+    "presidente": "Rosa Maria da Silva",
+    "cidades": ["Piripiri", "Brasileira", "Capitão de Campos"],
+    "endereco": "Rua Martinho Sousa, 945, Piripiri-PI",
+    "cep": "64.260-000",
+    "telefones": ["(86) 3276-1616", "(86) 99917-0047"],
+    "email": "sinte-piripiri@hotmail.com"
+  },
+  {
+    "regional": "Regeneração",
+    "cidade_polo": "Regeneração",
+    "presidente": "Maria das Mercês de Jesus Silva",
+    "cidades": ["Regeneração", "Angical do Piauí", "Jardim do Mulato", "São Gonçalo do Piauí"],
+    "endereco": "Rua Cônego Carino, S/N, Centro, Regeneração-PI",
+    "cep": "64.490-000",
+    "telefones": ["(86) 3293-1322", "(86) 99917-0047"],
+    "email": "jesusmercesjesus@gmail.com"
+  },
+  {
+    "regional": "São João do Piauí",
+    "cidade_polo": "São João do Piauí",
+    "presidente": "Dionísia Ribeiro da Silva",
+    "cidades": ["São João do Piauí", "Bela Vista do Piauí", "Campo Alegre do Fidalgo", "Capitão Gervásio Oliveira", "Conceição do Canindé", "Lagoa do Barro do Piauí", "Nova Santa Rita", "Paes Landim", "Simplício Mendes", "Socorro do Piauí"],
+    "endereco": "Travessa Adail Coelho Maia, 419, São João do Piauí-PI",
+    "cep": "64.670-000",
+    "telefones": ["(89) 3582-2468"],
+    "email": ""
+  },
+  {
+    "regional": "São Raimundo Nonato",
+    "cidade_polo": "São Raimundo Nonato",
+    "presidente": "Vanda Maria de Oliveira Costa Aragão",
+    "cidades": ["São Raimundo Nonato", "Anísio de Abreu", "Bonfim do Piauí", "Caracol", "Coronel José Dias", "Dirceu Arcoverde", "Dom Inocêncio", "Fartura do Piauí", "Guaribas", "Jurema", "São Braz do Piauí", "São Lourenço do Piauí", "Várzea Branca"],
+    "endereco": "Rua Professor João, 120, Centro, São Raimundo Nonato-PI",
+    "cep": "64.770-000",
+    "telefones": ["(89) 3582-2468", "(89) 99939-0072"],
+    "email": "sintesrn@hotmail.com"
+  },
+  {
+    "regional": "União",
+    "cidade_polo": "União",
+    "presidente": "Francisco Félix da Silva",
+    "cidades": ["União", "Miguel Alves"],
+    "endereco": "Rua da Pedreira, 941, Centro, União-PI",
+    "cep": "64.120-000",
+    "telefones": ["(86) 3265-1192", "(86) 99917-0086"],
+    "email": "sinteuniao2011@hotmail.com"
+  },
+  {
+    "regional": "Uruçuí",
+    "cidade_polo": "Uruçuí",
+    "presidente": "Raimunda Martins Gomes",
+    "cidades": ["Uruçuí", "Baixa Grande do Ribeiro", "Ribeiro Gonçalves", "Sebastião Leal"],
+    "endereco": "Rua Projetada, S/N, Bela Vista, Uruçuí-PI",
+    "cep": "64.860-000",
+    "telefones": ["(89) 3544-1293"],
+    "email": "sinteurucui@hotmail.com"
+  },
+  {
+    "regional": "Valença",
+    "cidade_polo": "Valença do Piauí",
+    "presidente": "Alexsandro José Neris de Meneses",
+    "cidades": ["Valença do Piauí", "Aroazes", "Elesbão Veloso", "Francinópolis", "Inhuma", "Lagoa do Sítio", "Novo Oriente do Piauí", "Pimenteiras", "Prata do Piauí", "Santa Cruz dos Milagres", "Santo Antônio dos Milagres", "São Félix do Piauí", "Várzea Grande"],
+    "endereco": "Rua Cel. Aníbal Martins, 787, Centro, Valença-PI",
+    "cep": "64.300-000",
+    "telefones": ["(89) 3465-1151", "(89) 99939-0031"],
+    "email": "alexsandro.neris@hotmail.com"
+  }
+]
+;
 
 function procurarRegionalPorCidade(query) {
-    const q = query.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+    const q = query.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
     for (const reg of DADOS_REGIONAIS_INFO) {
-        const regNome = reg.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+        const regNome = reg.regional.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
         if (regNome === q || regNome.includes(q)) return reg;
         
         for (const cid of reg.cidades) {
-            const cidNome = cid.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+            const cidNome = cid.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
             if (cidNome === q || cidNome.includes(q)) return reg;
         }
     }
     return null;
 }
+
 
 const searchInput = document.getElementById('search-input');
         const clearBtn = document.getElementById('clear-btn');
@@ -543,13 +815,13 @@ const searchInput = document.getElementById('search-input');
                     <div class="regional-info-card" style="background:#fff; border:1px solid var(--surface-border); border-radius:8px; padding:1.2rem; margin-bottom:1.5rem; display:flex; flex-direction:column; gap:0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                         <h3 style="margin:0; color:var(--text-main); font-size:1.2rem; display:flex; align-items:center; gap:0.5rem;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" style="color:var(--accent)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                            Núcleo Regional: ${escapeHTML(regInfo.nome)}
+                            Núcleo Regional: ${escapeHTML(regInfo.regional)}
                         </h3>
                         <div style="font-size:0.9rem; color:var(--text-muted); line-height:1.5;">
                             <p style="margin:0.3rem 0;"><strong>Presidente:</strong> ${escapeHTML(regInfo.presidente)}</p>
                             <p style="margin:0.3rem 0;"><strong>Cidades Abrangidas:</strong> ${escapeHTML(regInfo.cidades.join(", "))}</p>
-                            <p style="margin:0.3rem 0;"><strong>Endereço:</strong> ${escapeHTML(regInfo.endereco)}</p>
-                            ${regInfo.fone ? `<p style="margin:0.3rem 0;"><strong>Fone:</strong> ${escapeHTML(regInfo.fone)}</p>` : ''}
+                            <p style="margin:0.3rem 0;"><strong>Endereço:</strong> ${escapeHTML(regInfo.endereco)} - CEP: ${escapeHTML(regInfo.cep)}</p>
+                            ${regInfo.telefones && regInfo.telefones.length > 0 ? `<p style="margin:0.3rem 0;"><strong>Fone:</strong> ${escapeHTML(regInfo.telefones.join(" / "))}</p>` : ''}
                             ${regInfo.email ? `<p style="margin:0.3rem 0;"><strong>E-mail:</strong> ${escapeHTML(regInfo.email)}</p>` : ''}
                         </div>
                     </div>
