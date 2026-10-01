@@ -2419,7 +2419,7 @@ const searchInput = document.getElementById('search-input');
 
                             const btnMail = h.email ? `
                                 <button type="button" class="btn-outline-action" style="padding:0.3rem 0.6rem; font-size:0.75rem; cursor:pointer;" onclick="dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(h.email)}', '${escapeHTML(h.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}')">
-                                    <img src="gmail.svg" width="14" height="14" alt="Email" style="vertical-align: middle; margin-right: 4px;"> E-mail
+                                    <img src="gmail.webp" width="14" height="14" alt="Email" style="vertical-align: middle; margin-right: 4px;"> E-mail
                                 </button>
                             ` : '';
 
@@ -2431,7 +2431,7 @@ const searchInput = document.getElementById('search-input');
                                             ${h.is_principal ? '<span style="background:#eff6ff; color:#1d4ed8; font-size:0.68rem; font-weight:700; padding:0.1rem 0.35rem; border-radius:4px; margin-left:0.35rem;">PRINCIPAL</span>' : ''}
                                             <span style="display:block; font-size:0.75rem; color:#64748b;">${escapeHTML(h.parentesco || 'Herdeiro')} • CPF: ${escapeHTML(formatCPF(h.cpf || '---'))}</span>
                                             <span style="display:block; font-size:0.78rem; color:var(--text-main); font-weight:600; margin-top:0.2rem;"> ${escapeHTML(h.telefone || 'Sem telefone')}</span>
-                                            ${h.email ? `<span style="display:block; font-size:0.75rem; color:#2563eb; margin-top:0.1rem; cursor:pointer; text-decoration:underline;" onclick="dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(h.email)}', '${escapeHTML(h.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}')" title="Enviar e-mail com texto pronto"><img src="gmail.svg" width="14" height="14" alt="Email" style="vertical-align: middle; margin-right: 4px;"> ${escapeHTML(h.email)}</span>` : ''}
+                                            ${h.email ? `<span style="display:block; font-size:0.75rem; color:#2563eb; margin-top:0.1rem; cursor:pointer; text-decoration:underline;" onclick="dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(h.email)}', '${escapeHTML(h.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}')" title="Enviar e-mail com texto pronto"><img src="gmail.webp" width="14" height="14" alt="Email" style="vertical-align: middle; margin-right: 4px;"> ${escapeHTML(h.email)}</span>` : ''}
                                         </div>
                                         <div style="display:flex; gap:0.35rem;">
                                             ${btnWhats}
