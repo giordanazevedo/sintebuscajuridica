@@ -474,7 +474,7 @@ const searchInput = document.getElementById('search-input');
                     badgeHerdeiroHtml = `
                         <div class="herdeiro-card-badge" onclick="irParaHerdeiro('${escapeHTML(herdeiroInfoGeral.id)}')" title="Clique para abrir o processo de herdeiros deste titular">
                             <div style="display:flex; align-items:center; gap:0.65rem;">
-                                <span class="herdeiro-badge-icon">⚖️</span>
+                                <span class="herdeiro-badge-icon"></span>
                                 <div>
                                     <strong style="color:var(--primary); font-size:0.88rem;">Processo de Herdeiros Cadastrado (${escapeHTML(herdeiroInfoGeral.status_label)})</strong>
                                     <span style="display:block; font-size:0.75rem; color:var(--text-muted);">${escapeHTML(herdeiroInfoGeral.id)}${cxTxt}</span>
@@ -1501,11 +1501,11 @@ const searchInput = document.getElementById('search-input');
                 const labelCaixa = (caso.caixa_concluido.toUpperCase().startsWith('CX') || caso.caixa_concluido.toUpperCase().startsWith('CAIXA'))
                     ? caso.caixa_concluido
                     : `Caixa ${caso.caixa_concluido}`;
-                localBadgeHtml = `<span class="card-location-badge loc-caixa-concluido" title="Arquivado na caixa">📦 ${escapeHTML(labelCaixa)}</span>`;
+                localBadgeHtml = `<span class="card-location-badge loc-caixa-concluido" title="Arquivado na caixa"> ${escapeHTML(labelCaixa)}</span>`;
             } else if (caso.status === 'concluido') {
-                localBadgeHtml = `<span class="card-location-badge loc-provisorio" style="background:#fff7ed; color:#c2410c; border-color:#ffedd5;" title="Aguardando identificação da caixa">📦 Caixa não informada</span>`;
+                localBadgeHtml = `<span class="card-location-badge loc-provisorio" style="background:#fff7ed; color:#c2410c; border-color:#ffedd5;" title="Aguardando identificação da caixa"> Caixa não informada</span>`;
             } else if (caso.localizacao_provisoria) {
-                localBadgeHtml = `<span class="card-location-badge loc-provisorio" title="Guarda provisória">📁 ${escapeHTML(caso.localizacao_provisoria)}</span>`;
+                localBadgeHtml = `<span class="card-location-badge loc-provisorio" title="Guarda provisória"> ${escapeHTML(caso.localizacao_provisoria)}</span>`;
             }
 
             // Info de herdeiro para contato rápido
@@ -1521,8 +1521,8 @@ const searchInput = document.getElementById('search-input');
                                 ${escapeHTML(herdeiroPrincipal.nome)}${escapeHTML(parentescoTxt)}
                             </strong>
                             <div style="display: flex; flex-direction: column; gap: 0.15rem; color: #64748b; font-size: 0.75rem;">
-                                ${herdeiroPrincipal.email ? `<div style="display:flex; align-items:center; gap:0.3rem; cursor:pointer;" onclick="event.stopPropagation(); dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(herdeiroPrincipal.email)}', '${escapeHTML(herdeiroPrincipal.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}');" title="Enviar e-mail com texto pronto"><span style="font-size:0.8rem;">✉️</span> <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-decoration:underline;">${escapeHTML(herdeiroPrincipal.email)}</span></div>` : ''}
-                                <div style="display:flex; align-items:center; gap:0.3rem;"><span style="font-size:0.8rem;">📞</span> <span>${escapeHTML(telExibir)}</span></div>
+                                ${herdeiroPrincipal.email ? `<div style="display:flex; align-items:center; gap:0.3rem; cursor:pointer;" onclick="event.stopPropagation(); dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(herdeiroPrincipal.email)}', '${escapeHTML(herdeiroPrincipal.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}');" title="Enviar e-mail com texto pronto"><span style="font-size:0.8rem;"><img src="gmail.svg" width="14" height="14" alt="Email" style="vertical-align: middle; margin-right: 4px;"></span> <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-decoration:underline;">${escapeHTML(herdeiroPrincipal.email)}</span></div>` : ''}
+                                <div style="display:flex; align-items:center; gap:0.3rem;"><span style="font-size:0.8rem;"></span> <span>${escapeHTML(telExibir)}</span></div>
                             </div>
                         </div>
                     </div>
@@ -1534,7 +1534,7 @@ const searchInput = document.getElementById('search-input');
             if (caso.status === 'fila_espera') {
                 botoesRodape = `
                     <button type="button" class="btn-card-action btn-action-primary" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'em_producao');" title="Iniciar elaboração da minuta jurídica">
-                        <span>▶ Iniciar Produção</span>
+                        <span> Iniciar Produção</span>
                     </button>
                     <button type="button" class="btn-card-action" style="background:#f1f5f9; color:#475569;" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');">
                         <span>Detalhes</span>
@@ -1543,7 +1543,7 @@ const searchInput = document.getElementById('search-input');
             } else if (caso.status === 'em_producao') {
                 botoesRodape = `
                     <button type="button" class="btn-card-action btn-action-primary" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura');" title="Minuta concluída: avançar para envio aos herdeiros">
-                        <span>✅ Documento Pronto</span>
+                        <span> Documento Pronto</span>
                     </button>
                     <button type="button" class="btn-card-action" style="background:#f1f5f9; color:#475569;" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');">
                         <span>Detalhes</span>
@@ -1552,19 +1552,19 @@ const searchInput = document.getElementById('search-input');
             } else if (caso.status === 'enviado_assinatura') {
                 const btnEmail = herdeiroPrincipal.email ? `
                     <button type="button" class="btn-card-action" style="background-color: #ea4335; color: white; border: none;" onclick="event.stopPropagation(); dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(herdeiroPrincipal.email)}', '${escapeHTML(herdeiroPrincipal.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}');" title="Enviar E-mail via Gmail com texto pronto">
-                        <span>✉️ E-mail</span>
+                        <span><img src="gmail.svg" width="14" height="14" alt="Email" style="vertical-align: middle; margin-right: 4px;"> E-mail</span>
                     </button>
                 ` : '';
                 botoesRodape = `
                     ${btnEmail}
                     <button type="button" class="btn-card-action btn-concluir" onclick="event.stopPropagation(); abrirModalArquivar('${escapeHTML(caso.id)}');" title="Herdeiros assinaram: arquivar na caixa definitiva">
-                        <span>🗃️ Arquivar</span>
+                        <span> Arquivar</span>
                     </button>
                 `;
             } else {
                 botoesRodape = `
                     <button type="button" class="btn-card-action" style="background:#ecfdf5; color:#047857; border-color:#a7f3d0;" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');">
-                        <span>👁️ Ver Ficha Completa</span>
+                        <span> Ver Ficha Completa</span>
                     </button>
                 `;
             }
@@ -1572,13 +1572,13 @@ const searchInput = document.getElementById('search-input');
             // Contagem de checklist
             const chk = caso.documentos_checklist || {};
             const qtdDocs = Object.keys(chk).filter(k => k !== 'outros' && chk[k] === true).length;
-            const docBadge = `<span class="meta-pill" style="background:#f8fafc; border:1px solid #e2e8f0;">📄 ${qtdDocs}/7 docs</span>`;
+            const docBadge = `<span class="meta-pill" style="background:#f8fafc; border:1px solid #e2e8f0;"> ${qtdDocs}/7 docs</span>`;
 
             return `
                 <div class="kanban-card" onclick="abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}')">
                     <div class="card-top">
                         <span class="card-id-badge">${escapeHTML(caso.id)}</span>
-                        <span class="card-time-badge">⏱️ ${tempoStr}</span>
+                        <span class="card-time-badge"> ${tempoStr}</span>
                     </div>
 
                     <div class="card-falecido-nome">${escapeHTML(fal.nome || 'SEM NOME')}</div>
@@ -1618,8 +1618,8 @@ const searchInput = document.getElementById('search-input');
                 const stLabel = STATUS_MAP_TEXT[st] || st;
 
                 const localTxt = (st === 'concluido' && c.caixa_concluido)
-                    ? `📦 <strong>${escapeHTML(c.caixa_concluido)}</strong>`
-                    : `📁 ${escapeHTML(c.localizacao_provisoria || 'Recepção')}`;
+                    ? ` <strong>${escapeHTML(c.caixa_concluido)}</strong>`
+                    : ` ${escapeHTML(c.localizacao_provisoria || 'Recepção')}`;
 
                 html += `
                     <tr onclick="abrirModalDetalhesHerdeiro('${escapeHTML(c.id)}')" style="cursor: pointer;">
@@ -2096,7 +2096,7 @@ const searchInput = document.getElementById('search-input');
                 <div class="heir-card-header">
                     <span class="heir-card-title">Herdeiro #${index}</span>
                     <span class="heir-card-badge">${hPrincipal === 'checked' || index === 1 ? 'Principal' : 'Herdeiro'}</span>
-                    ${index > 1 ? `<button type="button" class="btn-remove-heir" onclick="this.closest('.dynamic-heir-card').remove(); aplicarFiltroHerdeiros();">✕ Remover</button>` : ''}
+                    ${index > 1 ? `<button type="button" class="btn-remove-heir" onclick="this.closest('.dynamic-heir-card').remove(); aplicarFiltroHerdeiros();"> Remover</button>` : ''}
                 </div>
                 <div class="form-row-3">
                     <div class="form-group">
@@ -2381,13 +2381,13 @@ const searchInput = document.getElementById('search-input');
                 const boxTransicoes = document.getElementById('det-botoes-transicao');
                 let btnsTransHtml = '';
                 if (caso.status === 'fila_espera') {
-                    btnsTransHtml = `<button type="button" class="btn-card-action btn-action-primary" style="padding:0.4rem 0.8rem;" onclick="transicionarStatus('${escapeHTML(caso.id)}', 'em_producao')">▶ Iniciar Minuta (Mover p/ Em Produção)</button>`;
+                    btnsTransHtml = `<button type="button" class="btn-card-action btn-action-primary" style="padding:0.4rem 0.8rem;" onclick="transicionarStatus('${escapeHTML(caso.id)}', 'em_producao')"> Iniciar Minuta (Mover p/ Em Produção)</button>`;
                 } else if (caso.status === 'em_producao') {
-                    btnsTransHtml = `<button type="button" class="btn-card-action btn-action-primary" style="padding:0.4rem 0.8rem;" onclick="transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura')">📤 Minuta Pronta (Mover p/ Enviado p/ Assinatura)</button>`;
+                    btnsTransHtml = `<button type="button" class="btn-card-action btn-action-primary" style="padding:0.4rem 0.8rem;" onclick="transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura')"> Minuta Pronta (Mover p/ Enviado p/ Assinatura)</button>`;
                 } else if (caso.status === 'enviado_assinatura') {
-                    btnsTransHtml = `<button type="button" class="btn-card-action btn-concluir" style="padding:0.4rem 0.8rem;" onclick="abrirModalArquivar('${escapeHTML(caso.id)}')">🗃️ Assinado / Concluir na Caixa Específica</button>`;
+                    btnsTransHtml = `<button type="button" class="btn-card-action btn-concluir" style="padding:0.4rem 0.8rem;" onclick="abrirModalArquivar('${escapeHTML(caso.id)}')"> Assinado / Concluir na Caixa Específica</button>`;
                 } else {
-                    btnsTransHtml = `<span style="font-size:0.85rem; color:#047857; font-weight:700;">✅ Processo Arquivado em Definitivo</span>`;
+                    btnsTransHtml = `<span style="font-size:0.85rem; color:#047857; font-weight:700;"> Processo Arquivado em Definitivo</span>`;
                 }
                 if (boxTransicoes) boxTransicoes.innerHTML = btnsTransHtml;
 
@@ -2395,9 +2395,9 @@ const searchInput = document.getElementById('search-input');
                 const boxLoc = document.getElementById('det-localizacao-box');
                 if (boxLoc) {
                     if (caso.status === 'concluido' && caso.caixa_concluido) {
-                        boxLoc.innerHTML = `<span class="card-location-badge loc-caixa-concluido" style="font-size:0.95rem; padding:0.4rem 0.75rem;">📦 Caixa Definitiva: ${escapeHTML(caso.caixa_concluido)}</span>`;
+                        boxLoc.innerHTML = `<span class="card-location-badge loc-caixa-concluido" style="font-size:0.95rem; padding:0.4rem 0.75rem;"> Caixa Definitiva: ${escapeHTML(caso.caixa_concluido)}</span>`;
                     } else {
-                        boxLoc.innerHTML = `<span class="card-location-badge loc-provisorio" style="font-size:0.95rem; padding:0.4rem 0.75rem;">📁 Guarda Provisória: ${escapeHTML(caso.localizacao_provisoria || 'Recepção')}</span>`;
+                        boxLoc.innerHTML = `<span class="card-location-badge loc-provisorio" style="font-size:0.95rem; padding:0.4rem 0.75rem;"> Guarda Provisória: ${escapeHTML(caso.localizacao_provisoria || 'Recepção')}</span>`;
                     }
                 }
 
@@ -2413,13 +2413,13 @@ const searchInput = document.getElementById('search-input');
                             const telDigits = (h.telefone || '').replace(/\D/g, '');
                             const btnWhats = telDigits ? `
                                 <button type="button" class="btn-card-action btn-whatsapp" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="dispararWhatsAppHerdeiro('${escapeHTML(caso.id)}', '${telDigits}', '${escapeHTML(h.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}')">
-                                    💬 WhatsApp
+                                     WhatsApp
                                 </button>
                             ` : '';
 
                             const btnMail = h.email ? `
                                 <button type="button" class="btn-outline-action" style="padding:0.3rem 0.6rem; font-size:0.75rem; cursor:pointer;" onclick="dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(h.email)}', '${escapeHTML(h.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}')">
-                                    ✉️ E-mail
+                                    <img src="gmail.svg" width="14" height="14" alt="Email" style="vertical-align: middle; margin-right: 4px;"> E-mail
                                 </button>
                             ` : '';
 
@@ -2430,8 +2430,8 @@ const searchInput = document.getElementById('search-input');
                                             <strong style="font-size:0.9rem; color:var(--text-main);">${escapeHTML(h.nome)}</strong>
                                             ${h.is_principal ? '<span style="background:#eff6ff; color:#1d4ed8; font-size:0.68rem; font-weight:700; padding:0.1rem 0.35rem; border-radius:4px; margin-left:0.35rem;">PRINCIPAL</span>' : ''}
                                             <span style="display:block; font-size:0.75rem; color:#64748b;">${escapeHTML(h.parentesco || 'Herdeiro')} • CPF: ${escapeHTML(formatCPF(h.cpf || '---'))}</span>
-                                            <span style="display:block; font-size:0.78rem; color:var(--text-main); font-weight:600; margin-top:0.2rem;">📞 ${escapeHTML(h.telefone || 'Sem telefone')}</span>
-                                            ${h.email ? `<span style="display:block; font-size:0.75rem; color:#2563eb; margin-top:0.1rem; cursor:pointer; text-decoration:underline;" onclick="dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(h.email)}', '${escapeHTML(h.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}')" title="Enviar e-mail com texto pronto">✉️ ${escapeHTML(h.email)}</span>` : ''}
+                                            <span style="display:block; font-size:0.78rem; color:var(--text-main); font-weight:600; margin-top:0.2rem;"> ${escapeHTML(h.telefone || 'Sem telefone')}</span>
+                                            ${h.email ? `<span style="display:block; font-size:0.75rem; color:#2563eb; margin-top:0.1rem; cursor:pointer; text-decoration:underline;" onclick="dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(h.email)}', '${escapeHTML(h.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}')" title="Enviar e-mail com texto pronto"><img src="gmail.svg" width="14" height="14" alt="Email" style="vertical-align: middle; margin-right: 4px;"> ${escapeHTML(h.email)}</span>` : ''}
                                         </div>
                                         <div style="display:flex; gap:0.35rem;">
                                             ${btnWhats}
@@ -2459,7 +2459,7 @@ const searchInput = document.getElementById('search-input');
 
                     let chkHtml = '';
                     itens.forEach(it => {
-                        const icon = it.val ? '✅' : '⚪';
+                        const icon = it.val ? '' : '';
                         const cor = it.val ? '#047857' : '#94a3b8';
                         chkHtml += `<div style="display:flex; align-items:center; gap:0.45rem; color:${cor};"><span>${icon}</span> <span>${escapeHTML(it.label)}</span></div>`;
                     });
@@ -2712,7 +2712,7 @@ const searchInput = document.getElementById('search-input');
                             html += `
                                 <div class="caixa-card" onclick="mostrarProcessosDaCaixa('${escapeHTML(c.nome)}')">
                                     <div class="caixa-card-header">
-                                        <span class="caixa-icon">📦</span>
+                                        <span class="caixa-icon"></span>
                                         <span class="caixa-total-badge">${c.total} processo(s)</span>
                                     </div>
                                     <div class="caixa-nome">${escapeHTML(c.nome)}</div>
@@ -2741,7 +2741,7 @@ const searchInput = document.getElementById('search-input');
                     if (containerCaixasGrid) containerCaixasGrid.style.display = 'none';
                     if (containerCaixaDetalhes) containerCaixaDetalhes.style.display = 'block';
 
-                    document.getElementById('caixa-detalhes-titulo').textContent = `📦 ${nomeCaixa} (${caixaObj.total} processos)`;
+                    document.getElementById('caixa-detalhes-titulo').textContent = ` ${nomeCaixa} (${caixaObj.total} processos)`;
 
                     const wrapper = document.getElementById('caixa-detalhes-tabela-wrapper');
                     let tableHtml = `
