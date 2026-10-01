@@ -46,8 +46,7 @@ PLANILHAS_GOOGLE = [
     {"nome_acao": "MÃO SANTA IV A VII", "id": "1LLxcb-STxF8Y2qhzsmMYTy-n-L9-lu33"},
     {"nome_acao": "Ação Guilherme Melo COMPLETO", "id": "1-3xLtKtDB4VdSIC9C-HAyTdCZ_aQOPNkQcy9fvMG9-c"},
     {"nome_acao": "SEGUNDA AÇÃO", "id": "1_tfg7-uoslZaVJCDDpOyiNXh_LVxvWak"},
-    {"nome_acao": "HERDEIROS CONCLUIDOS GUILHERME MELO E MÃO SANTA", "id": "1CxixmGKhtV-MdF6xM3h6RhfxKqzbiyIQ"},
-    {"nome_acao": "SEGUNDA AÇÃO - HERDEIROS CONCLUÍDOS", "id": "1eF_NFwNhbR7PeJJmQXLK27z69O3cqhXq"}
+    {"nome_acao": "HERDEIROS CONCLUÍDOS TODOS", "id": "1eF_NFwNhbR7PeJJmQXLK27z69O3cqhXq"}
 ]
 
 MAPA_IDS_ACOES = {p["nome_acao"]: p["id"] for p in PLANILHAS_GOOGLE}
