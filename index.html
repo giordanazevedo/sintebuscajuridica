@@ -789,56 +789,52 @@
                     </div>
                 </div>
 
-                <!-- Grid de 2 colunas -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <!-- Coluna Esquerda: Herdeiros e Documentos -->
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
-                        <!-- Localização Física -->
-                        <div class="herdeiro-form-section" style="margin-bottom: 0;">
-                            <div class="form-section-title">
-                                <span>📁 Guarda Física dos Documentos</span>
-                            </div>
-                            <div id="det-localizacao-box"
-                                style="font-size: 0.9rem; font-weight: 600; color: var(--text-main);">
-                                <!-- Local ou Caixa -->
-                            </div>
+                <!-- Layout de 1 coluna (100% de largura) -->
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    
+                    <!-- Localização Física -->
+                    <div class="herdeiro-form-section" style="margin-bottom: 0;">
+                        <div class="form-section-title">
+                            <span>📁 Guarda Física dos Documentos</span>
                         </div>
-
-                        <!-- Herdeiros e Contatos -->
-                        <div class="herdeiro-form-section" style="margin-bottom: 0;">
-                            <div class="form-section-title">
-                                <span>👥 Herdeiros e Contatos</span>
-                            </div>
-                            <div id="det-herdeiros-lista" style="display: flex; flex-direction: column; gap: 0.65rem;">
-                                <!-- Lista de herdeiros com botões de WhatsApp -->
-                            </div>
-                        </div>
-
-                        <!-- Checklist -->
-                        <div class="herdeiro-form-section" style="margin-bottom: 0;">
-                            <div class="form-section-title">
-                                <span>📋 Documentos Recebidos</span>
-                            </div>
-                            <div id="det-checklist-view"
-                                style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.82rem;">
-                                <!-- Itens do checklist -->
-                            </div>
+                        <div id="det-localizacao-box"
+                            style="font-size: 0.9rem; font-weight: 600; color: var(--text-main);">
+                            <!-- Local ou Caixa -->
                         </div>
                     </div>
 
-                    <!-- Coluna Direita: Anexos e Histórico -->
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
-                        <!-- Histórico & Timeline (Espaço ampliado) -->
-                        <div class="herdeiro-form-section" style="margin-bottom: 0; flex: 1; display: flex; flex-direction: column;">
-                            <div class="form-section-title">
-                                <span>⏱️ Linha do Tempo e Notificações</span>
-                            </div>
-                            <div class="timeline-container" id="det-timeline-view"
-                                style="flex: 1; max-height: 500px; overflow-y: auto;">
-                                <!-- Eventos históricos -->
-                            </div>
+                    <!-- Herdeiros e Contatos -->
+                    <div class="herdeiro-form-section" style="margin-bottom: 0;">
+                        <div class="form-section-title">
+                            <span>👥 Herdeiros e Contatos</span>
+                        </div>
+                        <div id="det-herdeiros-lista" style="display: flex; flex-direction: column; gap: 0.65rem;">
+                            <!-- Lista de herdeiros com botões de WhatsApp -->
                         </div>
                     </div>
+
+                    <!-- Histórico & Timeline -->
+                    <div class="herdeiro-form-section" style="margin-bottom: 0;">
+                        <div class="form-section-title">
+                            <span>⏱️ Linha do Tempo e Notificações</span>
+                        </div>
+                        <div class="timeline-container" id="det-timeline-view"
+                            style="max-height: 400px; overflow-y: auto;">
+                            <!-- Eventos históricos -->
+                        </div>
+                    </div>
+
+                    <!-- Checklist -->
+                    <div class="herdeiro-form-section" style="margin-bottom: 0;">
+                        <div class="form-section-title">
+                            <span>📋 Documentos Recebidos</span>
+                        </div>
+                        <div id="det-checklist-view"
+                            style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.82rem;">
+                            <!-- Itens do checklist -->
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
