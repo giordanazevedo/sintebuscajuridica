@@ -1543,7 +1543,7 @@ const searchInput = document.getElementById('search-input');
             } else if (caso.status === 'em_producao') {
                 botoesRodape = `
                     <button type="button" class="btn-card-action btn-action-primary" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura');" title="Minuta concluída: avançar para envio aos herdeiros">
-                        <span> Documento Pronto</span>
+                        <span>✅ Documento Pronto</span>
                     </button>
                     <button type="button" class="btn-card-action" style="background:#f1f5f9; color:#475569;" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');">
                         <span>Detalhes</span>
@@ -2387,7 +2387,7 @@ const searchInput = document.getElementById('search-input');
                 } else if (caso.status === 'enviado_assinatura') {
                     btnsTransHtml = `<button type="button" class="btn-card-action btn-concluir" style="padding:0.4rem 0.8rem;" onclick="abrirModalArquivar('${escapeHTML(caso.id)}')"> Assinado / Concluir na Caixa Específica</button>`;
                 } else {
-                    btnsTransHtml = `<span style="font-size:0.85rem; color:#047857; font-weight:700;"> Processo Arquivado em Definitivo</span>`;
+                    btnsTransHtml = `<span style="font-size:0.85rem; color:#047857; font-weight:700;">✅ Processo Arquivado em Definitivo</span>`;
                 }
                 if (boxTransicoes) boxTransicoes.innerHTML = btnsTransHtml;
 
@@ -2459,7 +2459,7 @@ const searchInput = document.getElementById('search-input');
 
                     let chkHtml = '';
                     itens.forEach(it => {
-                        const icon = it.val ? '' : '';
+                        const icon = it.val ? '✅' : '⚪';
                         const cor = it.val ? '#047857' : '#94a3b8';
                         chkHtml += `<div style="display:flex; align-items:center; gap:0.45rem; color:${cor};"><span>${icon}</span> <span>${escapeHTML(it.label)}</span></div>`;
                     });
