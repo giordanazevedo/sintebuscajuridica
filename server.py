@@ -958,6 +958,10 @@ def serve_css():
 def serve_js():
     return send_from_directory(".", "script.js")
 
+@app.route("/gmail.svg")
+def serve_gmail_svg():
+    return send_from_directory(".", "gmail.svg")
+
 
 @app.route("/health")
 def health():
