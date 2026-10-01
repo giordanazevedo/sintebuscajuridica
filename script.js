@@ -1,3 +1,20 @@
+
+const DADOS_REGIONAIS_INFO = [];
+
+function procurarRegionalPorCidade(query) {
+    const q = query.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+    for (const reg of DADOS_REGIONAIS_INFO) {
+        const regNome = reg.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+        if (regNome === q || regNome.includes(q)) return reg;
+        
+        for (const cid of reg.cidades) {
+            const cidNome = cid.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+            if (cidNome === q || cidNome.includes(q)) return reg;
+        }
+    }
+    return null;
+}
+
 const searchInput = document.getElementById('search-input');
         const clearBtn = document.getElementById('clear-btn');
         const syncBtn = document.getElementById('sync-btn');
@@ -538,7 +555,14 @@ const searchInput = document.getElementById('search-input');
                     </div>
                 `;
             } else {
-                html += `<div style="background:#fff3cd; color:#856404; padding:1rem; border-radius:8px; margin-bottom:1rem;">Nenhuma regional vinculada a "${escapeHTML(data.regional)}" foi encontrada no mapeamento.</div>`;
+                const funcType = typeof procurarRegionalPorCidade;
+                let debugMsg = "Nenhuma regional encontrada.";
+                if (funcType !== 'function') {
+                    debugMsg = "ERRO: O arquivo de dados das regionais não carregou corretamente no seu navegador (função não encontrada). Tente limpar o cache do navegador.";
+                } else {
+                    debugMsg = `Nenhuma regional vinculada a "${escapeHTML(data.regional)}" foi encontrada no mapeamento.`;
+                }
+                html += `<div style="background:#fff3cd; color:#856404; padding:1rem; border-radius:8px; margin-bottom:1rem;">${debugMsg}</div>`;
             }
 
             if (data.total > 0) {
