@@ -1569,11 +1569,6 @@ const searchInput = document.getElementById('search-input');
                 `;
             }
 
-            // Contagem de checklist
-            const chk = caso.documentos_checklist || {};
-            const qtdDocs = Object.keys(chk).filter(k => k !== 'outros' && chk[k] === true).length;
-            const docBadge = `<span class="meta-pill" style="background:#f8fafc; border:1px solid #e2e8f0;">📄 ${qtdDocs}/7 docs</span>`;
-
             return `
                 <div class="kanban-card" onclick="abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}')">
                     <div class="card-top">
@@ -1587,7 +1582,6 @@ const searchInput = document.getElementById('search-input');
                         <span class="meta-pill pill-acao">${escapeHTML(fal.acao_juridica || 'Ação Geral')}</span>
                         ${fal.cpf ? `<span class="meta-pill">CPF: ${escapeHTML(formatCPF(fal.cpf))}</span>` : ''}
                         ${fal.matricula ? `<span class="meta-pill">Mat: ${escapeHTML(formatMatricula(fal.matricula))}</span>` : ''}
-                        ${docBadge}
                     </div>
 
                     ${contatoHerdeiroHtml}
@@ -2051,15 +2045,6 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('cad-caixa-concluido').value = '';
                 document.getElementById('cad-observacoes').value = `Documentos entregues para nova ação. Processo anterior: ${caso.id} (${cxOrig || 'Arquivo'}).`;
 
-                const chk = caso.documentos_checklist || {};
-                document.getElementById('chk-doc-obito').checked = chk.certidao_obito !== false;
-                document.getElementById('chk-doc-rg-falecido').checked = chk.rg_cpf_falecido !== false;
-                document.getElementById('chk-doc-rg-herdeiros').checked = chk.rg_cpf_herdeiros !== false;
-                document.getElementById('chk-doc-residencia').checked = chk.comprovante_residencia !== false;
-                document.getElementById('chk-doc-casamento').checked = !!chk.certidao_casamento_nascimento;
-                document.getElementById('cad-doc-outros').value = chk.outros || '';
-                document.getElementById('cad-data-recebimento-doc').value = new Date().toISOString().split('T')[0];
-
                 if (containerHerdeirosCards) containerHerdeirosCards.innerHTML = '';
                 const herds = caso.herdeiros || [];
                 if (herds.length > 0) {
@@ -2087,16 +2072,6 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('cad-local-provisorio').value = caso.localizacao_provisoria || '';
                 document.getElementById('cad-caixa-concluido').value = caso.caixa_concluido || '';
                 document.getElementById('cad-observacoes').value = caso.observacoes || '';
-
-                // Checklist
-                const chk = caso.documentos_checklist || {};
-                document.getElementById('chk-doc-obito').checked = !!chk.certidao_obito;
-                document.getElementById('chk-doc-rg-falecido').checked = !!chk.rg_cpf_falecido;
-                document.getElementById('chk-doc-rg-herdeiros').checked = !!chk.rg_cpf_herdeiros;
-                document.getElementById('chk-doc-residencia').checked = !!chk.comprovante_residencia;
-                document.getElementById('chk-doc-casamento').checked = !!chk.certidao_casamento_nascimento;
-                document.getElementById('cad-doc-outros').value = chk.outros || '';
-                document.getElementById('cad-data-recebimento-doc').value = caso.data_recebimento_doc || '';
 
                 // Herdeiros
                 if (containerHerdeirosCards) containerHerdeirosCards.innerHTML = '';
@@ -2127,14 +2102,6 @@ const searchInput = document.getElementById('search-input');
                 document.getElementById('cad-caixa-concluido').value = '';
                 document.getElementById('cad-observacoes').value = '';
 
-                document.getElementById('chk-doc-obito').checked = true;
-                document.getElementById('chk-doc-rg-falecido').checked = true;
-                document.getElementById('chk-doc-rg-herdeiros').checked = true;
-                document.getElementById('chk-doc-residencia').checked = true;
-                document.getElementById('chk-doc-casamento').checked = false;
-                document.getElementById('cad-doc-outros').value = '';
-                document.getElementById('cad-data-recebimento-doc').value = new Date().toISOString().split('T')[0];
-
                 if (containerHerdeirosCards) containerHerdeirosCards.innerHTML = '';
                 adicionarLinhaHerdeiro({ parentesco: 'Filho(a)', is_principal: true });
             }
@@ -2161,8 +2128,6 @@ const searchInput = document.getElementById('search-input');
             const hCpf = dados?.cpf || '';
             const hRg = dados?.rg || '';
             const hEstadoCivil = dados?.estado_civil || 'Solteiro(a)';
-            const hProfissao = dados?.profissao || '';
-            const hEndereco = dados?.endereco || '';
             const hTel = dados?.telefone || '';
             const hEmail = dados?.email || '';
             const hPrincipal = dados?.is_principal ? 'checked' : (index === 1 ? 'checked' : '');
@@ -2211,16 +2176,6 @@ const searchInput = document.getElementById('search-input');
                     <div class="form-group">
                         <label>RG / Órgão Expedidor</label>
                         <input type="text" class="form-control h-rg" placeholder="Ex: 1234567 SSP-PI" value="${escapeHTML(hRg)}">
-                    </div>
-                </div>
-                <div class="form-row-3">
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label>Endereço Residencial Completo</label>
-                        <input type="text" class="form-control h-endereco" placeholder="Rua, número, bairro, cidade-UF..." value="${escapeHTML(hEndereco)}">
-                    </div>
-                    <div class="form-group">
-                        <label>Profissão</label>
-                        <input type="text" class="form-control h-profissao" placeholder="Ex: Professor(a), Aposentado(a)..." value="${escapeHTML(hProfissao)}">
                     </div>
                 </div>
                 <div class="form-row-2">
@@ -2431,8 +2386,6 @@ const searchInput = document.getElementById('search-input');
                             cpf: card.querySelector('.h-cpf')?.value.trim() || '',
                             rg: card.querySelector('.h-rg')?.value.trim() || '',
                             estado_civil: card.querySelector('.h-estado-civil')?.value || 'Solteiro(a)',
-                            profissao: card.querySelector('.h-profissao')?.value.trim() || '',
-                            endereco: card.querySelector('.h-endereco')?.value.trim() || '',
                             telefone: card.querySelector('.h-tel')?.value.trim() || '',
                             email: card.querySelector('.h-email')?.value.trim() || '',
                             is_principal: card.querySelector('.h-principal')?.checked || false
@@ -2444,15 +2397,6 @@ const searchInput = document.getElementById('search-input');
                     showToast('Cadastre ao menos 1 herdeiro com nome.', 'error');
                     return;
                 }
-
-                const checklist = {
-                    certidao_obito: document.getElementById('chk-doc-obito').checked,
-                    rg_cpf_falecido: document.getElementById('chk-doc-rg-falecido').checked,
-                    rg_cpf_herdeiros: document.getElementById('chk-doc-rg-herdeiros').checked,
-                    comprovante_residencia: document.getElementById('chk-doc-residencia').checked,
-                    certidao_casamento_nascimento: document.getElementById('chk-doc-casamento').checked,
-                    outros: document.getElementById('cad-doc-outros').value.trim()
-                };
 
                 const editId = document.getElementById('cad-herd-id-editando').value.trim();
                 const payload = {
@@ -2467,8 +2411,6 @@ const searchInput = document.getElementById('search-input');
                         data_obito: document.getElementById('cad-falecido-obito').value
                     },
                     herdeiros: herdeirosList,
-                    documentos_checklist: checklist,
-                    data_recebimento_doc: document.getElementById('cad-data-recebimento-doc').value || '',
                     localizacao_provisoria: document.getElementById('cad-local-provisorio').value.trim() || 'Recepção / Entrada Jurídico',
                     caixa_concluido: document.getElementById('cad-caixa-concluido').value.trim(),
                     observacoes: document.getElementById('cad-observacoes').value.trim()
@@ -2654,29 +2596,7 @@ const searchInput = document.getElementById('search-input');
                     boxHerds.innerHTML = herdsHtml;
                 }
 
-                // Checklist
-                const boxChk = document.getElementById('det-checklist-view');
-                if (boxChk) {
-                    const chk = caso.documentos_checklist || {};
-                    const itens = [
-                        { label: 'Certidão de Óbito do Titular', val: chk.certidao_obito },
-                        { label: 'RG e CPF do Titular Falecido', val: chk.rg_cpf_falecido },
-                        { label: 'RG e CPF dos Herdeiros', val: chk.rg_cpf_herdeiros },
-                        { label: 'Comprovante de Residência', val: chk.comprovante_residencia },
-                        { label: 'Certidão de Casamento / Nascimento', val: chk.certidao_casamento_nascimento }
-                    ];
 
-                    let chkHtml = '';
-                    itens.forEach(it => {
-                        const icon = it.val ? '✅' : '⚪';
-                        const cor = it.val ? '#047857' : '#94a3b8';
-                        chkHtml += `<div style="display:flex; align-items:center; gap:0.45rem; color:${cor};"><span>${icon}</span> <span>${escapeHTML(it.label)}</span></div>`;
-                    });
-                    if (chk.outros) {
-                        chkHtml += `<div style="margin-top:0.4rem; padding-top:0.4rem; border-top:1px dashed #e2e8f0; font-size:0.78rem; color:#475569;"><strong>Outros:</strong> ${escapeHTML(chk.outros)}</div>`;
-                    }
-                    boxChk.innerHTML = chkHtml;
-                }
 
                 // Anexos
                 const boxAnexos = document.getElementById('det-anexos-lista');
@@ -2835,23 +2755,7 @@ const searchInput = document.getElementById('search-input');
                     boxPrintHerds.innerHTML = listHtml;
                 }
 
-                const boxPrintChk = document.getElementById('print-checklist-docs');
-                if (boxPrintChk) {
-                    const chk = c.documentos_checklist || {};
-                    let chkHtml = '';
-                    const lista = [
-                        { label: 'Certidão de Óbito', val: chk.certidao_obito },
-                        { label: 'RG e CPF do Titular Falecido', val: chk.rg_cpf_falecido },
-                        { label: 'RG e CPF dos Herdeiros', val: chk.rg_cpf_herdeiros },
-                        { label: 'Comprovante de Residência', val: chk.comprovante_residencia },
-                        { label: 'Certidão Casamento/Nascimento', val: chk.certidao_casamento_nascimento }
-                    ];
-                    lista.forEach(item => {
-                        chkHtml += `<span style="margin-right:15px; display:inline-block;">[${item.val ? 'X' : ' '}] ${item.label}</span> `;
-                    });
-                    if (chk.outros) chkHtml += `<br><span>Outros: ${escapeHTML(chk.outros)}</span>`;
-                    boxPrintChk.innerHTML = chkHtml;
-                }
+
 
                 window.print();
             });
