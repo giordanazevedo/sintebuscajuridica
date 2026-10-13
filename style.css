@@ -35,11 +35,18 @@ body {
     overflow-x: hidden;
 }
 
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
 h1,
 h2,
 h3,
 h4 {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 700;
 }
 
@@ -458,7 +465,7 @@ main {
 
 .meta-value.highlight {
     color: var(--primary);
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 1.05rem;
 }
@@ -1249,7 +1256,7 @@ footer strong {
 }
 
 .gm-stat-card .sc-num {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 2rem;
     font-weight: 800;
     line-height: 1;
@@ -1379,7 +1386,7 @@ footer strong {
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 .gm-btn-refresh:hover {
@@ -1418,7 +1425,7 @@ footer strong {
     align-items: center;
     gap: 0.5rem;
     transition: var(--transition);
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 .search-tab svg {
@@ -1499,7 +1506,7 @@ footer strong {
     font-size: 2.25rem;
     font-weight: 800;
     color: var(--accent);
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     line-height: 1;
 }
 
@@ -1565,7 +1572,7 @@ footer strong {
     border-radius: 9999px;
     font-size: 0.8rem;
     font-weight: 700;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 .sync-status-container {
@@ -1646,7 +1653,7 @@ footer strong {
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 .btn-novidades:hover {
@@ -1797,7 +1804,7 @@ footer strong {
     font-size: 0.7rem;
     font-weight: 700;
     line-height: 1;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     color: #ffffff;
     border: 2px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);

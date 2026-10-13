@@ -867,7 +867,7 @@ const searchInput = document.getElementById('search-input');
                         </div>
                     </div>
                 `;
-                html += '<h3 style="font-family:\'Outfit\',sans-serif; color:var(--accent); margin-bottom: 1rem; text-align:left;">Lista de Servidores</h3>';
+                html += '<h3 style="font-family:\'Inter\',sans-serif; color:var(--accent); margin-bottom: 1rem; text-align:left;">Lista de Servidores</h3>';
             } else {
                 html += `
                     <div class="empty-state" style="margin-top: 2rem;">
@@ -930,7 +930,7 @@ const searchInput = document.getElementById('search-input');
                     bloco.innerHTML = `
                         <div style="margin-bottom:1rem;">
                             <div style="display:flex;align-items:center;gap:0.65rem;margin-bottom:0.85rem;flex-wrap:wrap;">
-                                <h3 style="font-family:'Outfit',sans-serif;color:var(--text-main);font-size:1.05rem;margin:0;">
+                                <h3 style="font-family:'Inter',sans-serif;color:var(--text-main);font-size:1.05rem;margin:0;">
                                     Guilherme Melo + FUNDEF em <span style="color:var(--accent);">${escapeHTML(data.regional)}</span>
                                 </h3>
                                 <span style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:6px;font-size:0.7rem;font-weight:700;padding:0.15rem 0.45rem;text-transform:uppercase;letter-spacing:0.5px;">Contagem por Matr&iacute;cula</span>
