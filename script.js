@@ -1494,6 +1494,9 @@ function criarCardKanbanHtml(caso) {
     const herds = caso.herdeiros || [];
     const herdeiroPrincipal = herds.find(h => h.is_principal) || herds[0] || {};
     const tempoStr = formatarTempoAtras(caso.ultima_atualizacao || caso.data_cadastro);
+    const qtdHerdeiros = herds.length;
+
+    const nomeFalecido = fal.nome || 'Sem Nome';
 
     // Badge de localização física
     let localBadgeHtml = '';
@@ -1501,97 +1504,148 @@ function criarCardKanbanHtml(caso) {
         const labelCaixa = (caso.caixa_concluido.toUpperCase().startsWith('CX') || caso.caixa_concluido.toUpperCase().startsWith('CAIXA'))
             ? caso.caixa_concluido
             : `Caixa ${caso.caixa_concluido}`;
-        localBadgeHtml = `<span class="card-location-badge loc-caixa-concluido" title="Arquivado na caixa">📦 ${escapeHTML(labelCaixa)}</span>`;
+        localBadgeHtml = `
+            <div class="card-location-badge loc-caixa-concluido" title="Arquivado na caixa física">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="badge-svg-icon"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                <span>${escapeHTML(labelCaixa)}</span>
+            </div>`;
     } else if (caso.status === 'concluido') {
-        localBadgeHtml = `<span class="card-location-badge loc-provisorio" style="background:#fff7ed; color:#c2410c; border-color:#ffedd5;" title="Aguardando identificação da caixa">📦 Caixa não informada</span>`;
+        localBadgeHtml = `
+            <div class="card-location-badge loc-provisorio alert-loc" title="Aguardando identificação da caixa">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="badge-svg-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <span>Caixa não informada</span>
+            </div>`;
     } else if (caso.localizacao_provisoria) {
-        localBadgeHtml = `<span class="card-location-badge loc-provisorio" title="Guarda provisória">📁 ${escapeHTML(caso.localizacao_provisoria)}</span>`;
+        localBadgeHtml = `
+            <div class="card-location-badge loc-provisorio" title="Guarda física provisória">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="badge-svg-icon"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                <span>${escapeHTML(caso.localizacao_provisoria)}</span>
+            </div>`;
     }
 
     // Info de herdeiro para contato rápido
     let contatoHerdeiroHtml = '';
     if (herdeiroPrincipal && herdeiroPrincipal.nome) {
         const telExibir = herdeiroPrincipal.telefone || 'Sem telefone';
-        const parentescoTxt = herdeiroPrincipal.parentesco ? ` (${herdeiroPrincipal.parentesco})` : '';
+        const parentescoTxt = herdeiroPrincipal.parentesco ? ` · ${herdeiroPrincipal.parentesco}` : '';
+        const badgeMaisHerdeiros = qtdHerdeiros > 1 ? `<span class="heir-count-pill">+${qtdHerdeiros - 1} herdeiro(s)</span>` : '';
+
         contatoHerdeiroHtml = `
-                    <div class="card-herdeiro-info">
-                        <span class="herdeiro-label">Herdeiro Responsável:</span>
-                        <div style="display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.35rem;">
-                            <strong style="font-size: 0.85rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHTML(herdeiroPrincipal.nome)}">
-                                ${escapeHTML(herdeiroPrincipal.nome)}${escapeHTML(parentescoTxt)}
-                            </strong>
-                            <div style="display: flex; flex-direction: column; gap: 0.15rem; color: #64748b; font-size: 0.75rem;">
-                                ${herdeiroPrincipal.email ? `<div style="display:flex; align-items:center; gap:0.3rem; cursor:pointer;" onclick="event.stopPropagation(); dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(herdeiroPrincipal.email)}', '${escapeHTML(herdeiroPrincipal.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}');" title="Enviar e-mail com texto pronto"><span style="font-size:0.8rem;">✉️</span> <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-decoration:underline;">${escapeHTML(herdeiroPrincipal.email)}</span></div>` : ''}
-                                <div style="display:flex; align-items:center; gap:0.3rem;"><span style="font-size:0.8rem;">📞</span> <span>${escapeHTML(telExibir)}</span></div>
-                            </div>
-                        </div>
+            <div class="card-herdeiro-info">
+                <div class="herdeiro-header-row">
+                    <span class="herdeiro-label">Herdeiro Principal</span>
+                    ${badgeMaisHerdeiros}
+                </div>
+                <div class="herdeiro-body">
+                    <div class="herdeiro-name" title="${escapeHTML(herdeiroPrincipal.nome)}">
+                        <span>${escapeHTML(herdeiroPrincipal.nome)}</span>
+                        <span class="herdeiro-parentesco">${escapeHTML(parentescoTxt)}</span>
                     </div>
-                `;
+                    <div class="herdeiro-contatos">
+                        ${herdeiroPrincipal.telefone ? `
+                            <a class="herdeiro-contact-item" href="tel:${escapeHTML(herdeiroPrincipal.telefone)}" onclick="event.stopPropagation();" title="Ligar para ${escapeHTML(herdeiroPrincipal.telefone)}">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                <span>${escapeHTML(telExibir)}</span>
+                            </a>
+                        ` : ''}
+                        ${herdeiroPrincipal.email ? `
+                            <button type="button" class="herdeiro-contact-item btn-inline-email" onclick="event.stopPropagation(); dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(herdeiroPrincipal.email)}', '${escapeHTML(herdeiroPrincipal.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}');" title="Enviar e-mail para ${escapeHTML(herdeiroPrincipal.email)}">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                <span class="email-text">${escapeHTML(herdeiroPrincipal.email)}</span>
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     // Ações específicas de rodapé conforme o estágio
     let botoesRodape = '';
     if (caso.status === 'fila_espera') {
         botoesRodape = `
-                    <button type="button" class="btn-card-action btn-action-primary" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'em_producao');" title="Iniciar elaboração da minuta jurídica">
-                        <span>▶ Iniciar Produção</span>
-                    </button>
-                    <button type="button" class="btn-card-action" style="background:#f1f5f9; color:#475569;" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');">
-                        <span>Detalhes</span>
-                    </button>
-                `;
+            <button type="button" class="btn-card-action btn-action-advance" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'em_producao');" title="Iniciar elaboração da minuta jurídica">
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>Iniciar Produção</span>
+            </button>
+            <button type="button" class="btn-card-action btn-action-neutral" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');" title="Visualizar detalhes">
+                <span>Ver Ficha</span>
+            </button>
+        `;
     } else if (caso.status === 'em_producao') {
         botoesRodape = `
-                    <button type="button" class="btn-card-action btn-action-primary" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura');" title="Minuta concluída: avançar para envio aos herdeiros">
-                        <span>✅ Documento Pronto</span>
-                    </button>
-                    <button type="button" class="btn-card-action" style="background:#f1f5f9; color:#475569;" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');">
-                        <span>Detalhes</span>
-                    </button>
-                `;
+            <button type="button" class="btn-card-action btn-action-advance" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura');" title="Minuta concluída: avançar para envio aos herdeiros">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Pronto p/ Assinar</span>
+            </button>
+            <button type="button" class="btn-card-action btn-action-neutral" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');" title="Visualizar detalhes">
+                <span>Ver Ficha</span>
+            </button>
+        `;
     } else if (caso.status === 'enviado_assinatura') {
         const btnEmail = herdeiroPrincipal.email ? `
-                    <button type="button" class="btn-card-action" style="background-color: #ea4335; color: white; border: none;" onclick="event.stopPropagation(); dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(herdeiroPrincipal.email)}', '${escapeHTML(herdeiroPrincipal.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}');" title="Enviar E-mail via Gmail com texto pronto">
-                        <span>✉️ E-mail</span>
-                    </button>
-                ` : '';
+            <button type="button" class="btn-card-action btn-action-email" onclick="event.stopPropagation(); dispararEmailHerdeiro('${escapeHTML(caso.id)}', '${escapeHTML(herdeiroPrincipal.email)}', '${escapeHTML(herdeiroPrincipal.nome)}', '${escapeHTML(fal.nome)}', '${escapeHTML(fal.acao_juridica)}');" title="Enviar E-mail com instruções e minuta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <span>E-mail</span>
+            </button>
+        ` : '';
         botoesRodape = `
-                    ${btnEmail}
-                    <button type="button" class="btn-card-action btn-concluir" onclick="event.stopPropagation(); abrirModalArquivar('${escapeHTML(caso.id)}');" title="Herdeiros assinaram: arquivar na caixa definitiva">
-                        <span>🗃️ Arquivar</span>
-                    </button>
-                `;
+            ${btnEmail}
+            <button type="button" class="btn-card-action btn-action-archive" onclick="event.stopPropagation(); abrirModalArquivar('${escapeHTML(caso.id)}');" title="Herdeiros assinaram: arquivar na caixa definitiva">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                <span>Arquivar Caixa</span>
+            </button>
+        `;
     } else {
         botoesRodape = `
-                    <button type="button" class="btn-card-action" style="background:#ecfdf5; color:#047857; border-color:#a7f3d0;" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');">
-                        <span>👁️ Ver Ficha Completa</span>
-                    </button>
-                `;
+            <button type="button" class="btn-card-action btn-action-complete" onclick="event.stopPropagation(); abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}');" title="Ver ficha completa do processo arquivado">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                <span>Ver Arquivo Completo</span>
+            </button>
+        `;
     }
 
     return `
-                <div class="kanban-card" onclick="abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}')">
-                    <div class="card-top">
-                        <span class="card-id-badge">${escapeHTML(caso.id)}</span>
-                        <span class="card-time-badge">⏱️ ${tempoStr}</span>
-                    </div>
+        <div class="kanban-card" onclick="abrirModalDetalhesHerdeiro('${escapeHTML(caso.id)}')" data-caso-id="${escapeHTML(caso.id)}">
+            <div class="card-top">
+                <span class="card-id-badge">${escapeHTML(caso.id)}</span>
+                <span class="card-time-badge" title="Última movimentação">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="time-svg"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>${tempoStr}</span>
+                </span>
+            </div>
 
-                    <div class="card-falecido-nome">${escapeHTML(fal.nome || 'SEM NOME')}</div>
-
-                    <div class="card-meta-pills">
-                        <span class="meta-pill pill-acao">${escapeHTML(fal.acao_juridica || 'Ação Geral')}</span>
-                        ${fal.cpf ? `<span class="meta-pill">CPF: ${escapeHTML(formatCPF(fal.cpf))}</span>` : ''}
-                        ${fal.matricula ? `<span class="meta-pill">Mat: ${escapeHTML(formatMatricula(fal.matricula))}</span>` : ''}
-                    </div>
-
-                    ${contatoHerdeiroHtml}
-                    ${localBadgeHtml}
-
-                    <div class="card-actions-footer">
-                        ${botoesRodape}
-                    </div>
+            <div class="card-falecido-row">
+                <div class="falecido-content">
+                    <span class="falecido-role-tag">Falecido(a) Titular</span>
+                    <div class="card-falecido-nome" title="${escapeHTML(nomeFalecido)}">${escapeHTML(nomeFalecido)}</div>
                 </div>
-            `;
+            </div>
+
+            <div class="card-meta-pills">
+                <span class="meta-pill pill-acao" title="Ação Judicial">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="pill-svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    ${escapeHTML(fal.acao_juridica || 'Ação Geral')}
+                </span>
+                ${fal.cpf ? `<span class="meta-pill pill-doc" title="CPF"><span class="pill-prefix">CPF:</span> ${escapeHTML(formatCPF(fal.cpf))}</span>` : ''}
+                ${fal.matricula ? `<span class="meta-pill pill-doc" title="Matrícula"><span class="pill-prefix">Mat:</span> ${escapeHTML(formatMatricula(fal.matricula))}</span>` : ''}
+            </div>
+
+            ${contatoHerdeiroHtml}
+            ${localBadgeHtml}
+
+            ${caso.observacoes && caso.observacoes.trim() && !caso.observacoes.includes('Importado automaticamente') ? `
+                <div class="card-obs-badge" title="${escapeHTML(caso.observacoes)}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="obs-svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <span>${escapeHTML(caso.observacoes)}</span>
+                </div>
+            ` : ''}
+
+            <div class="card-actions-footer">
+                ${botoesRodape}
+            </div>
+        </div>
+    `;
 }
 
 function renderizarTabela(casos) {
@@ -1678,14 +1732,14 @@ kpiCards.forEach(item => {
         el.addEventListener('click', () => {
             if (filtroStatusKpi === item.status) {
                 filtroStatusKpi = ''; // Toggle off
-                el.style.borderColor = '';
+                el.classList.remove('kpi-active');
             } else {
                 filtroStatusKpi = item.status;
                 kpiCards.forEach(c => {
                     const other = document.getElementById(c.id);
-                    if (other) other.style.borderColor = '';
+                    if (other) other.classList.remove('kpi-active');
                 });
-                el.style.borderColor = 'var(--accent)';
+                el.classList.add('kpi-active');
             }
             carregarHerdeiros();
         });

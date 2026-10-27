@@ -14708,11 +14708,11 @@
   {
     "id": "058671-4",
     "data_cadastro": "2026-09-24 18:50:35",
-    "ultima_atualizacao": "2026-09-29 17:27:18",
+    "ultima_atualizacao": "2026-10-27 15:50:04",
     "status": "em_producao",
     "falecido": {
       "nome": "MA DE L DE J CAVALCANTE",
-      "cpf": "7817428387",
+      "cpf": "07817428387",
       "matricula": "058671-4",
       "regional": "",
       "acao_juridica": "Ação Guilherme Melo, FUNDEF, MÃO SANTA 99, SEGUNDA AÇÃO",
@@ -14724,6 +14724,10 @@
         "nome": "MARIELE CAVALCANTE RIBEIRO",
         "parentesco": "Herdeiro(a)",
         "cpf": "",
+        "rg": "",
+        "estado_civil": "Solteiro(a)",
+        "profissao": "",
+        "endereco": "",
         "telefone": "86988629444",
         "email": "",
         "is_principal": true,
@@ -14742,8 +14746,15 @@
     },
     "localizacao_provisoria": "PILHA SETEMBRO",
     "caixa_concluido": "",
-    "observacoes": "",
-    "historico": [],
+    "observacoes": "OKAY",
+    "historico": [
+      {
+        "data": "2026-10-27 15:50:04",
+        "acao": "Atualização Cadastral",
+        "usuario": "Jurídico",
+        "detalhes": "Dados do processo de herdeiros editados pelo operador."
+      }
+    ],
     "notificacoes": [],
     "anexos": []
   },
