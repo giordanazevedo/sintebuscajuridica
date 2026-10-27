@@ -1564,7 +1564,7 @@ function criarCardKanbanHtml(caso) {
     let botoesRodape = '';
     if (caso.status === 'fila_espera') {
         botoesRodape = `
-            <button type="button" class="btn-card-action btn-action-advance" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'em_producao');" title="Iniciar elaboração da minuta jurídica">
+            <button type="button" class="btn-card-action btn-action-advance" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'em_producao');" title="Iniciar elaboração de documento">
                 <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                 <span>Iniciar Produção</span>
             </button>
@@ -1574,7 +1574,7 @@ function criarCardKanbanHtml(caso) {
         `;
     } else if (caso.status === 'em_producao') {
         botoesRodape = `
-            <button type="button" class="btn-card-action btn-action-advance" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura');" title="Minuta concluída: avançar para envio aos herdeiros">
+            <button type="button" class="btn-card-action btn-action-advance" onclick="event.stopPropagation(); transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura');" title="Documento concluído: avançar para envio aos herdeiros">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 <span>Pronto p/ Assinar</span>
             </button>
@@ -2543,9 +2543,9 @@ async function abrirModalDetalhesHerdeiro(id) {
         const boxTransicoes = document.getElementById('det-botoes-transicao');
         let btnsTransHtml = '';
         if (caso.status === 'fila_espera') {
-            btnsTransHtml = `<button type="button" class="btn-card-action btn-action-primary" style="padding:0.4rem 0.8rem;" onclick="transicionarStatus('${escapeHTML(caso.id)}', 'em_producao')">▶ Iniciar Minuta (Mover p/ Em Produção)</button>`;
+            btnsTransHtml = `<button type="button" class="btn-card-action btn-action-primary" style="padding:0.4rem 0.8rem;" onclick="transicionarStatus('${escapeHTML(caso.id)}', 'em_producao')">▶ Iniciar Produção (Mover p/ Em Produção)</button>`;
         } else if (caso.status === 'em_producao') {
-            btnsTransHtml = `<button type="button" class="btn-card-action btn-action-primary" style="padding:0.4rem 0.8rem;" onclick="transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura')">📤 Minuta Pronta (Mover p/ Enviado p/ Assinatura)</button>`;
+            btnsTransHtml = `<button type="button" class="btn-card-action btn-action-primary" style="padding:0.4rem 0.8rem;" onclick="transicionarStatus('${escapeHTML(caso.id)}', 'enviado_assinatura')">📤 Documento Pronto (Mover p/ Enviado p/ Assinatura)</button>`;
         } else if (caso.status === 'enviado_assinatura') {
             btnsTransHtml = `<button type="button" class="btn-card-action btn-concluir" style="padding:0.4rem 0.8rem;" onclick="abrirModalArquivar('${escapeHTML(caso.id)}')">🗃️ Assinado / Concluir na Caixa Específica</button>`;
         } else {
