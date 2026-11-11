@@ -438,25 +438,67 @@ function renderResults(results, searchTerm) {
         return;
     }
 
-    const grouped = {};
-    results.forEach(item => {
-        const nameKey = (item.nome || 'SEM NOME').toUpperCase().trim();
-        if (!grouped[nameKey]) {
-            grouped[nameKey] = {
-                nome: item.nome || 'SEM NOME',
-                links: []
-            };
+    const parents = results.map((_, index) => index);
+    const findRoot = index => {
+        while (parents[index] !== index) {
+            parents[index] = parents[parents[index]];
+            index = parents[index];
         }
-        grouped[nameKey].links.push(item);
+        return index;
+    };
+    const union = (first, second) => {
+        const firstRoot = findRoot(first);
+        const secondRoot = findRoot(second);
+        if (firstRoot !== secondRoot) parents[secondRoot] = firstRoot;
+    };
+    const identifierOwners = new Map();
+
+    results.forEach((item, index) => {
+        const cpf = String(item.cpf || '').replace(/\D/g, '');
+        const rawMatricula = String(item.matricula || '').trim().toUpperCase();
+        const matricula = rawMatricula.replace(/[^A-Z0-9]/g, '');
+        const identifiers = [];
+
+        if (cpf.length >= 8 && cpf.length <= 11) {
+            identifiers.push('CPF:' + cpf.padStart(11, '0'));
+        }
+        if (matricula.length >= 3 && !['NAN', 'NONE', 'NI', '0'].includes(matricula)) {
+            identifiers.push('MAT:' + matricula);
+            const matriculaSemZeros = matricula.replace(/^0+/, '');
+            if (matriculaSemZeros) identifiers.push('MAT:' + matriculaSemZeros);
+        }
+
+        if (identifiers.length === 0) {
+            identifiers.push('NOME:' + (item.nome || 'SEM NOME').toUpperCase().trim());
+        }
+
+        identifiers.forEach(identifier => {
+            if (identifierOwners.has(identifier)) {
+                union(index, identifierOwners.get(identifier));
+            } else {
+                identifierOwners.set(identifier, index);
+            }
+        });
     });
 
-    const uniqueNamesCount = Object.keys(grouped).length;
+    const grouped = new Map();
+    results.forEach((item, index) => {
+        const root = findRoot(index);
+        const name = item.nome || 'SEM NOME';
+        if (!grouped.has(root)) {
+            grouped.set(root, { nome: name, links: [] });
+        }
+        const server = grouped.get(root);
+        if (name.length > server.nome.length) server.nome = name;
+        server.links.push(item);
+    });
+
+    const uniqueNamesCount = grouped.size;
     resultsCount.innerHTML = 'Encontrado(s) <span>' + uniqueNamesCount + '</span> servidor(es) com total de <span>' + results.length + '</span> vínculos/ações';
 
     let html = '<div class="cards-list">';
 
-    for (const key in grouped) {
-        const server = grouped[key];
+    for (const server of grouped.values()) {
         const occurrenceText = server.links.length === 1 ? '1 ocorrência' : server.links.length + ' ocorrências / vínculos';
 
         // Verifica se há vínculo de herdeiros em algum dos registros do servidor
