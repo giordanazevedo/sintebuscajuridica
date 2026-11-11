@@ -1053,7 +1053,6 @@ def search():
     
     encontrados_diretos = []
     matriculas_validas = set()
-    nomes_validos = set()
     cpfs_validos = set()
     
     # 1º Passo: Localiza correspondências DIRETAS e PRECISAS
@@ -1118,9 +1117,6 @@ def search():
                 if cpf_sz:
                     cpfs_validos.add(cpf_sz)
                 
-            if nome_reg and nome_reg not in ['NAN', 'NONE', 'SEM NOME'] and len(nome_reg) >= 5:
-                nomes_validos.add(nome_reg)
-
     # 1.1: Localiza correspondências DIRETAS nos registros de Gestão de Herdeiros
     # Garante que titulares falecidos cadastrados diretamente em herdeiros também apareçam na busca
     herdeiros_encontrados = []
@@ -1201,8 +1197,6 @@ def search():
                     if cpf_sz:
                         cpfs_validos.add(cpf_sz)
 
-                if f_nome and f_nome not in ['NAN', 'NONE', 'SEM NOME'] and len(f_nome) >= 5:
-                    nomes_validos.add(f_nome)
     except Exception as e_h_search:
         print(f"⚠️ Erro ao buscar em herdeiros: {e_h_search}")
 
@@ -1213,7 +1207,7 @@ def search():
     resultados_finais = list(encontrados_diretos)
     chaves_ja_incluidas = set((r["arquivo"], r["aba"], r["nome"], r["matricula"]) for r in resultados_finais)
 
-    if matriculas_validas or nomes_validos or cpfs_validos:
+    if matriculas_validas or cpfs_validos:
         for reg in banco_dados:
             chave_reg = (reg["arquivo"], reg["aba"], reg["nome"], reg["matricula"])
             if chave_reg in chaves_ja_incluidas:
@@ -1221,13 +1215,11 @@ def search():
 
             mat_reg_limpa = reg["matricula"].replace(".", "").replace("-", "").replace("/", "").upper()
             cpf_reg_limpo = reg["cpf"].replace(".", "").replace("-", "").replace("/", "")
-            nome_reg = reg["nome"].upper()
 
             mat_match = (mat_reg_limpa and (mat_reg_limpa in matriculas_validas or mat_reg_limpa.lstrip("0") in matriculas_validas))
             cpf_match = (cpf_reg_limpo and (cpf_reg_limpo in cpfs_validos or cpf_reg_limpo.zfill(11) in cpfs_validos or cpf_reg_limpo.lstrip("0") in cpfs_validos))
-            nome_match = (nome_reg and nome_reg in nomes_validos)
 
-            if mat_match or cpf_match or nome_match:
+            if mat_match or cpf_match:
                 resultados_finais.append(reg)
                 chaves_ja_incluidas.add(chave_reg)
 
